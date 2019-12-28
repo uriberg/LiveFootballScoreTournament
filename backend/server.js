@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri = process.env.LiveBet_URI;
+const uri = process.env.MONGO_URI;
 mongoose.connect(uri, {userNewUrlParser: true, useCreateIndex: true});//flags are needed for taking care of MongoDB updates changes
 const connection = mongoose.connection;
 connection.once('open', () => {
