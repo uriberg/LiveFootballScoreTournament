@@ -20,12 +20,16 @@ app.use(cors());
 app.use(express.json());
 
 if (process.env.NODE_ENV === "production"){
-    app.use(express.static("client/build"));
+    app.use(express.static("build"));
+
+    app.get('*',(req,res) => {
+        res.sendFile(path.resolve(__dirname, "build", "index.html" ));
+    });
 };
 
 // const uri = process.env.MONGO_URI || 'mongodb://uriberg:uriberg2@ds011870.mlab.com:11870/uriberg';
+//const uri = 'mongodb://uriberg:uriberg2@ds011870.mlab.com:11870/';
 const uri = process.env.LiveBet_URI;
-// const uri = process.env.LiveBet_URI;
 mongoose.connect(uri, {userNewUrlParser: true, useCreateIndex: true});//flags are needed for taking care of MongoDB updates changes
 const connection = mongoose.connection;
 connection.once('open', () => {
