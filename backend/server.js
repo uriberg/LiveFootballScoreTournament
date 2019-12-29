@@ -23,8 +23,8 @@ if (process.env.NODE_ENV === "production"){
     app.use(express.static("client/build"));
 };
 
-// const uri = process.env.MONGO_URI || 'mongodb://uriberg:uriberg2@ds011870.mlab.com:11870/heroku_n0jlwqcz';
-const uri = process.env.LiveBet_URI || 'mongodb://uriberg:uriberg2@ds011870.mlab.com:11870/heroku_n0jlwqcz';
+// const uri = process.env.MONGO_URI || 'mongodb://uriberg:uriberg2@ds011870.mlab.com:11870/uriberg';
+const uri = process.env.LiveBet_URI;
 // const uri = process.env.LiveBet_URI;
 mongoose.connect(uri, {userNewUrlParser: true, useCreateIndex: true});//flags are needed for taking care of MongoDB updates changes
 const connection = mongoose.connection;
