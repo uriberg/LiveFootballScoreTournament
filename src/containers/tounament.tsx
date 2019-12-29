@@ -104,7 +104,8 @@ class Tournament extends Component {
     };
 
     getMatches = () => {
-        axios.get('http://localhost:5000/matches')
+        const port = process.env.PORT || 5000;
+        axios.get('murmuring-island-31556.herokuapp.com:' + port + '/matches')
             .then(response => {
                // console.log(response);
                 this.setState({currMatches: response.data});
