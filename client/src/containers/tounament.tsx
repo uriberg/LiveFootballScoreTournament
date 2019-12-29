@@ -95,7 +95,7 @@ class Tournament extends Component {
     };
 
     getUsers = () => {
-        axios.get('http://localhost:5000/users')
+        axios.get('/users')
             .then(response => {
                 console.log(response);
                 this.setState({users: response.data});
