@@ -95,7 +95,7 @@ class Tournament extends Component {
     };
 
     getUsers = () => {
-        axios.get('/users')
+        axios.get('http://localhost:5000/users')
             .then(response => {
                 console.log(response);
                 this.setState({users: response.data});
@@ -105,7 +105,7 @@ class Tournament extends Component {
 
     getMatches = () => {
         const port = process.env.PORT || 5000;
-        axios.get('/matches')
+        axios.get('http://localhost:5000/matches')
             .then(response => {
                // console.log(response);
                 this.setState({currMatches: response.data});

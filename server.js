@@ -7,36 +7,19 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// if (process.env.NODE_ENV === 'production') {
-//     // Serve any static files
-//     app.use(express.static(path.join(__dirname, 'client/build')));
-//     // Handle React routing, return all requests to React app
-//     app.get('*', (request, response) => {
-//         response.sendFile(path.join(__dirname, 'client/build', 'index.tsx'))
-//     })
-// }
+if (process.env.NODE_ENV === 'production') {
+    // Serve any static files
+    app.use(express.static('client/build'));
+    // Handle React routing, return all requests to React app
+}
 
 app.use(cors());
 app.use(express.json());
 
-if (process.env.NODE_ENV === "production"){
-    app.use(express.static(path.join(__dirname, "../client/build")));
 
-    app.get('*',(req,res) => {
-        res.sendFile(path.join(__dirname + "../client/build/index.html"));
-    });
-};
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    res.header(
-"Access-Control-Allow-Headers",
-"Origin, X-Requested-With, Content-Type, Accept"
-);
-    next();
-});
-app.options("*", cors());
+
+
 
 // const uri = process.env.MONGO_URI || 'mongodb://uriberg:uriberg2@ds011870.mlab.com:11870/uriberg';
 //const uri = 'mongodb://uriberg:uriberg2@ds011870.mlab.com:11870/';
