@@ -5,6 +5,8 @@ import React, {Component} from 'react';
 //import Modal from '../../components/UI/Modal/Modal';
 //import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import axios from 'axios';
+import axiosInstance from '../axios';
+
 //import Spinner from '../../components/UI/Spinner/Spinner';
 //import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 //import {connect} from 'react-redux';
@@ -35,6 +37,7 @@ class Tournament extends Component {
     private weeklyScoreinterval : number | undefined;
     private currMatchesInterval : number | undefined;
     private usersInterval : number | undefined;
+
 
     state = {
        users: [],
@@ -74,7 +77,7 @@ class Tournament extends Component {
     }
 
     addMatch = (matchId: any, homeTeamName: any, awayTeamName: any) => {
-      axios.post('/matches/add', {matchId: matchId, homeTeamName: homeTeamName, awayTeamName: awayTeamName})
+      axiosInstance().post('/matches/add', {matchId: matchId, homeTeamName: homeTeamName, awayTeamName: awayTeamName})
           .then(response => {console.log(response)})
           .catch(err => {console.log('Error: ' + err)});
     };
@@ -95,7 +98,7 @@ class Tournament extends Component {
     };
 
     getUsers = () => {
-        axios.get('/users')
+        axiosInstance().get('/users')
             .then(response => {
                 console.log(response);
                 this.setState({users: response.data});
@@ -105,7 +108,7 @@ class Tournament extends Component {
 
     getMatches = () => {
         const port = process.env.PORT || 5000;
-        axios.get('/matches')
+        axiosInstance().get('/matches')
             .then(response => {
                // console.log(response);
                 this.setState({currMatches: response.data});
@@ -115,7 +118,7 @@ class Tournament extends Component {
 
     setCurrentDatabase = () => {
         console.log('SETTING');
-        axios.get('/matches')
+        axiosInstance().get('/matches')
             .then(response => {
                 console.log(response.data);
                 let matchesCreated = response.data.length > 0;
@@ -171,7 +174,7 @@ class Tournament extends Component {
     };
 
     addUser = () => {
-        axios.post('/users/newUser', {
+        axiosInstance().post('/users/newUser', {
             username: this.state.usernameToAddName,
             totalScore: this.state.usernameToAddScore,
             weeklyScore: 0
@@ -227,7 +230,7 @@ class Tournament extends Component {
     };
 
     updateUserScore = (userId: string, weeklyScore: number) => {
-        axios.put('/users/' + userId + '/updateScore', {weeklyScore: weeklyScore})
+        axiosInstance().put('/users/' + userId + '/updateScore', {weeklyScore: weeklyScore})
             .then(response => {
                 //console.log(response)
             })

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Button} from "semantic-ui-react";
 import axios from 'axios';
+import axiosInstance from '../axios';
 import classes from './match.module.css';
 
 interface MatchProps {
@@ -37,7 +38,7 @@ class Match extends Component<MatchProps> {
     };
 
     componentDidMount() {
-        axios.get('/matches/' + this.props.id)
+        axiosInstance().get('/matches/' + this.props.id)
             .then(response => {
                 console.log(response);
                 if (response.data) {
@@ -89,7 +90,7 @@ class Match extends Component<MatchProps> {
     };
 
     updateMatchScore = (goalsHomeTeam: number, goalsAwayTeam: number) => {
-        axios.put('/matches/' + this.props.id + '/result', {goalsHomeTeam: goalsHomeTeam, goalsAwayTeam: goalsAwayTeam})
+        axiosInstance().put('/matches/' + this.props.id + '/result', {goalsHomeTeam: goalsHomeTeam, goalsAwayTeam: goalsAwayTeam})
             .then(response => {console.log(response)})
             .catch(err => {console.log(err)});
     };
@@ -99,7 +100,7 @@ class Match extends Component<MatchProps> {
 
 
         if (prevProps.selectedUser !== this.props.selectedUser || this.state.selectionChanged) {
-            axios.get('/matches/' + this.props.id)
+            axiosInstance().get('/matches/' + this.props.id)
                 .then(response => {
                     console.log(response);
                     let selectionHasChanged = true;
@@ -139,7 +140,7 @@ class Match extends Component<MatchProps> {
 
     submitOdds = () => {
         this.setState({editMode: false});
-        axios.put('/matches/' + this.props.id + '/odds', {
+        axiosInstance().put('/matches/' + this.props.id + '/odds', {
             homeOdd: this.state.homeOdd,
             tieOdd: this.state.tieOdd,
             awayOdd: this.state.awayOdd
@@ -175,7 +176,7 @@ class Match extends Component<MatchProps> {
                 }
                 // @ts-ignore
                 homeWinUsers.push(this.props.selectedUser);
-                axios.put('/matches/' + this.props.id + '/bet', {
+                axiosInstance().put('/matches/' + this.props.id + '/bet', {
                     homeWinUsers,
                     awayWinUsers,
                     tieUsers
@@ -218,7 +219,7 @@ class Match extends Component<MatchProps> {
                 }
                 // @ts-ignore
                 awayWinUsers.push(this.props.selectedUser);
-                axios.put('/matches/' + this.props.id + '/bet', {
+                axiosInstance().put('/matches/' + this.props.id + '/bet', {
                     homeWinUsers,
                     awayWinUsers,
                     tieUsers
@@ -261,7 +262,7 @@ class Match extends Component<MatchProps> {
                 }
                 // @ts-ignore
                 tieUsers.push(this.props.selectedUser);
-                axios.put('/matches/' + this.props.id + '/bet', {
+                axiosInstance().put('/matches/' + this.props.id + '/bet', {
                     homeWinUsers,
                     awayWinUsers,
                     tieUsers
