@@ -13,7 +13,9 @@ const MatchSchema = new Schema({
         awayOdd: {type: Number, required: false},
         homeWinUsers: {type: [], required: false},
         tieUsers: {type: [], required: false},
-        awayWinUsers: {type: [], required: false}
+        awayWinUsers: {type: [], required: false},
+        round: {type: String, required: true},
+        leagueId: {type: Number, required: true}
     },
     {
         timestamps: true

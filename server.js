@@ -32,9 +32,11 @@ connection.once('open', () => {
 
 const matchesRouter = require('./routes/matches');
 const usersRouter = require('./routes/users');
+const tournamentsRouter = require('./routes/tournaments');
 
 app.use('/matches', matchesRouter);
-app.use('/users',usersRouter);
+app.use('/users', usersRouter);
+app.use('/tournaments', tournamentsRouter);
 
 
 app.listen(port, () => {

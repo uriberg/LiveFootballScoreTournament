@@ -33,7 +33,13 @@ interface MatchType {
     awayTeamName: string;
 }
 
-class Tournament extends Component {
+interface TournamentProps {
+    tournamentName: string,
+    tournamentLeagueId: number,
+    users: User [],
+}
+
+class Tournament extends Component<TournamentProps> {
     private weeklyScoreinterval : number | undefined;
     private currMatchesInterval : number | undefined;
     private usersInterval : number | undefined;
@@ -46,15 +52,30 @@ class Tournament extends Component {
         selectedUser: '',
         usernameToAddName: '',
         usernameToAddScore: 0,
-        currMatches: []
+        currMatches: [],
+        leagueId: null,
+        propUsers: this.props.users,
+        leagueCurrentRound: ''
     };
 
     componentDidMount() {
+        //this.getUsers();
+       // console.log(this.state.propUsers);
+        this.getCurrentRound(this.props.tournamentLeagueId);
+        let tempUsers = [...this.state.propUsers];
+        for(let i = 0; i < this.state.propUsers.length; i++){
+            // @ts-ignore
+            tempUsers[i].totalScore = +(tempUsers[i].totalScore) + (+tempUsers[i].weeklyScore);
+        };
+        this.setState({users: tempUsers});
+        //this.getMatches();
+        this.calculateWeeklyScore();
+
         // @ts-ignore
-        this.usersInterval = setInterval(() => {
-            this.getUsers();
-        }, 5000);
-        this.getCurrentRound();
+        // this.usersInterval = setInterval(() => {
+        //     this.getUsers();
+        // }, 5000);
+        //this.getCurrentRound();
         // @ts-ignore
         this.currMatchesInterval = setInterval(() => {
             this.getMatches();
@@ -66,7 +87,8 @@ class Tournament extends Component {
     }
 
     componentDidUpdate(): void {
-        console.log('UPDATE');
+       // console.log('UPDATE');
+        //console.log(this.props.tournamentLeagueId);
         this.calculateWeeklyScore();
     }
 
@@ -76,23 +98,33 @@ class Tournament extends Component {
         clearInterval(this.usersInterval);
     }
 
-    addMatch = (matchId: any, homeTeamName: any, awayTeamName: any) => {
-      axiosInstance().post('/matches/add', {matchId: matchId, homeTeamName: homeTeamName, awayTeamName: awayTeamName})
-          .then(response => {console.log(response)})
+    addMatch = (matchId: any, homeTeamName: any, awayTeamName: any, currentRound: any, leagueId: any) => {
+      axiosInstance().post('/matches/add', {
+          matchId: matchId,
+          homeTeamName: homeTeamName,
+          awayTeamName: awayTeamName,
+          round: currentRound,
+          leagueId: leagueId
+      })
+          .then(response => {
+              console.log(response);
+          })
           .catch(err => {console.log('Error: ' + err)});
     };
 
-    getCurrentRound = () => {
+    getCurrentRound = (leagueId: number) => {
         const headers = {
             "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
             "x-rapidapi-key": "caf2d8bb45msh890d53234504df6p11bfa9jsn11476be6f67b"
         };
 
-        axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/rounds/637/current', {headers})
+        axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/rounds/' + leagueId +'/current', {headers})
             .then(response => {
-                console.log(response.data.api.fixtures[0]);
+               // console.log(response.data.api.fixtures[0]);
                 let currentRound = response.data.api.fixtures[0];
-                this.getCurrRoundMatches(currentRound);
+                console.log(currentRound);
+                this.setState({leagueCurrentRound: currentRound});
+                this.getCurrRoundMatches(this.state.leagueCurrentRound);
             })
             .catch(err => console.log(err));
     };
@@ -100,45 +132,72 @@ class Tournament extends Component {
     getUsers = () => {
         axiosInstance().get('/users')
             .then(response => {
-                console.log(response);
+               // console.log(response);
                 this.setState({users: response.data});
             })
             .catch(err => {console.log(err)});
     };
 
     getMatches = () => {
-        const port = process.env.PORT || 5000;
-        axiosInstance().get('/matches')
-            .then(response => {
-               // console.log(response);
-                this.setState({currMatches: response.data});
-            })
-            .catch(err => {console.log(err)});
+        if (this.props.tournamentLeagueId && this.state.leagueCurrentRound) {
+            console.log('should fetch matches');
+          //  console.log(this.state.leagueCurrentRound);
+            axiosInstance().get('/matches/' + this.props.tournamentLeagueId + '/' + this.state.leagueCurrentRound)
+                .then(response => {
+                    console.log(response);
+                    this.setState({currMatches: response.data});
+                })
+                .catch(err => {
+                    console.log(err)
+                });
+        }
+        //console.log('getMatches');
+        //console.log(this.state.currFixtures);
+        console.log(this.state.currMatches);
+
     };
 
-    setCurrentDatabase = () => {
-        console.log('SETTING');
-        axiosInstance().get('/matches')
+    checkDatabase = () => {
+        axiosInstance().get('/matches/' + this.props.tournamentLeagueId + '/' + this.state.leagueCurrentRound)
             .then(response => {
-                console.log(response.data);
-                let matchesCreated = response.data.length > 0;
-                if (!matchesCreated){
-                    for(let i = 0; i < this.state.currFixtures.length; i++){
+                console.log(response);
+                if (response.data.length === 0){
+                    console.log('LENGTH IS ZERO');
+                    this.setCurrentDatabase();
+                }
+                this.setState({currMatches: response.data});
+            })
+            .catch(err => {
+                console.log(err)
+            });
+    };
+
+
+    setCurrentDatabase = () => {
+                    // @ts-ignore
+        for(let i = 0; i < this.state.currFixtures.length; i++){
                         // @ts-ignore
-                        console.log(this.state.currFixtures[i].fixture_id);
+                      //  console.log(this.state.currFixtures[i].fixture_id);
                         // @ts-ignore
                         let matchId = this.state.currFixtures[i].fixture_id;
                         // @ts-ignore
                         let homeTeamName = this.state.currFixtures[i].homeTeam.team_name;
                         // @ts-ignore
                         let awayTeamName = this.state.currFixtures[i].awayTeam.team_name;
-                        this.addMatch(matchId, homeTeamName, awayTeamName);
+                        // @ts-ignore
+                        let currentRound = this.state.currFixtures[i].round;
+                       // console.log(currentRound);
+                        // @ts-ignore
+                        let leagueId = this.state.currFixtures[i].league_id;
+                        this.addMatch(matchId, homeTeamName, awayTeamName, currentRound, leagueId);
                         //this.addMatch(this.state.currFixtures[i].fixture_id);
                     }
-                }
-                console.log(matchesCreated);
-            })
-            .catch(err => {console.log('Error: ' + err)});
+                //}
+               // console.log(matchesCreated);
+            // })
+            // .catch(err => {console.log('Error: ' + err)});
+
+        //adding matches to fixtures
     };
 
     getCurrRoundMatches = (currentRound: string) => {
@@ -146,14 +205,15 @@ class Tournament extends Component {
             "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
             "x-rapidapi-key": "caf2d8bb45msh890d53234504df6p11bfa9jsn11476be6f67b"
         };
-
-        axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/league/637/' + currentRound, {headers})
+      //  console.log(this.state.leagueCurrentRound);
+        console.log('currRoundMatches');
+        axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/league/' + this.props.tournamentLeagueId  + '/' + this.state.leagueCurrentRound, {headers})
             .then(response => {
-                console.log(response.data.api);
-                console.log(response.data.api.fixtures[0].homeTeam.team_name);
-                this.setState({currFixtures: response.data.api.fixtures});
-                this.setCurrentDatabase();
-                console.log(this.state.currFixtures);
+                //console.log(response.data.api);
+                //console.log(response.data.api.fixtures[0].homeTeam.team_name);
+                this.setState({currFixtures: response.data.api.fixtures, leagueCurrentRound: response.data.api.fixtures[0].round});
+                this.checkDatabase();
+                //console.log(this.state.currFixtures);
 
             })
             .catch(err => console.log(err));
@@ -161,7 +221,7 @@ class Tournament extends Component {
 
 
     selectedUserChanged = (event: any) => {
-        console.log(event.target.value);
+        //console.log(event.target.value);
         this.setState({selectedUser: event.target.value});
     };
 
@@ -187,8 +247,9 @@ class Tournament extends Component {
     calculateWeeklyScore = () => {
         let users : User []  = [...this.state.users];
         let matches : MatchType [] = [...this.state.currMatches];
-        console.log(users);
-        console.log(matches);
+        //console.log(users);
+        //console.log(matches);
+        //let matches = [...this.state.currFixtures];
         for (let i = 0; i < users.length; i++){
             // @ts-ignore
             users[i].weeklyScore = 0;
@@ -203,23 +264,23 @@ class Tournament extends Component {
                             users[i].weeklyScore = +parseFloat((users[i].weeklyScore + matches[j].homeOdd).toFixed(2));
 
                             // @ts-ignore
-                            console.log(matches[j]);
-                            console.log(users[i].name, matches[j].homeOdd, matches[j].homeTeamName);
+                           // console.log(matches[j]);
+                            //console.log(users[i].name, matches[j].homeOdd, matches[j].homeTeamName);
                         }
                     } else if (matches[j].goalsHomeTeam < matches[j].goalsAwayTeam) {
                         // @ts-ignore
                         if (matches[j].awayWinUsers.indexOf(users[i].name) > -1) {
                             // @ts-ignore
                             users[i].weeklyScore = +parseFloat((users[i].weeklyScore + matches[j].awayOdd).toFixed(2));
-                            console.log(users[i].name, matches[j].awayOdd, matches[j].awayTeamName);
+                           // console.log(users[i].name, matches[j].awayOdd, matches[j].awayTeamName);
                         }
                     } else if (matches[j].goalsHomeTeam === matches[j].goalsAwayTeam) {
                         // @ts-ignore
                         if (matches[j].tieUsers.indexOf(users[i].name) > -1) {
                             // @ts-ignore
                             users[i].weeklyScore = +parseFloat((users[i].weeklyScore + matches[j].tieOdd).toFixed(2));
-                            console.log(matches[j]);
-                            console.log(users[i].name, matches[j].tieOdd);
+                        //    console.log(matches[j]);
+                          //  console.log(users[i].name, matches[j].tieOdd);
                         }
                     }
                 }
@@ -227,6 +288,7 @@ class Tournament extends Component {
             // @ts-ignore
             this.updateUserScore(users[i]._id, users[i].weeklyScore);
         }
+        console.log(users);
     };
 
     updateUserScore = (userId: string, weeklyScore: number) => {
@@ -236,6 +298,7 @@ class Tournament extends Component {
             })
             .catch(err => {console.log(err)});
     };
+
 
     render() {
         // @ts-ignore
@@ -259,7 +322,8 @@ class Tournament extends Component {
                {this.state.users.map((user: User) =>
                <User name={user.name} totalScore={user.totalScore} weeklyScore={user.weeklyScore} key={user.name}/> )}
                {this.state.currFixtures.map((match: any) =>
-               <Match id={match.fixture_id} homeTeamName={match.homeTeam.team_name} awayTeamName={match.awayTeam.team_name} key={match.fixture_id} selectedUser={this.state.selectedUser}/>)}
+               <Match id={match.fixture_id} homeTeamName={match.homeTeam.team_name} awayTeamName={match.awayTeam.team_name} key={match.fixture_id} selectedUser={this.state.selectedUser}
+                        leagueId={this.props.tournamentLeagueId} round={this.state.leagueCurrentRound}/>)}
            </div>
         );
     }

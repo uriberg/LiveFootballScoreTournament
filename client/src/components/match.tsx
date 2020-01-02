@@ -18,6 +18,8 @@ interface MatchProps {
         Tie: number
     },
     selectedUser: string
+    leagueId: number,
+    round: string;
 }
 
 class Match extends Component<MatchProps> {
@@ -40,9 +42,9 @@ class Match extends Component<MatchProps> {
     componentDidMount() {
         axiosInstance().get('/matches/' + this.props.id)
             .then(response => {
-                console.log(response);
+               // console.log(response);
                 if (response.data) {
-                    console.log('set');
+                    //console.log('set');
 
                     this.setState({
                         homeOdd: response.data.homeOdd,
@@ -77,12 +79,12 @@ class Match extends Component<MatchProps> {
         };
         axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/id/' + this.props.id, {headers})
             .then(response => {
-                console.log(response);
+                //console.log(response);
                 if (response.data.api.fixtures[0].statusShort !== 'NS'){
                     let goalsHomeTeam = response.data.api.fixtures[0].goalsHomeTeam;
                     let goalsAwayTeam = response.data.api.fixtures[0].goalsAwayTeam;
-                    console.log('goalsHomeTeam: ' + goalsHomeTeam);
-                    console.log('goalsAwayTeam: ' + goalsAwayTeam);
+                   // console.log('goalsHomeTeam: ' + goalsHomeTeam);
+                  //  console.log('goalsAwayTeam: ' + goalsAwayTeam);
                     this.updateMatchScore(goalsHomeTeam, goalsAwayTeam);
                 }
             })
@@ -98,11 +100,11 @@ class Match extends Component<MatchProps> {
 
     componentDidUpdate(prevProps: Readonly<MatchProps>, prevState: Readonly<{}>, snapshot?: any): void {
 
-
-        if (prevProps.selectedUser !== this.props.selectedUser || this.state.selectionChanged) {
+       // console.log('mathc upadted!! ' + this.props.selectedUser + ' ' + this.props.leagueId);
+        if (prevProps.selectedUser !== this.props.selectedUser || this.state.selectionChanged || prevProps.leagueId !== this.props.leagueId) {
             axiosInstance().get('/matches/' + this.props.id)
                 .then(response => {
-                    console.log(response);
+                  //  console.log(response);
                     let selectionHasChanged = true;
                     if (prevProps.selectedUser === this.props.selectedUser){
                         selectionHasChanged = false;
@@ -118,9 +120,30 @@ class Match extends Component<MatchProps> {
                     console.log('Error: ' + err)
                 });
         }
-
-
     }
+
+    // componentWillUpdate(nextProps: Readonly<MatchProps>, nextState: Readonly<{}>, nextContext: any): void {
+    //     console.log('mathc upadted!! ' + this.props.selectedUser + ' ' + this.props.leagueId);
+    //     if (nextProps.selectedUser !== this.props.selectedUser || this.state.selectionChanged || nextProps.leagueId !== this.props.leagueId) {
+    //         axiosInstance().get('/matches/' + this.props.id)
+    //             .then(response => {
+    //                 console.log(response);
+    //                 let selectionHasChanged = true;
+    //                 if (nextProps.selectedUser === this.props.selectedUser){
+    //                     selectionHasChanged = false;
+    //                 }
+    //                 this.setState({
+    //                     userChoseAway: response.data.awayWinUsers.indexOf(nextProps.selectedUser) > -1,
+    //                     userChoseHome: response.data.homeWinUsers.indexOf(nextProps.selectedUser) > -1,
+    //                     userChoseTie: response.data.tieUsers.indexOf(nextProps.selectedUser) > -1,
+    //                     selectionChanged: selectionHasChanged
+    //                 });
+    //             })
+    //             .catch(err => {
+    //                 console.log('Error: ' + err)
+    //             });
+    //     }
+    // }
 
     toggleEditMode = () => {
         this.setState({editMode: !this.state.editMode});

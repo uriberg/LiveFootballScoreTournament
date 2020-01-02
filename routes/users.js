@@ -34,13 +34,16 @@ router.route('/newUser').post((req, res) => {
 });
 
 router.route('/:userId/updateScore').put((req,res) => {
-   console.log(req.body);
+  // console.log(req.body);
    User.findByIdAndUpdate(req.params.userId)
        .then(user => {
-           user.weeklyScore = req.body.weeklyScore;
-           user.save();
+          // console.log(user);
+           if (user) {
+               user.weeklyScore = req.body.weeklyScore;
+               user.save();
+           }
            res.json(user);
-       })
+       });
 });
 //
 // router.route('/:id').delete((req, res) => {

@@ -6,9 +6,10 @@ interface UserProps {
     weeklyScore: number
 }
 
+
 const User = (props: UserProps) => (
     <div>
-        <p>{props.name} - {props.totalScore + props.weeklyScore}</p>
+        <p>{props.name} - {props.totalScore}</p>
     </div>
 );
 
