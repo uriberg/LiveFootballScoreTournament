@@ -3,12 +3,6 @@ import axiosInstance from '../axios';
 import {Button, Form} from "semantic-ui-react";
 import Tournament from "./tournament";
 
-interface User {
-    name: string;
-    totalScore: number;
-    weeklyScore: number;
-}
-
 const options = [
     {key: 'I', text: 'Israeli League', value: 'israeli league'},
     {key: 'P', text: 'Premier League', value: 'premier league'},
@@ -26,7 +20,9 @@ class Landing extends Component {
         totalScore: 0,
         tournamentUsers: [],
         showTournament: false,
-        tournamentsArray: []
+        tournamentsArray: [],
+        tournamentId: '',
+        lastRecordedRound: ''
     };
 
     turnOnCreateMode = () => {
@@ -45,7 +41,7 @@ class Landing extends Component {
         axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then((response: any) => {
                 console.log(response);
-                this.setState({createMode: false, showTournament: true});
+                this.setState({createMode: false, showTournament: true, tournamentId: response.data._id});
             })
             .catch((err: any) => {console.log(err)});
     };
@@ -83,7 +79,7 @@ class Landing extends Component {
         console.log(tournamentUsersArray);
     };
 
-    selectedLeagueChanged = (event: any, {name, value}: any) => {
+    selectedLeagueChanged = (event: any, {value}: any) => {
         console.log(value);
         if (value === 'israeli league') {
             this.setState({tournamentLeagueId: 637})
@@ -101,12 +97,14 @@ class Landing extends Component {
                     tournamentName: response.data.tournamentName,
                     tournamentLeagueId: response.data.tournamentLeagueId,
                     tournamentUsers: response.data.tournamentUsers,
+                    tournamentId: id,
+                    lastRecordedRound: response.data.lastRecordedRound,
                     showTournament: true
                 });
             })
             .catch(err => {console.log(err)});
         //console.log(event.target._id);
-    }
+    };
 
     render() {
         const tournamentsList =  this.state.tournamentsArray.map((tournament: any) =>
@@ -152,7 +150,7 @@ class Landing extends Component {
                     : null}
                 {this.state.showTournament ?
                     <Tournament tournamentName={this.state.tournamentName} tournamentLeagueId={this.state.tournamentLeagueId}
-                        users={this.state.tournamentUsers}/>
+                        users={this.state.tournamentUsers} tournamentId={this.state.tournamentId} lastRecordedRound={this.state.lastRecordedRound}/>
                 : tournamentsList}
 
 

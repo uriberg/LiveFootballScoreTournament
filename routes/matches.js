@@ -10,7 +10,7 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/:leagueId/:currentRound').get((req, res) => {
-    console.log('got request');
+    //console.log('got request');
     Matches.find()
         .then(notes => {
             //console.log(req.params);
@@ -20,10 +20,10 @@ router.route('/:leagueId/:currentRound').get((req, res) => {
             //console.log(+leagueId);
 
             for (let i = 0; i < notes.length; i++) {
-                console.log(notes[i].round);
-                console.log(round);
+                //console.log(notes[i].round);
+                //console.log(round);
                 if (notes[i].round === round && notes[i].leagueId === leagueId) {
-                    console.log('pushing!!!');
+                   // console.log('pushing!!!');
                     notesToSend.push(notes[i]);
                 }
             }
@@ -32,7 +32,7 @@ router.route('/:leagueId/:currentRound').get((req, res) => {
 
         })
         .catch(err => res.status(400).json('Error ' + err));
-})
+});
 
 router.route('/:matchId').get((req, res) => {
     // console.log('matchIdRequest');

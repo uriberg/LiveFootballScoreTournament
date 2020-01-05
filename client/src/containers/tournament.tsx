@@ -37,12 +37,15 @@ interface TournamentProps {
     tournamentName: string,
     tournamentLeagueId: number,
     users: User [],
+    tournamentId: string,
+    lastRecordedRound: string
 }
 
 class Tournament extends Component<TournamentProps> {
     private weeklyScoreinterval : number | undefined;
     private currMatchesInterval : number | undefined;
     private usersInterval : number | undefined;
+    private checkRoundInterval : number | undefined;
 
 
     state = {
@@ -55,7 +58,10 @@ class Tournament extends Component<TournamentProps> {
         currMatches: [],
         leagueId: null,
         propUsers: this.props.users,
-        leagueCurrentRound: ''
+        leagueCurrentRound: '',
+        desiredPrevRound: '',
+        showPrevMatches: false,
+        prevMatches: []
     };
 
     componentDidMount() {
@@ -63,10 +69,10 @@ class Tournament extends Component<TournamentProps> {
        // console.log(this.state.propUsers);
         this.getCurrentRound(this.props.tournamentLeagueId);
         let tempUsers = [...this.state.propUsers];
-        for(let i = 0; i < this.state.propUsers.length; i++){
-            // @ts-ignore
-            tempUsers[i].totalScore = +(tempUsers[i].totalScore) + (+tempUsers[i].weeklyScore);
-        };
+        // for(let i = 0; i < this.state.propUsers.length; i++){
+        //     // @ts-ignore
+        //     tempUsers[i].totalScore = +(tempUsers[i].totalScore) + (+tempUsers[i].weeklyScore);
+        // };
         this.setState({users: tempUsers});
         //this.getMatches();
         this.calculateWeeklyScore();
@@ -83,19 +89,25 @@ class Tournament extends Component<TournamentProps> {
         // @ts-ignore
         this.weeklyScoreinterval = setInterval(() => {
             this.calculateWeeklyScore();
-        }, 5000);
-    }
+        }, 10000);
 
-    componentDidUpdate(): void {
-       // console.log('UPDATE');
-        //console.log(this.props.tournamentLeagueId);
-        this.calculateWeeklyScore();
+        // @ts-ignore
+        // this.checkRoundInterval = setInterval( () => {
+        //     this.getCurrentRound(this.props.tournamentLeagueId);
+        // }, 86400000);//i.e every one day
+
+        this.checkRoundInterval = setInterval( () => {
+            this.getCurrentRound(this.props.tournamentLeagueId);
+        }, 120000);//i.e every two minutes
+
+
     }
 
     componentWillUnmount(): void {
         clearInterval(this.weeklyScoreinterval);
         clearInterval(this.currMatchesInterval);
         clearInterval(this.usersInterval);
+        clearInterval(this.checkRoundInterval);
     }
 
     addMatch = (matchId: any, homeTeamName: any, awayTeamName: any, currentRound: any, leagueId: any) => {
@@ -123,10 +135,33 @@ class Tournament extends Component<TournamentProps> {
                // console.log(response.data.api.fixtures[0]);
                 let currentRound = response.data.api.fixtures[0];
                 console.log(currentRound);
-                this.setState({leagueCurrentRound: currentRound});
+                this.setState({leagueCurrentRound: currentRound, desiredPrevRound: currentRound});
                 this.getCurrRoundMatches(this.state.leagueCurrentRound);
             })
             .catch(err => console.log(err));
+    };
+
+    desiredPrevRound = () => {
+        let currentPrevRound = this.state.desiredPrevRound;
+        let currentPrevRoundNumber = '';
+        let newPrevRoundNumber = '';
+        let firstNumberIndex = -1;
+        for(let i = 0; i < currentPrevRound.length; i++){
+
+            if (currentPrevRound.charAt(i) >= '0' && currentPrevRound.charAt(i) <= '9'){
+                if (firstNumberIndex < 0) {
+                    firstNumberIndex = i;
+                }
+                else {}
+                console.log(currentPrevRound.charAt(i));
+                currentPrevRoundNumber = currentPrevRoundNumber + currentPrevRound.charAt(i);
+                console.log(currentPrevRoundNumber);
+            }
+        }
+         newPrevRoundNumber = +(currentPrevRoundNumber) -1 + '';
+         console.log(newPrevRoundNumber);
+         const newDesiredPrevRound = this.state.desiredPrevRound.substring(0,firstNumberIndex) + newPrevRoundNumber;
+         console.log(newDesiredPrevRound);
     };
 
     getUsers = () => {
@@ -161,11 +196,41 @@ class Tournament extends Component<TournamentProps> {
         axiosInstance().get('/matches/' + this.props.tournamentLeagueId + '/' + this.state.leagueCurrentRound)
             .then(response => {
                 console.log(response);
+                console.log(this.state.leagueCurrentRound);
                 if (response.data.length === 0){
                     console.log('LENGTH IS ZERO');
-                    this.setCurrentDatabase();
+                    this.updateTournamentRound();
                 }
+                // console.log(this.props.users);
+                // console.log(this.state.users);
+                // let temp = [...this.state.users];
+                // console.log(temp);
+                // for(let i = 0; i < temp.length; i++){
+                //     // @ts-ignore
+                //     temp[i].totalScore = temp[i].totalScore + temp[i].weeklyScore;
+                // }
+                // console.log(temp);
                 this.setState({currMatches: response.data});
+            })
+            .catch(err => {
+                console.log(err)
+            });
+    };
+
+    updateTournamentRound = () => {
+        let updatedScore = [...this.state.users];
+        console.log(updatedScore);
+        for(let i = 0; i < updatedScore.length; i++){
+            // @ts-ignore
+            updatedScore[i].totalScore = updatedScore[i].totalScore + updatedScore[i].weeklyScore;
+            // @ts-ignore
+            updatedScore[i].weeklyScore = 0;
+        }
+        console.log(updatedScore);
+        axiosInstance().put('tournaments/' + this.props.tournamentId + '/updateCurrentRound',{newRecordedRound: this.state.leagueCurrentRound, updatedTotalScore: updatedScore})
+            .then(response => {
+                console.log(response);
+                this.setCurrentDatabase();
             })
             .catch(err => {
                 console.log(err)
@@ -174,6 +239,7 @@ class Tournament extends Component<TournamentProps> {
 
 
     setCurrentDatabase = () => {
+
                     // @ts-ignore
         for(let i = 0; i < this.state.currFixtures.length; i++){
                         // @ts-ignore
@@ -207,11 +273,12 @@ class Tournament extends Component<TournamentProps> {
         };
       //  console.log(this.state.leagueCurrentRound);
         console.log('currRoundMatches');
+        console.log(this.state.leagueCurrentRound);
         axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/league/' + this.props.tournamentLeagueId  + '/' + this.state.leagueCurrentRound, {headers})
             .then(response => {
                 //console.log(response.data.api);
                 //console.log(response.data.api.fixtures[0].homeTeam.team_name);
-                this.setState({currFixtures: response.data.api.fixtures, leagueCurrentRound: response.data.api.fixtures[0].round});
+                this.setState({currFixtures: response.data.api.fixtures, leagueCurrentRound: response.data.api.fixtures[0].round, desiredPrevRound: response.data.api.fixtures[0].round});
                 this.checkDatabase();
                 //console.log(this.state.currFixtures);
 
@@ -234,12 +301,16 @@ class Tournament extends Component<TournamentProps> {
     };
 
     addUser = () => {
-        axiosInstance().post('/users/newUser', {
-            username: this.state.usernameToAddName,
+        const newUser = {
+            name: this.state.usernameToAddName,
             totalScore: this.state.usernameToAddScore,
             weeklyScore: 0
-        })
-            .then(response => {console.log(response)})
+        };
+        axiosInstance().put('/tournaments/' + this.props.tournamentId + '/addUser',  {newUser})
+            .then(response => {
+                console.log(response);
+                this.setState({users: response.data.tournamentUsers});
+            })
             .catch(err => {console.log(err)});
 
     };
@@ -248,7 +319,7 @@ class Tournament extends Component<TournamentProps> {
         let users : User []  = [...this.state.users];
         let matches : MatchType [] = [...this.state.currMatches];
         //console.log(users);
-        //console.log(matches);
+        console.log(matches);
         //let matches = [...this.state.currFixtures];
         for (let i = 0; i < users.length; i++){
             // @ts-ignore
@@ -286,15 +357,18 @@ class Tournament extends Component<TournamentProps> {
                 }
             }
             // @ts-ignore
-            this.updateUserScore(users[i]._id, users[i].weeklyScore);
+            //this.updateUserScore(users[i]._id, users[i].weeklyScore);
         }
-        console.log(users);
+        if (users.length > 0){
+            this.updateUsersScore(users);
+        }
     };
 
-    updateUserScore = (userId: string, weeklyScore: number) => {
-        axiosInstance().put('/users/' + userId + '/updateScore', {weeklyScore: weeklyScore})
+    updateUsersScore = (users: any) => {
+        axiosInstance().put('/tournaments/' + this.props.tournamentId + '/updateUsersScore',  {users: users})
             .then(response => {
-                //console.log(response)
+                console.log(response);
+                this.setState({users: response.data.tournamentUsers});
             })
             .catch(err => {console.log(err)});
     };
@@ -324,6 +398,7 @@ class Tournament extends Component<TournamentProps> {
                {this.state.currFixtures.map((match: any) =>
                <Match id={match.fixture_id} homeTeamName={match.homeTeam.team_name} awayTeamName={match.awayTeam.team_name} key={match.fixture_id} selectedUser={this.state.selectedUser}
                         leagueId={this.props.tournamentLeagueId} round={this.state.leagueCurrentRound}/>)}
+               <Button onClick={this.desiredPrevRound}>Get previous round</Button>
            </div>
         );
     }

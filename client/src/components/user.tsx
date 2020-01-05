@@ -9,7 +9,7 @@ interface UserProps {
 
 const User = (props: UserProps) => (
     <div>
-        <p>{props.name} - {props.totalScore}</p>
+        <p>{props.name} - {(+(props.totalScore) + (+props.weeklyScore)).toFixed(2)}</p>
     </div>
 );
 
