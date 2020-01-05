@@ -36,7 +36,10 @@ class Match extends Component<MatchProps> {
         userChoseHome: false,
         userChoseTie: false,
         userChoseAway: false,
-        selectionChanged: false
+        selectionChanged: false,
+        isTie: false,
+        isHomeWin: false,
+        isAwayWin: false
     };
 
     componentDidMount() {
@@ -83,6 +86,7 @@ class Match extends Component<MatchProps> {
                 if (response.data.api.fixtures[0].statusShort !== 'NS'){
                     let goalsHomeTeam = response.data.api.fixtures[0].goalsHomeTeam;
                     let goalsAwayTeam = response.data.api.fixtures[0].goalsAwayTeam;
+
                    // console.log('goalsHomeTeam: ' + goalsHomeTeam);
                   //  console.log('goalsAwayTeam: ' + goalsAwayTeam);
                     this.updateMatchScore(goalsHomeTeam, goalsAwayTeam);
