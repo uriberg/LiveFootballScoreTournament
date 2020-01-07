@@ -1,0 +1,22 @@
+.container {
+    background-image: url('../images/sport_2-wallpaper-1920x1200.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100vw;
+    height: 100vh;
+    //background-size:contain;
+    background-position:center;
+}
+
+.mainButtons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.showTournament {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+}

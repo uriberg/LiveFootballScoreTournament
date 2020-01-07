@@ -4,9 +4,9 @@ import Tournament from "./containers/tournament";
 import Landing from "./containers/landing";
 
 const App: React.FC = () => {
-  return (
-    <Landing/>
-  );
+    return (
+        <Landing/>
+    );
 };
 
 export default App;

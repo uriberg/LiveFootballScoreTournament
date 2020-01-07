@@ -9,6 +9,23 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json('Error ' + err));
 });
 
+router.route('/verify/:leagueId/:round').get((req, res) => {
+    Matches.find()
+        .then(matches => {
+            let leagueId = +req.params.leagueId;
+            let falseRound = req.params.round;
+            let matchesToSend = [];
+            for (let i = 0; i < matches.length; i++) {
+                if ((matches[i].leagueId === leagueId && matches[i].round !== falseRound && matches[i].goalsHomeTeam === null) || matches[i].goalsHomeTeam == -1) {
+                    console.log(matches[i]);
+                    matchesToSend.push(matches[i]);
+                }
+            }
+            res.json(matchesToSend);
+        })
+        .catch(err => res.status(400).json('Error ' + err));
+});
+
 router.route('/:leagueId/:currentRound').get((req, res) => {
     //console.log('got request');
     Matches.find()
@@ -23,7 +40,7 @@ router.route('/:leagueId/:currentRound').get((req, res) => {
                 //console.log(notes[i].round);
                 //console.log(round);
                 if (notes[i].round === round && notes[i].leagueId === leagueId) {
-                   // console.log('pushing!!!');
+                    // console.log('pushing!!!');
                     notesToSend.push(notes[i]);
                 }
             }

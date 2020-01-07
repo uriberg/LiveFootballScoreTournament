@@ -39,7 +39,10 @@ class Match extends Component<MatchProps> {
         selectionChanged: false,
         isTie: false,
         isHomeWin: false,
-        isAwayWin: false
+        isAwayWin: false,
+        goalsHomeTeam: -1,
+        goalsAwayTeam: -1,
+        ns: true
     };
 
     componentDidMount() {
@@ -57,8 +60,10 @@ class Match extends Component<MatchProps> {
                         tieUsers: response.data.tieUsers,
                         awayWinUsers: response.data.awayWinUsers
                     });
+                    this.getMatchScore();
                 }
             });
+
 
 
         // @ts-ignore
@@ -86,6 +91,15 @@ class Match extends Component<MatchProps> {
                 if (response.data.api.fixtures[0].statusShort !== 'NS'){
                     let goalsHomeTeam = response.data.api.fixtures[0].goalsHomeTeam;
                     let goalsAwayTeam = response.data.api.fixtures[0].goalsAwayTeam;
+                    if (goalsHomeTeam > goalsAwayTeam){
+                        this.setState({isHomeWin: true, isAwayWin: false, isTie: false, ns: false, goalsHomeTeam: goalsHomeTeam, goalsAwayTeam: goalsAwayTeam});
+                    }
+                    else if (goalsHomeTeam < goalsAwayTeam){
+                        this.setState({isHomeWin: false, isAwayWin: true, isTie: false, ns: false,  goalsHomeTeam: goalsHomeTeam, goalsAwayTeam: goalsAwayTeam});
+                    }
+                    else {
+                        this.setState({isHomeWin: false, isAwayWin: false, isTie: true, ns: false,  goalsHomeTeam: goalsHomeTeam, goalsAwayTeam: goalsAwayTeam});
+                    }
 
                    // console.log('goalsHomeTeam: ' + goalsHomeTeam);
                   //  console.log('goalsAwayTeam: ' + goalsAwayTeam);
@@ -315,16 +329,19 @@ class Match extends Component<MatchProps> {
         // @ts-ignore
         // @ts-ignore
         return (
-            <div>
-                    <Button onClick={this.pushUserToHomeWin} primary={this.state.userChoseHome}>
+            <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                    <Button onClick={this.pushUserToHomeWin} basic color={
+                        (this.state.userChoseHome &&  this.state.isHomeWin) ? 'green' : (this.state.userChoseHome && !this.state.ns) ? 'red' : 'black'}
+                            primary={this.state.ns && this.state.userChoseHome}>
                         <div
                             style={{
                                 display: 'flex',
                                 flexDirection: 'row',
                                 justifyContent: 'space-between',
+                                alignItems: 'center',
                                 minWidth: '195px'
                             }}>
-                            <div style={{color: 'red'}}>{this.props.homeTeamName}</div>
+                            <div>{this.props.homeTeamName}</div>
                             {this.state.editMode ?
                                 <input value={this.state.homeOdd} onChange={this.handleHomeOddChange}/>
                                 :
@@ -334,15 +351,18 @@ class Match extends Component<MatchProps> {
                             }
                         </div>
                     </Button>
-                    <Button onClick={this.pushUserToTie} primary={this.state.userChoseTie}>
+                    <Button onClick={this.pushUserToTie} basic color={
+                        (this.state.userChoseTie &&  this.state.isTie) ? 'green' : (this.state.userChoseTie && !this.state.ns) ? 'red' : 'black'}
+                            primary={this.state.ns && this.state.userChoseTie}>
                         <div
                             style={{
                                 display: 'flex',
                                 flexDirection: 'row',
                                 justifyContent: 'space-between',
+                                alignItems: 'center',
                                 minWidth: '150px'
                             }}>
-                            <div style={{color: 'red'}}>X</div>
+                            <div>X</div>
                             {this.state.editMode ?
                                 <input value={this.state.tieOdd} onChange={this.handleTieOddChange}/>
                                 :
@@ -352,15 +372,18 @@ class Match extends Component<MatchProps> {
                             }
                         </div>
                     </Button>
-                    <Button onClick={this.pushUserToAwayWin} primary={this.state.userChoseAway}>
+                    <Button onClick={this.pushUserToAwayWin} basic color={
+                        (this.state.userChoseAway &&  this.state.isAwayWin) ? 'green' : (this.state.userChoseAway && !this.state.ns) ? 'red' : 'black'}
+                        primary={this.state.ns && this.state.userChoseAway}>
                             <div
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'row',
                                     justifyContent: 'space-between',
+                                    alignItems: 'center',
                                     minWidth: '195px'
                                 }}>
-                                <div style={{color: 'red'}}>{this.props.awayTeamName}</div>
+                                <div>{this.props.awayTeamName}</div>
                                 {this.state.editMode ?
                                     <input value={this.state.awayOdd} onChange={this.handleAwayOddChange}/>
                                     :
@@ -372,6 +395,9 @@ class Match extends Component<MatchProps> {
                     </Button>
                     <Button onClick={this.toggleEditMode}>Edit</Button>
                     <Button onClick={this.submitOdds}>Submit</Button>
+                {!this.state.ns ?
+                    <div>{this.state.goalsHomeTeam} - {this.state.goalsAwayTeam}</div>
+                     : null}
             </div>
         );
     }
