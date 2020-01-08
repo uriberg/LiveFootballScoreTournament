@@ -7,8 +7,12 @@ import * as Scroll from 'react-scroll';
 import {Link, Element, Events, animateScroll as scroll, scrollSpy, scroller} from 'react-scroll'
 
 const options = [
-    {key: 'I', text: 'Israeli League', value: 'israeli league'},
-    {key: 'P', text: 'Premier League', value: 'premier league'},
+    {key: 'il', text: 'Israeli Premier League', value: 'Israeli Premier League', flag: 'il'},
+    {key: 'gb eng', text: 'Premier League', value: 'Premier League', flag: 'gb eng'},
+    {key: 'es', text: 'La Liga', value: 'La Liga', flag: 'es'},
+    {key: 'it', text: 'Serie A', value: 'Serie A', flag: 'it'},
+    {key: 'de', text: 'Bundesliga', value: 'Bundesliga', flag: 'de'},
+    {key: 'fr', text: 'Ligue 1', value: 'Ligue 1', flag: 'fr'}
 ];
 
 
@@ -30,7 +34,7 @@ class Landing extends Component {
     };
 
     turnOnCreateMode = () => {
-        this.setState({createMode: true});
+        this.setState({createMode: true, fetchMode: false, tournamentUsers: [], tournamentName: ''});
     };
 
     createTournament = () => {
@@ -56,7 +60,7 @@ class Landing extends Component {
         axiosInstance().get('/tournaments')
             .then(response => {
                 console.log(response);
-                this.setState({tournamentsArray: response.data, fetchMode: true});
+                this.setState({tournamentsArray: response.data, fetchMode: true, createMode: false});
             })
             .catch(err => {
                 console.log(err)
@@ -89,12 +93,23 @@ class Landing extends Component {
 
     selectedLeagueChanged = (event: any, {value}: any) => {
         console.log(value);
-        if (value === 'israeli league') {
-            this.setState({tournamentLeagueId: 637})
-        } else if (value === 'premier league') {
-            this.setState({tournamentLeagueId: 524})
+        if (value === 'Israeli Premier League') {
+            this.setState({tournamentLeagueId: 637});
+        } else if (value === 'Premier League') {
+            this.setState({tournamentLeagueId: 524});
+        } else if (value === 'La Liga') {
+            this.setState({tournamentLeagueId: 775});
+        } else if (value === 'Serie A') {
+            this.setState({tournamentLeagueId: 891});
+        } else if (value === 'Bundesliga') {
+            this.setState({tournamentLeagueId: 754});
+        } else if (value === 'Ligue 1') {
+            this.setState({tournamentLeagueId: 525});
         }
-        //this.setState({selectedLeague: event.target.value});
+    };
+
+    backToHomePage = () => {
+      this.setState({showTournament: false, fetchMode: false, createMode: false});
     };
 
     getTournament = (id: string) => {
@@ -147,60 +162,70 @@ class Landing extends Component {
                         <Button onClick={this.fetchTournaments}>Fetch existing tournaments</Button>
                     </Link>
 
-                    <Button onClick={this.turnOnCreateMode}>Create New Tournament</Button>
+                    <Link activeClass="active" to="createForm" spy={true} smooth={true} offset={50} duration={500}>
+                        <Button onClick={this.turnOnCreateMode}>Create New Tournament</Button>
+                    </Link>
 
                 </div>
-                {this.state.createMode ?
-                    <Form>
-                        <Form.Field>
-                            <label>Tournament's name</label>
-                            <input placeholder='name' value={this.state.tournamentName}
-                                   onChange={this.tournamentNameChanged}/>
-                        </Form.Field>
-                        <Form.Field>
-                            <Form.Select
-                                fluid
-                                label='League'
-                                options={options}
-                                placeholder='League'
-                                onChange={this.selectedLeagueChanged}
-                            />
-                        </Form.Field>
-                        <div>Add Users</div>
-                        <br/>
-                        <Form>
+                <Element name="createForm" className="element">
+                    {this.state.createMode ?
+                        <Form className={classes.createFormStyle}>
                             <Form.Field>
-                                <label>Username</label>
-                                <input placeholder='name' value={this.state.username}
-                                       onChange={this.usernameChanged}/>
+                                <label>Tournament's name</label>
+                                <input placeholder='name' value={this.state.tournamentName}
+                                       onChange={this.tournamentNameChanged}/>
                             </Form.Field>
                             <Form.Field>
-                                <label>Initial score</label>
-                                <input placeholder='score' value={this.state.totalScore}
-                                       onChange={this.totalScoreChanged}/>
+                                <Form.Select
+                                    fluid
+                                    label='League'
+                                    options={options}
+                                    placeholder='League'
+                                    onChange={this.selectedLeagueChanged}
+                                />
                             </Form.Field>
-                            <Button type='submit' onClick={this.addUser}>Add User</Button>
+                            <div className={classes.addUsersTitle}>Add Users</div>
+                            <br/>
+                            <Form>
+                                <Form.Field>
+                                    <label>Username</label>
+                                    <input placeholder='name' value={this.state.username}
+                                           onChange={this.usernameChanged}/>
+                                </Form.Field>
+                                <Form.Field>
+                                    <label>Initial score</label>
+                                    <input placeholder='score' value={this.state.totalScore}
+                                           onChange={this.totalScoreChanged}/>
+                                </Form.Field>
+                                <Button type='submit' onClick={this.addUser}>Add User</Button>
+                            </Form>
+                            <div className={classes.createTournamentButton}>
+                                <Link activeClass="active" to="test2" spy={true} smooth={true} offset={50}
+                                      duration={500}>
+                                    <Button type='submit' onClick={this.createTournament} style={{width: '100%'}}>Create
+                                        Tournament</Button>
+                                </Link>
+                            </div>
                         </Form>
-                        <Button type='submit' onClick={this.createTournament}>Create Tournament</Button>
-                    </Form>
-                    : null}
-                    <Element name="test1" className="element">
-                        {this.state.fetchMode ?
-                    <div className="ui grid" style={{margin: '0 5%', height: '100vh'}}>
-                        {tournamentsList}
-                    </div> : null}
+                        : null}
+                </Element>
+                <Element name="test1" className="element">
+                    {this.state.fetchMode ?
+                        <div className="ui grid" style={{margin: '0 5%', minHeight: '100vh'}}>
+                            {tournamentsList}
+                        </div> : null}
                 </Element>
 
 
-                    <Element name="test2" className="element">
-                        {this.state.showTournament ?
+                <Element name="test2" className="element">
+                    {this.state.showTournament ?
                         <div className={classes.showTournament}>
                             <Tournament tournamentName={this.state.tournamentName}
                                         tournamentLeagueId={this.state.tournamentLeagueId}
                                         users={this.state.tournamentUsers} tournamentId={this.state.tournamentId}
-                                        lastRecordedRound={this.state.lastRecordedRound}/>
+                                        lastRecordedRound={this.state.lastRecordedRound} backHome={this.backToHomePage}/>
                         </div> : null}
-                    </Element>
+                </Element>
 
 
             </div>

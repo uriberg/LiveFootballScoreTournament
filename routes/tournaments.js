@@ -39,7 +39,7 @@ router.route('/:tournamentId/addUser').put((req, res) => {
     console.log(req.body);
     Tournament.findByIdAndUpdate(req.params.tournamentId)
         .then(tournament => {
-            tournament.tournamentUsers.push(req.body.newUser);
+            tournament.tournamentUsers = req.body.users;
             tournament.save();
             res.json(tournament);
         })

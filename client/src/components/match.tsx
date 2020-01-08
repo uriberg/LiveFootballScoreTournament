@@ -337,7 +337,7 @@ class Match extends Component<MatchProps> {
                             style={{
                                 display: 'flex',
                                 flexDirection: 'row',
-                                justifyContent: 'space-between',
+                                justifyContent: 'center',
                                 alignItems: 'center',
                                 minWidth: '195px'
                             }}>
@@ -358,7 +358,7 @@ class Match extends Component<MatchProps> {
                             style={{
                                 display: 'flex',
                                 flexDirection: 'row',
-                                justifyContent: 'space-between',
+                                justifyContent: 'center',
                                 alignItems: 'center',
                                 minWidth: '150px'
                             }}>
@@ -379,7 +379,7 @@ class Match extends Component<MatchProps> {
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'row',
-                                    justifyContent: 'space-between',
+                                    justifyContent: 'center',
                                     alignItems: 'center',
                                     minWidth: '195px'
                                 }}>

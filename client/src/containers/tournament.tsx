@@ -32,7 +32,8 @@ interface TournamentProps {
     tournamentLeagueId: number,
     users: User [],
     tournamentId: string,
-    lastRecordedRound: string
+    lastRecordedRound: string,
+    backHome: () => void
 }
 
 class Tournament extends Component<TournamentProps> {
@@ -243,7 +244,7 @@ class Tournament extends Component<TournamentProps> {
     addMissingToTotal = () => {
         let unhandledMatches: MatchType [] = [...this.state.unhandledMatches];
         console.log(unhandledMatches);
-        console.log(unhandledMatches[0].goalsHomeTeam);
+        //console.log(unhandledMatches[0].goalsHomeTeam);
         let users: User [] = [...this.state.users];
         console.log(unhandledMatches);
         for (let m = 0; m < users.length; m++) {
@@ -387,12 +388,14 @@ class Tournament extends Component<TournamentProps> {
     };
 
     addUser = () => {
+        let users : User [] = [...this.state.users];
         const newUser = {
             name: this.state.usernameToAddName,
             totalScore: this.state.usernameToAddScore,
             weeklyScore: 0
         };
-        axiosInstance().put('/tournaments/' + this.props.tournamentId + '/addUser', {newUser})
+        users.push(newUser);
+        axiosInstance().put('/tournaments/' + this.props.tournamentId + '/addUser', {users: users})
             .then(response => {
                 console.log(response);
                 this.setState({users: response.data.tournamentUsers});
@@ -480,6 +483,7 @@ class Tournament extends Component<TournamentProps> {
                 <Menu inverted floated={"right"}>
                     <Menu.Item
                         name='home'
+                        onClick={this.props.backHome}
                     />
                     <Menu.Item
                         name='addUser'
@@ -491,7 +495,7 @@ class Tournament extends Component<TournamentProps> {
                 </Menu>
                 <div className={classes.tournamentBody}>
                     {this.state.editMode ?
-                        <Form>
+                        <Form className={classes.padding5}>
                             <Form.Field>
                                 <label>Username</label>
                                 <input placeholder='Full name' value={this.state.usernameToAddName}
@@ -505,7 +509,7 @@ class Tournament extends Component<TournamentProps> {
                             <Button type='submit' onClick={this.addUser}>Submit</Button>
                         </Form>
                         : null}
-                    <div className={classes.table}>
+                    <div className={classes.padding5}>
                         <Table sortable celled fixed>
                             <Table.Header>
                                 <Table.Row>
