@@ -135,6 +135,18 @@ class Tournament extends Component<TournamentProps> {
             })
             .catch(err => console.log(err));
     };
+    
+    deleteTournament = () => {
+        if (window.confirm("Do you want to delete " + this.props.tournamentName + '?') == true) {
+            axiosInstance().delete('/tournaments/' + this.props.tournamentId)
+                .then(() => {
+                    this.props.backHome();
+                })
+                .catch(err => {
+                    console.log('Error: ' + err)
+                });
+        }
+    };
 
     desiredPrevRound = () => {
         let currentPrevRound = this.state.desiredPrevRound;
@@ -488,6 +500,10 @@ class Tournament extends Component<TournamentProps> {
                     <Menu.Item
                         name='addUser'
                         onClick={this.toggleEditMode}
+                    />
+                    <Menu.Item
+                        name='deleteTournament'
+                        onClick={this.deleteTournament}
                     />
                     <Menu.Item>
                         <Select options={participants} onChange={this.selectedUserChanged} placeholder="Participants" style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>

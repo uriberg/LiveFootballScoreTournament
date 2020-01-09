@@ -69,6 +69,11 @@ router.route('/:tournamentId/updateCurrentRound').put((req, res) => {
         .catch(err => res.status(400).json('Error ' + err));
 });
 
+router.route('/:id').delete((req, res) => {
+    Tournament.findByIdAndDelete(req.params.id)
+        .then(res.json('Tournament Deleted!'))
+        .catch(err => res.status(400).json('Error: ' + err));
+});
 
 module.exports = router;
 
