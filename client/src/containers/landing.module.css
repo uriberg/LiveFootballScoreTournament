@@ -36,3 +36,30 @@
     margin-top: 5%;
     width: 100%;
 }
+
+.cardsWrapper {
+    min-height: 100vh;
+}
+
+.cardItem {
+    cursor: pointer;
+    width: 25%;
+    padding: 5%;
+}
+
+@media (max-width : 775px) {
+    .cardsWrapper {
+        font-size: 12px;
+    }
+
+    .cardItem {
+        width: 33%;
+    }
+}
+
+@media (max-width : 480px) {
+    .cardItem {
+        width: 50%;
+    }
+}
+

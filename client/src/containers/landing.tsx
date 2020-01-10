@@ -109,7 +109,7 @@ class Landing extends Component {
     };
 
     backToHomePage = () => {
-      this.setState({showTournament: false, fetchMode: false, createMode: false});
+        this.setState({showTournament: false, fetchMode: false, createMode: false});
     };
 
     getTournament = (id: string) => {
@@ -133,16 +133,18 @@ class Landing extends Component {
 
     render() {
         const tournamentsList = this.state.tournamentsArray.map((tournament: any) =>
-            <div className="four wide column" style={{cursor: 'pointer'}}>
+            <div className={classes.cardItem}>
                 <Link activeClass="active" to="test2" spy={true} smooth={true} offset={50} duration={500}
                       key={tournament._id} onClick={() => this.getTournament(tournament._id)}>
                     <Card>
                         <Image
                             src='https://images.unsplash.com/photo-1552667466-07770ae110d0?ixlib=rb-1.2.1&dpr=1&auto=format&fit=crop&w=416&h=312&q=60'
                             wrapped ui={false}/>
+
                         <Card.Content>
-                            <Card.Header style={{textAlign: 'center'}}>{tournament.tournamentName}</Card.Header>
+                                <Card.Header style={{textAlign: 'center'}}>{tournament.tournamentName}</Card.Header>
                         </Card.Content>
+
                         <Card.Content extra>
                             <div>
                                 <Icon name='user'/>
@@ -211,9 +213,12 @@ class Landing extends Component {
                 </Element>
                 <Element name="test1" className="element">
                     {this.state.fetchMode ?
-                        <div className="ui grid" style={{margin: '0 5%', minHeight: '100vh'}}>
-                            {tournamentsList}
-                        </div> : null}
+                        <div className={classes.cardsWrapper}>
+                            <div className="ui grid" style={{margin: '0 5%'}}>
+                                {tournamentsList}
+                            </div>
+                        </div>
+                        : null}
                 </Element>
 
 
@@ -223,7 +228,8 @@ class Landing extends Component {
                             <Tournament tournamentName={this.state.tournamentName}
                                         tournamentLeagueId={this.state.tournamentLeagueId}
                                         users={this.state.tournamentUsers} tournamentId={this.state.tournamentId}
-                                        lastRecordedRound={this.state.lastRecordedRound} backHome={this.backToHomePage}/>
+                                        lastRecordedRound={this.state.lastRecordedRound}
+                                        backHome={this.backToHomePage}/>
                         </div> : null}
                 </Element>
 
