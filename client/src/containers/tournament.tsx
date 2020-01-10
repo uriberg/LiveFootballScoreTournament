@@ -141,6 +141,7 @@ class Tournament extends Component<TournamentProps> {
             axiosInstance().delete('/tournaments/' + this.props.tournamentId)
                 .then(() => {
                     this.props.backHome();
+
                 })
                 .catch(err => {
                     console.log('Error: ' + err)
