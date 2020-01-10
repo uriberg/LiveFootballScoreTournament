@@ -333,14 +333,7 @@ class Match extends Component<MatchProps> {
                     <Button onClick={this.pushUserToHomeWin} basic color={
                         (this.state.userChoseHome &&  this.state.isHomeWin) ? 'green' : (this.state.userChoseHome && !this.state.ns) ? 'red' : 'black'}
                             primary={this.state.ns && this.state.userChoseHome}>
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                minWidth: '195px'
-                            }}>
+                        <div className={classes.resultOption}>
                             <div>{this.props.homeTeamName}</div>
                             {this.state.editMode ?
                                 <input value={this.state.homeOdd} onChange={this.handleHomeOddChange}/>
@@ -354,14 +347,7 @@ class Match extends Component<MatchProps> {
                     <Button onClick={this.pushUserToTie} basic color={
                         (this.state.userChoseTie &&  this.state.isTie) ? 'green' : (this.state.userChoseTie && !this.state.ns) ? 'red' : 'black'}
                             primary={this.state.ns && this.state.userChoseTie}>
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                minWidth: '150px'
-                            }}>
+                        <div className={classes.resultOption} style={{minWidth: '150px'}}>
                             <div>X</div>
                             {this.state.editMode ?
                                 <input value={this.state.tieOdd} onChange={this.handleTieOddChange}/>
@@ -375,14 +361,7 @@ class Match extends Component<MatchProps> {
                     <Button onClick={this.pushUserToAwayWin} basic color={
                         (this.state.userChoseAway &&  this.state.isAwayWin) ? 'green' : (this.state.userChoseAway && !this.state.ns) ? 'red' : 'black'}
                         primary={this.state.ns && this.state.userChoseAway}>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    minWidth: '195px'
-                                }}>
+                            <div className={classes.resultOption}>
                                 <div>{this.props.awayTeamName}</div>
                                 {this.state.editMode ?
                                     <input value={this.state.awayOdd} onChange={this.handleAwayOddChange}/>
