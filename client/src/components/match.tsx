@@ -347,7 +347,7 @@ class Match extends Component<MatchProps> {
                     <Button onClick={this.pushUserToTie} basic color={
                         (this.state.userChoseTie &&  this.state.isTie) ? 'green' : (this.state.userChoseTie && !this.state.ns) ? 'red' : 'black'}
                             primary={this.state.ns && this.state.userChoseTie}>
-                        <div className={classes.resultOption} style={{minWidth: '150px'}}>
+                        <div className={classes.resultOption + ' ' + classes.tieOption}>
                             <div>X</div>
                             {this.state.editMode ?
                                 <input value={this.state.tieOdd} onChange={this.handleTieOddChange}/>
