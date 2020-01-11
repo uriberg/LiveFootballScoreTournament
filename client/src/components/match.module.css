@@ -2,6 +2,12 @@
     font-size: 25px !important;
 }
 
+.matchContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .resultOption {
     display: flex;
     justify-content: space-between;
@@ -11,5 +17,12 @@
 
 .tieOption {
     min-width: 150px;
+}
+
+@media (max-width : 775px) {
+   .matchContainer {
+       display: grid;
+       margin-bottom: 10px;
+   }
 }
 

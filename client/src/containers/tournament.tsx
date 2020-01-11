@@ -505,12 +505,12 @@ class Tournament extends Component<TournamentProps> {
                                 onClick={this.props.backHome}
                             />
                             <Menu.Item
-                               // name='add'
+                                // name='add'
                                 icon='plus user'
                                 onClick={this.toggleEditMode}
                             />
                             <Menu.Item
-                               // name='deleteTournament'
+                                // name='deleteTournament'
                                 icon='delete'
                                 onClick={this.deleteTournament}
                             />
@@ -568,39 +568,39 @@ class Tournament extends Component<TournamentProps> {
                         </Form>
                         : null}
                     <div className={classes.padding5}>
-                        <Table sortable celled fixed>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell
-                                        sorted={this.state.column === 'name' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
-                                        onClick={this.handleSort('name')}
-                                    >
-                                        Name
-                                    </Table.HeaderCell>
-                                    <Table.HeaderCell
-                                        sorted={this.state.column === 'totalScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
-                                        onClick={this.handleSort('totalScore')}
-                                    >
-                                        Score
-                                    </Table.HeaderCell>
-                                    <Table.HeaderCell
-                                        sorted={this.state.column === 'weeklyScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
-                                        onClick={this.handleSort('weeklyScore')}
-                                    >
-                                        Weekly Score
-                                    </Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                                {_.map(usersList, ({totalScore, name, weeklyScore}) => (
-                                    <Table.Row key={name}>
-                                        <Table.Cell>{name}</Table.Cell>
-                                        <Table.Cell>{+(parseFloat(totalScore).toFixed(2))}</Table.Cell>
-                                        <Table.Cell>{weeklyScore}</Table.Cell>
+                            <Table sortable celled fixed>
+                                <Table.Header>
+                                    <Table.Row>
+                                        <Table.HeaderCell
+                                            sorted={this.state.column === 'name' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
+                                            onClick={this.handleSort('name')}
+                                        >
+                                            Name
+                                        </Table.HeaderCell>
+                                        <Table.HeaderCell
+                                            sorted={this.state.column === 'totalScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
+                                            onClick={this.handleSort('totalScore')}
+                                        >
+                                            Score
+                                        </Table.HeaderCell>
+                                        <Table.HeaderCell
+                                            sorted={this.state.column === 'weeklyScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
+                                            onClick={this.handleSort('weeklyScore')}
+                                        >
+                                            Weekly Score
+                                        </Table.HeaderCell>
                                     </Table.Row>
-                                ))}
-                            </Table.Body>
-                        </Table>
+                                </Table.Header>
+                                <Table.Body>
+                                    {_.map(usersList, ({totalScore, name, weeklyScore}) => (
+                                        <Table.Row key={name}>
+                                            <Table.Cell>{name}</Table.Cell>
+                                            <Table.Cell>{+(parseFloat(totalScore).toFixed(2))}</Table.Cell>
+                                            <Table.Cell>{weeklyScore}</Table.Cell>
+                                        </Table.Row>
+                                    ))}
+                                </Table.Body>
+                            </Table>
                     </div>
                     <div>
                         {this.state.currFixtures.map((match: any) =>

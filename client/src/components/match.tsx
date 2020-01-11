@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button} from "semantic-ui-react";
+import {Button, Icon} from "semantic-ui-react";
 import axios from 'axios';
 import axiosInstance from '../axios';
 import classes from './match.module.css';
@@ -329,12 +329,12 @@ class Match extends Component<MatchProps> {
         // @ts-ignore
         // @ts-ignore
         return (
-            <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+            <div className={classes.matchContainer}>
                     <Button onClick={this.pushUserToHomeWin} basic color={
                         (this.state.userChoseHome &&  this.state.isHomeWin) ? 'green' : (this.state.userChoseHome && !this.state.ns) ? 'red' : 'black'}
                             primary={this.state.ns && this.state.userChoseHome}>
                         <div className={classes.resultOption}>
-                            <div>{this.props.homeTeamName}</div>
+                            <div>{this.props.homeTeamName}{!this.state.ns ? '(' + this.state.goalsHomeTeam + ')' : null}</div>
                             {this.state.editMode ?
                                 <input value={this.state.homeOdd} onChange={this.handleHomeOddChange}/>
                                 :
@@ -362,7 +362,7 @@ class Match extends Component<MatchProps> {
                         (this.state.userChoseAway &&  this.state.isAwayWin) ? 'green' : (this.state.userChoseAway && !this.state.ns) ? 'red' : 'black'}
                         primary={this.state.ns && this.state.userChoseAway}>
                             <div className={classes.resultOption}>
-                                <div>{this.props.awayTeamName}</div>
+                                <div>{this.props.awayTeamName}{!this.state.ns ? '(' + this.state.goalsAwayTeam + ')' : null}</div>
                                 {this.state.editMode ?
                                     <input value={this.state.awayOdd} onChange={this.handleAwayOddChange}/>
                                     :
@@ -372,11 +372,13 @@ class Match extends Component<MatchProps> {
                                 }
                         </div>
                     </Button>
-                    <Button onClick={this.toggleEditMode}>Edit</Button>
-                    <Button onClick={this.submitOdds}>Submit</Button>
-                {!this.state.ns ?
-                    <div>{this.state.goalsHomeTeam} - {this.state.goalsAwayTeam}</div>
-                     : null}
+                    <Button onClick={this.toggleEditMode} icon>
+                        <Icon name={this.state.editMode ? 'check' : 'edit'}/>
+                    </Button>
+                    {/*<Button onClick={this.submitOdds}>Submit</Button>*/}
+                {/*{!this.state.ns ?*/}
+                {/*    <div>{this.state.goalsHomeTeam} - {this.state.goalsAwayTeam}</div>*/}
+                {/*     : null}*/}
             </div>
         );
     }
