@@ -3,61 +3,9 @@ import axios from 'axios';
 import axiosInstance from '../axios';
 import User from "../components/user";
 import Match from "../components/match";
-import {
-    Button,
-    Form,
-    Menu,
-    Dropdown,
-    Select,
-    Table,
-    Responsive,
-    Sidebar,
-    Image,
-    Icon,
-    Container
-} from "semantic-ui-react";
+import {Button, Form, Menu, Dropdown, Select, Table} from "semantic-ui-react";
 import classes from './tournament.module.css';
 import _ from 'lodash';
-
-
-const NavBarMobile: any = ({
-                               children,
-                               leftItems,
-                               onPusherClick,
-                               onToggle,
-                               rightItems,
-                               visible
-                           }: any) => (
-    <Sidebar.Pushable>
-        <Sidebar
-            as={Menu}
-            animation="overlay"
-            icon="labeled"
-            inverted
-            items={leftItems}
-            vertical
-            visible={visible}
-        />
-        <Sidebar.Pusher
-            dimmed={visible}
-            onClick={onPusherClick}
-            style={{minHeight: "100vh"}}
-        >
-            <Menu fixed="top" inverted>
-                <Menu.Item>
-                    <Image size="mini" src="https://react.semantic-ui.com/logo.png"/>
-                </Menu.Item>
-                <Menu.Item onClick={onToggle}>
-                    <Icon name="sidebar"/>
-                </Menu.Item>
-                <Menu.Menu position="right">
-                    {_.map(rightItems, item => <Menu.Item {...item} />)}
-                </Menu.Menu>
-            </Menu>
-            {children}
-        </Sidebar.Pusher>
-    </Sidebar.Pushable>
-);
 
 
 interface User {
@@ -88,7 +36,6 @@ interface TournamentProps {
     backHome: () => void
 }
 
-
 class Tournament extends Component<TournamentProps> {
     private weeklyScoreinterval: number | undefined;
     private currMatchesInterval: number | undefined;
@@ -113,17 +60,8 @@ class Tournament extends Component<TournamentProps> {
         activeItem: null,
         editMode: false,
         direction: 'descending',
-        column: undefined,
-        visible: false
+        column: undefined
     };
-
-    handlePusher = () => {
-        const visible = this.state.visible
-
-        if (visible) this.setState({visible: false});
-    };
-
-    handleToggle = () => this.setState({visible: !this.state.visible});
 
     componentDidMount() {
         this.getCurrentRound(this.props.tournamentLeagueId);
@@ -197,7 +135,7 @@ class Tournament extends Component<TournamentProps> {
             })
             .catch(err => console.log(err));
     };
-
+    
     deleteTournament = () => {
         if (window.confirm("Do you want to delete " + this.props.tournamentName + '?') == true) {
             axiosInstance().delete('/tournaments/' + this.props.tournamentId)
@@ -463,7 +401,7 @@ class Tournament extends Component<TournamentProps> {
     };
 
     addUser = () => {
-        let users: User [] = [...this.state.users];
+        let users : User [] = [...this.state.users];
         const newUser = {
             name: this.state.usernameToAddName,
             totalScore: this.state.usernameToAddScore,
@@ -544,125 +482,34 @@ class Tournament extends Component<TournamentProps> {
 
     toggleEditMode = () => {
         this.setState((prevState: any) => ({
-            editMode: !prevState.editMode, visible: !prevState.visible
+            editMode: !prevState.editMode
         }));
     };
 
 
     render() {
-        const participants = this.state.users.map((user: User) => ({
-            key: user.name,
-            value: user.name,
-            text: user.name
-        }));
+        const participants = this.state.users.map((user: User) => ({key: user.name, value: user.name, text: user.name}));
         const usersList = [...this.state.users];
         const direction = this.state.direction;
-        const {children} = this.props;
-        const visible = this.state.visible;
-
-        // const leftItems = [
-        //     { as: "a", content: "Home", key: "home", onClick: this.props.backHome},
-        //     { as: "a", content: "Users", key: "Participants" }
-        // ];
-        const leftItems = [
-            {as: "a", content: "Delete Tournament", key: "delete tournament", onClick: this.deleteTournament},
-            {as: "a", content: "Add User", key: "add user", onClick: this.addUser}
-        ];
         return (
             <div>
-                {/*<Menu inverted floated={"right"}>*/}
-                {/*    <Responsive as={Menu.Item} minWidth={790}*/}
-                {/*        name='home'*/}
-                {/*        onClick={this.props.backHome}*/}
-                {/*    />*/}
-                {/*    <Responsive as={Menu.Item} minWidth={790}*/}
-                {/*        name='addUser'*/}
-                {/*        onClick={this.toggleEditMode}*/}
-                {/*    />*/}
-                {/*    <Responsive as={Menu.Item} minWidth={790}*/}
-                {/*        name='deleteTournament'*/}
-                {/*        onClick={this.deleteTournament}*/}
-                {/*    />*/}
-                {/*    <Responsive as={Menu.Menu} minWidth={790}>*/}
-                {/*        <Select options={participants} onChange={this.selectedUserChanged} placeholder="Participants" style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>*/}
-                {/*    </Responsive>*/}
-                {/*</Menu>*/}
-                <Responsive {...Responsive.onlyMobile}>
-                    <Sidebar.Pushable>
-                        <Sidebar
-                            as={Menu}
-                            animation="overlay"
-                            icon="labeled"
-                            inverted
-                            vertical
-                            visible={visible}
-                        >
-                            <Menu.Item
-                                name='addUser'
-                                onClick={this.toggleEditMode}
-                            />
-                            <Menu.Item
-                                name='deleteTournament'
-                                onClick={this.deleteTournament}
-                            />
-                        </Sidebar>
-                        <Sidebar.Pusher
-                            dimmed={visible}
-                            onClick={this.handlePusher}
-                            // style={{minHeight: "100vh"}}
-                        >
-                            <Menu inverted>
-                                {/*<Menu.Item>*/}
-                                {/*    <Image size="mini" src="https://react.semantic-ui.com/logo.png"/>*/}
-                                {/*</Menu.Item>*/}
-                                <Menu.Item onClick={this.handleToggle}>
-                                    <Icon name="sidebar"/>
-                                </Menu.Item>
-                                    <Menu.Menu position="right">
-
-                                        <Menu.Item
-                                            name='home'
-                                            onClick={this.props.backHome}
-                                        />
-                                        <Menu.Menu>
-                                            <Select options={participants} onChange={this.selectedUserChanged}
-                                                    placeholder="Participants" style={{
-                                                backgroundColor: '#1B1C1D',
-                                                color: 'rgba(255,255,255,.9)'
-                                            }}/>
-                                        </Menu.Menu>
-                                    </Menu.Menu>
-                            </Menu>
-                        </Sidebar.Pusher>
-                    </Sidebar.Pushable>
-                </Responsive>
-                <Responsive minWidth={Responsive.onlyTablet.minWidth}>
-                    <Menu inverted>
-                        <Menu.Item>
-                            <Image size="mini" src="https://react.semantic-ui.com/logo.png"/>
-                        </Menu.Item>
-                        <Menu.Item
-                            name='addUser'
-                            onClick={this.toggleEditMode}
-                        />
-                        <Menu.Item
-                            name='deleteTournament'
-                            onClick={this.deleteTournament}
-                        />
-
-                        <Menu.Menu position="right">
-                            <Menu.Item
-                                name='home'
-                                onClick={this.props.backHome}
-                            />
-                            <Menu.Item>
-                                <Select options={participants} onChange={this.selectedUserChanged}
-                                        placeholder="Participants"
-                                        style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>
-                            </Menu.Item>
-                        </Menu.Menu>
-                    </Menu>
-                </Responsive>
+                <Menu inverted floated={"right"}>
+                    <Menu.Item
+                        name='home'
+                        onClick={this.props.backHome}
+                    />
+                    <Menu.Item
+                        name='addUser'
+                        onClick={this.toggleEditMode}
+                    />
+                    <Menu.Item
+                        name='deleteTournament'
+                        onClick={this.deleteTournament}
+                    />
+                    <Menu.Item>
+                        <Select options={participants} onChange={this.selectedUserChanged} placeholder="Participants" style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>
+                    </Menu.Item>
+                </Menu>
                 <div className={classes.tournamentBody}>
                     {this.state.editMode ?
                         <Form className={classes.padding5}>
@@ -704,7 +551,7 @@ class Tournament extends Component<TournamentProps> {
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {_.map(usersList, ({totalScore, name, weeklyScore}) => (
+                                {_.map(usersList, ({ totalScore, name, weeklyScore }) => (
                                     <Table.Row key={name}>
                                         <Table.Cell>{name}</Table.Cell>
                                         <Table.Cell>{+(parseFloat(totalScore).toFixed(2))}</Table.Cell>

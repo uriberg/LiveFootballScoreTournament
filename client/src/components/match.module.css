@@ -6,10 +6,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 195px;
+    min-width: 195px;
 }
 
 .tieOption {
-    width: 150px;
+    min-width: 150px;
 }
 
