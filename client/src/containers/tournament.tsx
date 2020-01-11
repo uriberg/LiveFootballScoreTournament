@@ -3,7 +3,7 @@ import axios from 'axios';
 import axiosInstance from '../axios';
 import User from "../components/user";
 import Match from "../components/match";
-import {Button, Form, Menu, Dropdown, Select, Table} from "semantic-ui-react";
+import {Button, Form, Menu, Dropdown, Select, Table, Responsive} from "semantic-ui-react";
 import classes from './tournament.module.css';
 import _ from 'lodash';
 
@@ -135,7 +135,7 @@ class Tournament extends Component<TournamentProps> {
             })
             .catch(err => console.log(err));
     };
-    
+
     deleteTournament = () => {
         if (window.confirm("Do you want to delete " + this.props.tournamentName + '?') == true) {
             axiosInstance().delete('/tournaments/' + this.props.tournamentId)
@@ -401,7 +401,7 @@ class Tournament extends Component<TournamentProps> {
     };
 
     addUser = () => {
-        let users : User [] = [...this.state.users];
+        let users: User [] = [...this.state.users];
         const newUser = {
             name: this.state.usernameToAddName,
             totalScore: this.state.usernameToAddScore,
@@ -488,28 +488,69 @@ class Tournament extends Component<TournamentProps> {
 
 
     render() {
-        const participants = this.state.users.map((user: User) => ({key: user.name, value: user.name, text: user.name}));
+        const participants = this.state.users.map((user: User) => ({
+            key: user.name,
+            value: user.name,
+            text: user.name
+        }));
         const usersList = [...this.state.users];
         const direction = this.state.direction;
         return (
             <div>
-                <Menu inverted floated={"right"}>
-                    <Menu.Item
-                        name='home'
-                        onClick={this.props.backHome}
-                    />
-                    <Menu.Item
-                        name='addUser'
-                        onClick={this.toggleEditMode}
-                    />
-                    <Menu.Item
-                        name='deleteTournament'
-                        onClick={this.deleteTournament}
-                    />
-                    <Menu.Item>
-                        <Select options={participants} onChange={this.selectedUserChanged} placeholder="Participants" style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>
-                    </Menu.Item>
-                </Menu>
+                <div style={{display: 'flex', justifyContent: 'center'}}>
+                    <Responsive {...Responsive.onlyMobile}>
+                        <Menu inverted floated={"right"}>
+                            <Menu.Item
+                                icon='home'
+                                onClick={this.props.backHome}
+                            />
+                            <Menu.Item
+                               // name='add'
+                                icon='plus user'
+                                onClick={this.toggleEditMode}
+                            />
+                            <Menu.Item
+                               // name='deleteTournament'
+                                icon='delete'
+                                onClick={this.deleteTournament}
+                            />
+                            <Menu.Item className={classes.width25} icon='user'>
+                                <Select options={participants} onChange={this.selectedUserChanged}
+                                        placeholder="Participants"
+                                        style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>
+
+                            </Menu.Item>
+                        </Menu>
+                    </Responsive>
+                </div>
+
+                <div>
+                    <Responsive minWidth={Responsive.onlyTablet.minWidth}>
+                        <Menu inverted floated={"right"}>
+                            <Menu.Item
+                                icon='home'
+                                onClick={this.props.backHome}
+                            />
+                            <Menu.Item
+                                // name='add'
+                                icon='plus user'
+                                onClick={this.toggleEditMode}
+                            />
+                            <Menu.Item
+                                // name='deleteTournament'
+                                icon='delete'
+                                onClick={this.deleteTournament}
+                            />
+                            <Menu.Item className={classes.width25} icon='user'>
+                                <Select options={participants} onChange={this.selectedUserChanged}
+                                        placeholder="Participants"
+                                        style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>
+
+                            </Menu.Item>
+                        </Menu>
+                    </Responsive>
+                </div>
+
                 <div className={classes.tournamentBody}>
                     {this.state.editMode ?
                         <Form className={classes.padding5}>
@@ -551,7 +592,7 @@ class Tournament extends Component<TournamentProps> {
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {_.map(usersList, ({ totalScore, name, weeklyScore }) => (
+                                {_.map(usersList, ({totalScore, name, weeklyScore}) => (
                                     <Table.Row key={name}>
                                         <Table.Cell>{name}</Table.Cell>
                                         <Table.Cell>{+(parseFloat(totalScore).toFixed(2))}</Table.Cell>
