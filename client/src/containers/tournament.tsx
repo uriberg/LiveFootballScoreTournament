@@ -514,12 +514,12 @@ class Tournament extends Component<TournamentProps> {
                                 icon='delete'
                                 onClick={this.deleteTournament}
                             />
-                            <Menu.Item className={classes.width25} icon='user'>
+                            <Menu.Menu className={classes.width25} icon='user'>
                                 <Select options={participants} onChange={this.selectedUserChanged}
                                         placeholder="Participants"
                                         style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>
 
-                            </Menu.Item>
+                            </Menu.Menu>
                         </Menu>
                     </Responsive>
                 </div>
