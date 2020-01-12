@@ -13,3 +13,13 @@
 .width25 {
     width: 25%;
 }
+
+.tableBody {
+    display: table-row-group !important;
+}
+
+@media (max-width: 767px) {
+    .ui tbody{
+        display: table-row-group !important;
+    }
+}
