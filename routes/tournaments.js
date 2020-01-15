@@ -26,6 +26,7 @@ router.route('/newTournament').post((req, res) => {
         tournamentName: req.body.newTournament.tournamentName,
         tournamentLeagueId: req.body.newTournament.tournamentLeagueId,
         tournamentUsers: req.body.newTournament.tournamentUsers,
+        tournamentOddsSource: req.body.newTournament.tournamentOddsSource,
         lastRecordedRound: ''
     });
     console.log(newTournament);

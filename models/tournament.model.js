@@ -14,8 +14,10 @@ const User = new Schema({
 const TournamentSchema = new Schema({
         tournamentName: {type: String, required: true},
         tournamentLeagueId: {type: Number, required: true},
+        tournamentOddsSource: {type: String, required: true},
         tournamentUsers: {type: [User], required: false},
-        lastRecordedRound: {type: String, required: false}
+        lastRecordedRound: {type: String, required: false},
+        tournamentMatches: {type: []}
     },
     {
         timestamps: true

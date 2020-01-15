@@ -18,8 +18,29 @@
     display: table-row-group !important;
 }
 
+.matchesWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 5%;
+}
+
+.tableWrapper {
+    padding: 5%;
+}
+
 @media (max-width: 767px) {
     .ui tbody{
         display: table-row-group !important;
+    }
+
+    .matchesWrapper{
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 600px){
+    .matchesWrapper {
+        justify-content: center;
     }
 }

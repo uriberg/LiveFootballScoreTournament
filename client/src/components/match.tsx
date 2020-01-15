@@ -20,6 +20,7 @@ interface MatchProps {
     selectedUser: string
     leagueId: number,
     round: string;
+    oddsSource: string
 }
 
 class Match extends Component<MatchProps> {
@@ -63,8 +64,9 @@ class Match extends Component<MatchProps> {
                     this.getMatchScore();
                 }
             });
-
-
+        if (this.props.oddsSource !== 'Manual'){
+            this.getMatchOdds();
+        }
 
         // @ts-ignore
         this.interval = setInterval(() => {
@@ -79,6 +81,51 @@ class Match extends Component<MatchProps> {
     componentWillUnmount(): void {
         clearInterval(this.interval);
     }
+
+    getMatchOdds = () => {
+        const headers = {
+            "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+            "x-rapidapi-key": "caf2d8bb45msh890d53234504df6p11bfa9jsn11476be6f67b"
+        };
+
+        axios.get('https://api-football-v1.p.rapidapi.com/v2/odds/fixture/' + this.props.id, {headers})
+            .then(response => {
+                console.log(this.props.oddsSource);
+                console.log(response);
+                let bookmakers = response.data.api.odds[0].bookmakers;
+                console.log(bookmakers);
+                for(let i = 0; bookmakers.length; i++){
+                    if (bookmakers[i].bookmaker_name === this.props.oddsSource){
+                        let bookmakerBets = bookmakers[i].bets;
+                        console.log(bookmakerBets);
+                        for(let j = 0; j < bookmakerBets.length; j++){
+                            if (bookmakerBets[j].label_name === 'Match Winner'){
+                                let matchWinnerOdds = bookmakerBets[j].values;
+                                let matchOdds = {
+                                    homeOdd: '',
+                                    tieOdd: '',
+                                    awayOdd: ''
+                                };
+                                console.log(matchWinnerOdds);
+                                for(let k = 0; k <matchWinnerOdds.length; k++){
+                                    if (matchWinnerOdds[k].value === 'Home'){
+                                        matchOdds.homeOdd = matchWinnerOdds[k].odd;
+                                    } else if(matchWinnerOdds[k].value === 'Draw'){
+                                        matchOdds.tieOdd = matchWinnerOdds[k].odd;
+                                    } else if(matchWinnerOdds[k].value === 'Away'){
+                                        matchOdds.awayOdd = matchWinnerOdds[k].odd;
+                                    }
+                                }
+                                this.setState({homeOdd: matchOdds.homeOdd, tieOdd: matchOdds.tieOdd, awayOdd: matchOdds.awayOdd});
+                            }
+                        }
+                        break;
+                    }
+                }
+                this.submitOdds();
+            })
+            .catch(err => {console.log(err)});
+    };
 
     getMatchScore = () => {
         const headers = {
@@ -138,6 +185,7 @@ class Match extends Component<MatchProps> {
                     console.log('Error: ' + err)
                 });
         }
+
     }
 
     // componentWillUpdate(nextProps: Readonly<MatchProps>, nextState: Readonly<{}>, nextContext: any): void {
@@ -164,7 +212,12 @@ class Match extends Component<MatchProps> {
     // }
 
     toggleEditMode = () => {
-        this.setState({editMode: !this.state.editMode});
+        const editMode = this.state.editMode;
+        if (editMode){
+            this.submitOdds();
+        } else {
+            this.setState({editMode: true});
+        }
     };
 
     handleHomeOddChange = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
@@ -180,6 +233,9 @@ class Match extends Component<MatchProps> {
     };
 
     submitOdds = () => {
+        console.log(this.state.homeOdd);
+        console.log(this.state.tieOdd);
+        console.log(this.state.awayOdd);
         this.setState({editMode: false});
         axiosInstance().put('/matches/' + this.props.id + '/odds', {
             homeOdd: this.state.homeOdd,

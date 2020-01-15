@@ -33,6 +33,7 @@ interface TournamentProps {
     users: User [],
     tournamentId: string,
     lastRecordedRound: string,
+    oddsSource: string,
     backHome: () => void
 }
 
@@ -569,31 +570,32 @@ class Tournament extends Component<TournamentProps> {
                             <Button type='submit' onClick={this.addUser}>Submit</Button>
                         </Form>
                         : null}
-                    <Table sortable celled>
-                        <Table.Header style={{display: 'contents'}}>
-                            <Table.Row>
-                                <Table.HeaderCell
-                                    sorted={this.state.column === 'name' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
-                                    onClick={this.handleSort('name')}
-                                >
-                                    Name
-                                </Table.HeaderCell>
-                                <Table.HeaderCell
-                                    sorted={this.state.column === 'totalScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
-                                    onClick={this.handleSort('totalScore')}
-                                >
-                                    Score
-                                </Table.HeaderCell>
-                                <Table.HeaderCell
-                                    sorted={this.state.column === 'weeklyScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
-                                    onClick={this.handleSort('weeklyScore')}
-                                >
-                                    Weekly Score
-                                </Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Header>
-                        <Table.Body className={classes.tableBody}>
-                            <style>{`
+                    <div className={classes.tableWrapper}>
+                        <Table sortable celled>
+                            <Table.Header style={{display: 'contents'}}>
+                                <Table.Row>
+                                    <Table.HeaderCell
+                                        sorted={this.state.column === 'name' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
+                                        onClick={this.handleSort('name')}
+                                    >
+                                        Name
+                                    </Table.HeaderCell>
+                                    <Table.HeaderCell
+                                        sorted={this.state.column === 'totalScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
+                                        onClick={this.handleSort('totalScore')}
+                                    >
+                                        Score
+                                    </Table.HeaderCell>
+                                    <Table.HeaderCell
+                                        sorted={this.state.column === 'weeklyScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
+                                        onClick={this.handleSort('weeklyScore')}
+                                    >
+                                        Weekly Score
+                                    </Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body className={classes.tableBody}>
+                                <style>{`
             @media (max-width: 767px){
                     .ui.table:not(.unstackable) tbody{
               display: table-row-group !important;
@@ -612,21 +614,29 @@ class Tournament extends Component<TournamentProps> {
              }
             }
           `}</style>
-                            {_.map(usersList, ({totalScore, name, weeklyScore}) => (
-                                <Table.Row key={name}>
-                                    <Table.Cell>{name}</Table.Cell>
-                                    <Table.Cell>{+(parseFloat(totalScore).toFixed(2))}</Table.Cell>
-                                    <Table.Cell>{weeklyScore}</Table.Cell>
-                                </Table.Row>
-                            ))}
-                        </Table.Body>
-                    </Table>
-                    <div>
-                        {this.state.currFixtures.map((match: any) =>
+                                {_.map(usersList, ({totalScore, name, weeklyScore}) => (
+                                    <Table.Row key={name}>
+                                        <Table.Cell>{name}</Table.Cell>
+                                        <Table.Cell>{+(parseFloat(totalScore).toFixed(2))}</Table.Cell>
+                                        <Table.Cell>{weeklyScore}</Table.Cell>
+                                    </Table.Row>
+                                ))}
+                            </Table.Body>
+                        </Table>
+                    </div>
+                    <div className={classes.matchesWrapper}>
+                        {this.state.currMatches.length > 0 ?
+                            this.state.currMatches.map((match: any) =>
+                            <Match id={match._id} homeTeamName={match.homeTeamName} awayTeamName={match.awayTeamName}
+                            key={match._id} selectedUser={this.state.selectedUser} leagueId={match.leagueId} round={match.round}
+                            oddsSource={this.props.oddsSource}/>)
+                            :
+                            this.state.currFixtures.map((match: any) =>
                             <Match id={match.fixture_id} homeTeamName={match.homeTeam.team_name}
                                    awayTeamName={match.awayTeam.team_name} key={match.fixture_id}
                                    selectedUser={this.state.selectedUser}
-                                   leagueId={this.props.tournamentLeagueId} round={this.state.leagueCurrentRound}/>)}
+                                   leagueId={this.props.tournamentLeagueId} round={this.state.leagueCurrentRound}
+                                    oddsSource={this.props.oddsSource}/>)}
                     </div>
                 </div>
             </div>

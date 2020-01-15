@@ -15,6 +15,12 @@ const options = [
     {key: 'fr', text: 'Ligue 1', value: 'Ligue 1', flag: 'fr'}
 ];
 
+const oddsFetchingOptions = [
+    {key: '365', text: 'Bet365', value: 'Bet365'},
+    {key: 'Bwin', text: 'Bwin', value: 'Bwin'},
+    {key: 'manual', text: 'Manual', value: 'Manual'}
+];
+
 
 class Landing extends Component {
 
@@ -30,7 +36,8 @@ class Landing extends Component {
         tournamentsArray: [],
         tournamentId: '',
         lastRecordedRound: '',
-        fetchMode: false
+        fetchMode: false,
+        tournamentOddsSource: ''
     };
 
     turnOnCreateMode = () => {
@@ -44,7 +51,8 @@ class Landing extends Component {
         const newTournament = {
             tournamentName: this.state.tournamentName,
             tournamentLeagueId: this.state.tournamentLeagueId,
-            tournamentUsers: this.state.tournamentUsers
+            tournamentUsers: this.state.tournamentUsers,
+            tournamentOddsSource: this.state.tournamentOddsSource
         };
         axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then((response: any) => {
@@ -108,11 +116,23 @@ class Landing extends Component {
         }
     };
 
+    selectedOddsSourceChanged = (event: any, {value}: any) => {
+      console.log(value);
+      if (value === 'Bet365') {
+          this.setState({tournamentOddsSource: 'Bet365'});
+      } else if (value === 'Bwin') {
+          this.setState({tournamentOddsSource: 'Bwin'});
+      } else if (value === 'Manual') {
+          this.setState({tournamentOddsSource: 'Manual'});
+      }
+    };
+
     backToHomePage = () => {
         this.setState({showTournament: false, fetchMode: false, createMode: false});
     };
 
     getTournament = (id: string) => {
+        this.setState({showTournament: false});
         axiosInstance().get('/tournaments/' + id)
             .then(response => {
                 console.log(response);
@@ -122,8 +142,10 @@ class Landing extends Component {
                     tournamentUsers: response.data.tournamentUsers,
                     tournamentId: id,
                     lastRecordedRound: response.data.lastRecordedRound,
+                    tournamentOddsSource: response.data.tournamentOddsSource,
                     showTournament: true
                 });
+                console.log(response.data);
             })
             .catch(err => {
                 console.log(err)
@@ -186,6 +208,15 @@ class Landing extends Component {
                                     onChange={this.selectedLeagueChanged}
                                 />
                             </Form.Field>
+                            <Form.Field>
+                                <Form.Select
+                                    fluid
+                                    label='Odds source'
+                                    options={oddsFetchingOptions}
+                                    placeholder='Source'
+                                    onChange={this.selectedOddsSourceChanged}
+                                />
+                            </Form.Field>
                             <div className={classes.addUsersTitle}>Add Users</div>
                             <br/>
                             <Form>
@@ -229,6 +260,7 @@ class Landing extends Component {
                                         tournamentLeagueId={this.state.tournamentLeagueId}
                                         users={this.state.tournamentUsers} tournamentId={this.state.tournamentId}
                                         lastRecordedRound={this.state.lastRecordedRound}
+                                        oddsSource={this.state.tournamentOddsSource}
                                         backHome={this.backToHomePage}/>
                         </div> : null}
                 </Element>
