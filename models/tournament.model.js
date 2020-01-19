@@ -16,8 +16,7 @@ const TournamentSchema = new Schema({
         tournamentLeagueId: {type: Number, required: true},
         tournamentOddsSource: {type: String, required: true},
         tournamentUsers: {type: [User], required: false},
-        lastRecordedRound: {type: String, required: false},
-        tournamentMatches: {type: []}
+        lastRecordedRound: {type: String, required: false}
     },
     {
         timestamps: true

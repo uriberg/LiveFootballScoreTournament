@@ -4,6 +4,7 @@ import axios from 'axios';
 import axiosInstance from '../axios';
 import classes from './match.module.css';
 
+
 interface MatchProps {
     id: number,
     homeTeamName: string,
@@ -20,11 +21,14 @@ interface MatchProps {
     selectedUser: string
     leagueId: number,
     round: string;
-    oddsSource: string
+    oddsSource: string,
+    tournamentId: any,
+    isExist: boolean
 }
 
 class Match extends Component<MatchProps> {
     private interval : number | undefined;
+    private oddsInterval : number | undefined;
 
     state = {
         editMode: false,
@@ -47,32 +51,10 @@ class Match extends Component<MatchProps> {
     };
 
     componentDidMount() {
-        axiosInstance().get('/matches/' + this.props.id)
-            .then(response => {
-               // console.log(response);
-                if (response.data) {
-                    //console.log('set');
-
-                    this.setState({
-                        homeOdd: response.data.homeOdd,
-                        tieOdd: response.data.tieOdd,
-                        awayOdd: response.data.awayOdd,
-                        homeWinUsers: response.data.homeWinUsers,
-                        tieUsers: response.data.tieUsers,
-                        awayWinUsers: response.data.awayWinUsers
-                    });
-                    this.getMatchScore();
-                }
-            });
-        if (this.props.oddsSource !== 'Manual'){
-            this.getMatchOdds();
+        if (this.props.isExist) {
+            console.log('onLoad is exists');
+          this.initiate();
         }
-
-        // @ts-ignore
-        this.interval = setInterval(() => {
-            this.getMatchScore();
-        }, 300000);//evert 5 minutes
-
         // if (this.props.odds?.HomeWin && this.props.odds?.Tie && this.props.odds?.AwayWin) {
         //     this.setState({editMode: false});
         // }
@@ -81,6 +63,45 @@ class Match extends Component<MatchProps> {
     componentWillUnmount(): void {
         clearInterval(this.interval);
     }
+
+    initiate = () => {
+        axiosInstance().get('/matches/' + this.props.id)
+            .then(response => {
+                console.log(response);
+                if (response.data) {
+                    //console.log('set');
+                    const homeOddIndex = response.data.homeOdd.findIndex((item: any) => item.tournamentId === this.props.tournamentId);
+                    const tieOddIndex = response.data.tieOdd.findIndex((item: any) => item.tournamentId === this.props.tournamentId);
+                    const awayOddIndex = response.data.awayOdd.findIndex((item: any) => item.tournamentId === this.props.tournamentId);
+                    const homeWinUsersIndex = response.data.homeWinUsers.findIndex((item: any) => item.tournamentId === this.props.tournamentId);
+                    const tieUsersIndex = response.data.tieUsers.findIndex((item: any) => item.tournamentId === this.props.tournamentId);
+                    const awayWinUsersIndex = response.data.awayWinUsers.findIndex((item: any) => item.tournamentId === this.props.tournamentId);
+                    console.log(tieUsersIndex);
+                    this.setState({
+                        homeOdd: homeOddIndex > -1 ? response.data.homeOdd[homeOddIndex].value : '',
+                        tieOdd: tieOddIndex > -1 ? response.data.tieOdd[tieOddIndex].value: '',
+                        awayOdd: awayOddIndex > -1 ? response.data.awayOdd[awayOddIndex].value : '',
+                        homeWinUsers: response.data.homeWinUsers,
+                        tieUsers: response.data.tieUsers,
+                        awayWinUsers: response.data.awayWinUsers
+                    });
+                    this.getMatchScore();
+                }
+            });
+        if (this.props.oddsSource !== 'Manual') {
+            this.getMatchOdds();
+        }
+
+        // // @ts-ignore
+        // this.oddsInterval = setTimeout(() => {
+        //     this.submitOdds();
+        // }, 10000);
+
+        // @ts-ignore
+        this.interval = setInterval(() => {
+            this.getMatchScore();
+        }, 300000);//evert 5 minutes
+    };
 
     getMatchOdds = () => {
         const headers = {
@@ -175,9 +196,9 @@ class Match extends Component<MatchProps> {
                         selectionHasChanged = false;
                     }
                     this.setState({
-                        userChoseAway: response.data.awayWinUsers.indexOf(this.props.selectedUser) > -1,
-                        userChoseHome: response.data.homeWinUsers.indexOf(this.props.selectedUser) > -1,
-                        userChoseTie: response.data.tieUsers.indexOf(this.props.selectedUser) > -1,
+                        userChoseAway: response.data.awayWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId) > -1,
+                        userChoseHome: response.data.homeWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId) > -1,
+                        userChoseTie: response.data.tieUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId) > -1,
                         selectionChanged: selectionHasChanged
                     });
                 })
@@ -185,7 +206,10 @@ class Match extends Component<MatchProps> {
                     console.log('Error: ' + err)
                 });
         }
-
+        if (!prevProps.isExist && this.props.isExist){
+            console.log('updated!! Exists!!');
+            this.initiate();
+        }
     }
 
     // componentWillUpdate(nextProps: Readonly<MatchProps>, nextState: Readonly<{}>, nextContext: any): void {
@@ -237,60 +261,65 @@ class Match extends Component<MatchProps> {
         console.log(this.state.tieOdd);
         console.log(this.state.awayOdd);
         this.setState({editMode: false});
-        axiosInstance().put('/matches/' + this.props.id + '/odds', {
-            homeOdd: this.state.homeOdd,
-            tieOdd: this.state.tieOdd,
-            awayOdd: this.state.awayOdd
-        })
-            .then(response => {
-                console.log(response);
+        const homeOdd = {value: +this.state.homeOdd, tournamentId: this.props.tournamentId, source: this.props.oddsSource};
+        const tieOdd = {value: +this.state.tieOdd, tournamentId: this.props.tournamentId, source: this.props.oddsSource};
+        const awayOdd = {value: +this.state.awayOdd, tournamentId: this.props.tournamentId, source: this.props.oddsSource};
+            axiosInstance().put('/matches/' + this.props.id + '/odds', {
+                homeOdd: homeOdd,
+                tieOdd: tieOdd,
+                awayOdd: awayOdd
             })
-            .catch(err => {
-                console.log(err)
-            });
+                .then(response => {
+                    console.log(response);
+                })
+                .catch(err => {
+                    console.log(err)
+                });
     };
 
     pushUserToHomeWin = () => {
-        if (this.props.selectedUser) {
-            console.log('selected');
-            let homeWinUsers = [...this.state.homeWinUsers];
-            // @ts-ignore
-            let indexHomeWin = homeWinUsers.indexOf(this.props.selectedUser);
-            if (indexHomeWin === -1) {
-                let tieUsers = [...this.state.tieUsers];
-                let awayWinUsers = [...this.state.awayWinUsers];
 
+        if (this.props.selectedUser) {
+                console.log('selected');
+                console.log(this.state.homeWinUsers);
+                let homeWinUsers = [...this.state.homeWinUsers];
                 // @ts-ignore
-                let indexTie = tieUsers.indexOf(this.props.selectedUser);
-                if (indexTie > -1) {
-                    tieUsers.splice(indexTie, 1);
-                } else {
+                let indexHomeWin = homeWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId);
+                if (indexHomeWin === -1) {
+                    let tieUsers = [...this.state.tieUsers];
+                    let awayWinUsers = [...this.state.awayWinUsers];
+
                     // @ts-ignore
-                    let indexAwayWin = awayWinUsers.indexOf(this.props.selectedUser);
-                    if (indexAwayWin > -1) {
-                        awayWinUsers.splice(indexAwayWin, 1);
+                    let indexTie = tieUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId);
+                    if (indexTie > -1) {
+                        tieUsers.splice(indexTie, 1);
+                    } else {
+                        // @ts-ignore
+                        let indexAwayWin = awayWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId);
+                        if (indexAwayWin > -1) {
+                            awayWinUsers.splice(indexAwayWin, 1);
+                        }
                     }
-                }
-                // @ts-ignore
-                homeWinUsers.push(this.props.selectedUser);
-                axiosInstance().put('/matches/' + this.props.id + '/bet', {
-                    homeWinUsers,
-                    awayWinUsers,
-                    tieUsers
-                })
-                    .then(response => {
-                        console.log(response);
-                        console.log('pushed ' + this.props.selectedUser + ' to home Win!');
-                        this.setState({
-                            homeWinUsers: response.data.homeWinUsers,
-                            awayWinUsers: response.data.awayWinUsers,
-                            tieUsers: response.data.tieUsers,
-                            selectionChanged: true
-                        });
+                    // @ts-ignore
+                    homeWinUsers.push({name: this.props.selectedUser, tournamentId: this.props.tournamentId});
+                    axiosInstance().put('/matches/' + this.props.id + '/bet', {
+                        homeWinUsers,
+                        awayWinUsers,
+                        tieUsers
                     })
-                    .catch(err => console.log('Error: ' + err));
+                        .then(response => {
+                            console.log(response);
+                            console.log('pushed ' + this.props.selectedUser + ' to home Win!');
+                            this.setState({
+                                homeWinUsers: response.data.homeWinUsers,
+                                awayWinUsers: response.data.awayWinUsers,
+                                tieUsers: response.data.tieUsers,
+                                selectionChanged: true
+                            });
+                        })
+                        .catch(err => console.log('Error: ' + err));
+                }
             }
-        }
     };
 
     pushUserToAwayWin = () => {
@@ -298,24 +327,24 @@ class Match extends Component<MatchProps> {
             console.log('selected');
             let awayWinUsers = [...this.state.awayWinUsers];
             // @ts-ignore
-            let indexAwayWin = awayWinUsers.indexOf(this.props.selectedUser);
+            let indexAwayWin = awayWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId);
             if (indexAwayWin === -1) {
                 let tieUsers = [...this.state.tieUsers];
                 let homeWinUsers = [...this.state.homeWinUsers];
 
                 // @ts-ignore
-                let indexTie = tieUsers.indexOf(this.props.selectedUser);
+                let indexTie = tieUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId);
                 if (indexTie > -1) {
                     tieUsers.splice(indexTie, 1);
                 } else {
                     // @ts-ignore
-                    let indexHomeWin = homeWinUsers.indexOf(this.props.selectedUser);
+                    let indexHomeWin = homeWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId);
                     if (indexHomeWin > -1) {
                         homeWinUsers.splice(indexHomeWin, 1);
                     }
                 }
                 // @ts-ignore
-                awayWinUsers.push(this.props.selectedUser);
+                awayWinUsers.push({name: this.props.selectedUser, tournamentId: this.props.tournamentId});
                 axiosInstance().put('/matches/' + this.props.id + '/bet', {
                     homeWinUsers,
                     awayWinUsers,
@@ -341,24 +370,24 @@ class Match extends Component<MatchProps> {
             console.log('selected');
             let tieUsers = [...this.state.tieUsers];
             // @ts-ignore
-            let indexTieWin = tieUsers.indexOf(this.props.selectedUser);
+            let indexTieWin = tieUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId);
             if (indexTieWin === -1) {
                 let awayWinUsers = [...this.state.awayWinUsers];
                 let homeWinUsers = [...this.state.homeWinUsers];
 
                 // @ts-ignore
-                let indexAway = awayWinUsers.indexOf(this.props.selectedUser);
+                let indexAway = awayWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId);
                 if (indexAway > -1) {
                     awayWinUsers.splice(indexAway, 1);
                 } else {
                     // @ts-ignore
-                    let indexHomeWin = homeWinUsers.indexOf(this.props.selectedUser);
+                    let indexHomeWin = homeWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId);
                     if (indexHomeWin > -1) {
                         homeWinUsers.splice(indexHomeWin, 1);
                     }
                 }
                 // @ts-ignore
-                tieUsers.push(this.props.selectedUser);
+                tieUsers.push({name: this.props.selectedUser, tournamentId: this.props.tournamentId});
                 axiosInstance().put('/matches/' + this.props.id + '/bet', {
                     homeWinUsers,
                     awayWinUsers,

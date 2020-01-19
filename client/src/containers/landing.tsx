@@ -84,10 +84,12 @@ class Landing extends Component {
     };
 
     totalScoreChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
+        console.log(value);
         this.setState({totalScore: value});
     };
 
     addUser = () => {
+        console.log(this.state.totalScore);
         const newUser = {
             name: this.state.username,
             totalScore: this.state.totalScore,

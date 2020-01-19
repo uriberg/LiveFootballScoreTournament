@@ -77,9 +77,9 @@ router.route('/add').post((req, res) => {
         statusShort: 'NS',
         goalsHomeTeam: null,
         goalsAwayTeam: null,
-        homeOdd: null,
-        tieOdd: null,
-        awayOdd: null
+        homeOdd: [],
+        tieOdd: [],
+        awayOdd: []
     });
 
     newMatch.save()
@@ -119,11 +119,19 @@ router.route('/newUser').post((req, res) => {
 // });
 //
 router.route('/:matchId/odds').put((req, res) => {
+    console.log(req.body);
     Matches.findByIdAndUpdate(req.params.matchId)
         .then(match => {
-            match.homeOdd = req.body.homeOdd;
-            match.awayOdd = req.body.awayOdd;
-            match.tieOdd = req.body.tieOdd;
+            let index = match.homeOdd.findIndex(item => item.tournamentId === req.body.homeOdd.tournamentId);
+            console.log('The index is: ' + index);
+            if (index > -1){
+                match.homeOdd.splice(index, 1);
+                match.tieOdd.splice(index, 1);
+                match.awayOdd.splice(index, 1);
+            }
+            match.homeOdd.push(req.body.homeOdd);
+            match.awayOdd.push(req.body.awayOdd);
+            match.tieOdd.push(req.body.tieOdd);
             match.save();
             res.json(match);
         })
