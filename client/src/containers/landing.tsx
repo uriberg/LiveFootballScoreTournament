@@ -57,10 +57,14 @@ class Landing extends Component {
         axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then((response: any) => {
                 console.log(response);
-                this.setState({createMode: false, tournamentId: response.data._id});
+                this.setState({createMode: false, tournamentId: response.data._id, showTournament: true});
                 setTimeout(() => {
-                    this.getTournament(response.data._id);
-                    scroll.scrollTo(window.innerHeight);
+                    //this.getTournament(response.data._id);
+                   // scroll.scrollTo(window.innerHeight);
+                    var elmnt = document.getElementById("shownTournament");
+                    if (elmnt) {
+                        elmnt.scrollIntoView();
+                    }
                 }, 2000);
             })
             .catch((err: any) => {
@@ -266,7 +270,7 @@ class Landing extends Component {
                 </Element>
 
 
-                <Element name="test2" className="element">
+                <Element name="test2" className="element" id="shownTournament">
                     {this.state.showTournament ?
                         <div className={classes.showTournament}>
                             <Tournament tournamentName={this.state.tournamentName}
