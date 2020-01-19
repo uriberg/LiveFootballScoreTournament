@@ -57,8 +57,11 @@ class Landing extends Component {
         axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then((response: any) => {
                 console.log(response);
-                this.getTournament(response.data._id);
                 this.setState({createMode: false, tournamentId: response.data._id});
+                setTimeout(() => {
+                    this.getTournament(response.data._id);
+                    scroll.scrollTo(window.innerHeight);
+                }, 2000);
             })
             .catch((err: any) => {
                 console.log(err)
