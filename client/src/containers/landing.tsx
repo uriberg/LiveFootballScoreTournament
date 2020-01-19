@@ -57,7 +57,8 @@ class Landing extends Component {
         axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then((response: any) => {
                 console.log(response);
-                this.setState({createMode: false, showTournament: true, tournamentId: response.data._id});
+                this.getTournament(response.data._id);
+                this.setState({createMode: false, tournamentId: response.data._id});
             })
             .catch((err: any) => {
                 console.log(err)
