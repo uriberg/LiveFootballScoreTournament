@@ -158,7 +158,9 @@ class Landing extends Component {
     render() {
         const tournamentsList = this.state.tournamentsArray.map((tournament: any) =>
             <div className={classes.cardItem}>
-                <Link activeClass="active" to="test2" spy={true} smooth={true} offset={50} duration={500}
+                <Link activeClass="active" to="test2" spy={true} smooth="easeInOutQuart"
+                      offset={0}
+                      duration={800}
                       key={tournament._id} onClick={() => this.getTournament(tournament._id)}>
                     <Card>
                         <Image
@@ -184,11 +186,15 @@ class Landing extends Component {
             <div className={classes.container}>
 
                 <div className={classes.mainButtons}>
-                    <Link activeClass="active" to="test1" spy={true} smooth={true} offset={50} duration={500}>
+                    <Link activeClass="active" to="test1" spy={true}  smooth="easeInOutQuart"
+                          offset={0}
+                          duration={800}>
                         <Button onClick={this.fetchTournaments}>Fetch existing tournaments</Button>
                     </Link>
 
-                    <Link activeClass="active" to="createForm" spy={true} smooth={true} offset={50} duration={500}>
+                    <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
+                          offset={0}
+                          duration={800}>
                         <Button onClick={this.turnOnCreateMode}>Create New Tournament</Button>
                     </Link>
 
@@ -235,8 +241,9 @@ class Landing extends Component {
                                 <Button type='submit' onClick={this.addUser}>Add User</Button>
                             </Form>
                             <div className={classes.createTournamentButton}>
-                                <Link activeClass="active" to="test2" spy={true} smooth={true} offset={50}
-                                      duration={500}>
+                                <Link activeClass="active" to="test2" spy={true} smooth="easeInOutQuart"
+                                      offset={0}
+                                      duration={800}>
                                     <Button type='submit' onClick={this.createTournament} style={{width: '100%'}}>Create
                                         Tournament</Button>
                                 </Link>
