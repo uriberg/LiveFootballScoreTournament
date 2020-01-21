@@ -68,7 +68,7 @@ class Landing extends Component {
                     if (elmnt) {
                         elmnt.scrollIntoView();
                     }
-                }, 2000);
+                }, 1000);
             })
             .catch((err: any) => {
                 console.log(err)
