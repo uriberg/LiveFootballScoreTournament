@@ -3,7 +3,7 @@ import axios from 'axios';
 import axiosInstance from '../axios';
 import User from "../components/user";
 import Match from "../components/match";
-import {Button, Form, Menu, Dropdown, Select, Table, Responsive} from "semantic-ui-react";
+import {Button, Form, Menu, Select, Table, Responsive} from "semantic-ui-react";
 import classes from './tournament.module.css';
 import _ from 'lodash';
 
@@ -29,7 +29,7 @@ interface MatchType {
     round: string;
     leagueId: number;
     statusShort: string;
-};
+}
 
 interface TournamentProps {
     tournamentName: string,
@@ -215,7 +215,7 @@ class Tournament extends Component<TournamentProps> {
 
 
     deleteTournament = () => {
-        if (window.confirm("Do you want to delete " + this.props.tournamentName + '?') == true) {
+        if (window.confirm("Do you want to delete " + this.props.tournamentName + '?') === true) {
             axiosInstance().delete('/tournaments/' + this.props.tournamentId)
                 .then(() => {
                     this.props.backHome();
@@ -489,20 +489,22 @@ class Tournament extends Component<TournamentProps> {
                     let homeOddIndex = matches[j].homeOdd.findIndex((item: any) => item.tournamentId === this.props.tournamentId);
                     let tieOddIndex = matches[j].tieOdd.findIndex((item: any) => item.tournamentId === this.props.tournamentId);
                     let awayOddIndex = matches[j].awayOdd.findIndex((item: any) => item.tournamentId === this.props.tournamentId);
-                    if (matches[j].goalsHomeTeam > matches[j].goalsAwayTeam) {
-                        // @ts-ignore
-                        if (matches[j].homeWinUsers.findIndex((item: any) => item.name === users[i].name && item.tournamentId === this.props.tournamentId) > -1 ){
-                            users[i].weeklyScore = +parseFloat((users[i].weeklyScore + matches[j].homeOdd[homeOddIndex].value).toFixed(2));
-                        }
-                    } else if (matches[j].goalsHomeTeam < matches[j].goalsAwayTeam) {
-                        // @ts-ignore
-                        if (matches[j].awayWinUsers.findIndex((item: any) => item.name === users[i].name && item.tournamentId === this.props.tournamentId) > -1) {
-                            users[i].weeklyScore = +parseFloat((users[i].weeklyScore + matches[j].awayOdd[awayOddIndex].value).toFixed(2));
-                        }
-                    } else if (matches[j].goalsHomeTeam === matches[j].goalsAwayTeam) {
-                        // @ts-ignore
-                        if (matches[j].tieUsers.findIndex((item: any) => item.name === users[i].name && item.tournamentId === this.props.tournamentId) > -1) {
-                            users[i].weeklyScore = +parseFloat((users[i].weeklyScore + matches[j].tieOdd[tieOddIndex].value).toFixed(2));
+                    if (homeOddIndex > -1 && tieOddIndex > -1 && awayOddIndex > -1) {//i.e odds have been submitted
+                        if (matches[j].goalsHomeTeam > matches[j].goalsAwayTeam) {
+                            // @ts-ignore
+                            if (matches[j].homeWinUsers.findIndex((item: any) => item.name === users[i].name && item.tournamentId === this.props.tournamentId) > -1) {
+                                users[i].weeklyScore = +parseFloat((users[i].weeklyScore + matches[j].homeOdd[homeOddIndex].value).toFixed(2));
+                            }
+                        } else if (matches[j].goalsHomeTeam < matches[j].goalsAwayTeam) {
+                            // @ts-ignore
+                            if (matches[j].awayWinUsers.findIndex((item: any) => item.name === users[i].name && item.tournamentId === this.props.tournamentId) > -1) {
+                                users[i].weeklyScore = +parseFloat((users[i].weeklyScore + matches[j].awayOdd[awayOddIndex].value).toFixed(2));
+                            }
+                        } else if (matches[j].goalsHomeTeam === matches[j].goalsAwayTeam) {
+                            // @ts-ignore
+                            if (matches[j].tieUsers.findIndex((item: any) => item.name === users[i].name && item.tournamentId === this.props.tournamentId) > -1) {
+                                users[i].weeklyScore = +parseFloat((users[i].weeklyScore + matches[j].tieOdd[tieOddIndex].value).toFixed(2));
+                            }
                         }
                     }
                 }
@@ -559,7 +561,6 @@ class Tournament extends Component<TournamentProps> {
         const usersList = [...this.state.users];
         const direction = this.state.direction;
 
-        const widthStyle = 'display: flex !important';
         return (
             <div>
                 <div style={{display: 'flex', justifyContent: 'center'}}>

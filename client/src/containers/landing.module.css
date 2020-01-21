@@ -38,6 +38,13 @@
     width: 100%;
 }
 
+.loadingWrapper {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .cardsWrapper {
     min-height: 100vh;
 }
