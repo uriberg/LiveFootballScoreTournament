@@ -59,16 +59,16 @@ class Landing extends Component {
         axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then((response: any) => {
                 console.log(response);
-                this.setState({createMode: false, tournamentId: response.data._id, showTournament: true, loading: false});
+                this.setState({createMode: false, tournamentId: response.data._id, showTournament: true});
                 setTimeout(() => {
                     //this.getTournament(response.data._id);
                     // scroll.scrollTo(window.innerHeight);
-                    //this.setState({loading: false});
+                    this.setState({loading: false});
                     var elmnt = document.getElementById("shownTournament");
                     if (elmnt) {
                         elmnt.scrollIntoView();
                     }
-                }, 1000);
+                }, 3000);
             })
             .catch((err: any) => {
                 console.log(err)
