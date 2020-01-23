@@ -693,7 +693,8 @@ class Tournament extends Component<TournamentProps> {
                                    awayTeamName={match.awayTeam.team_name} key={match.fixture_id}
                                    selectedUser={this.state.selectedUser}
                                    leagueId={this.props.tournamentLeagueId} round={this.state.leagueCurrentRound}
-                                    oddsSource={this.props.oddsSource} tournamentId={this.props.tournamentId} isExist={this.state.allMatchesExists}/>)}
+                                    oddsSource={this.props.oddsSource} tournamentId={this.props.tournamentId} isExist={this.state.allMatchesExists}
+                            homeGoals={match.goalsHomeTeam} awayGoals={match.goalsAwayTeam} isOver={match.statusShort === "FT"}/>)}
                     </div>
                 </div>
             </div>

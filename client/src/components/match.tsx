@@ -9,8 +9,8 @@ interface MatchProps {
     id: number,
     homeTeamName: string,
     awayTeamName: string,
-    homeGoals?: string,
-    awayGoals?: string,
+    homeGoals: string,
+    awayGoals: string,
     currWinner?: string,
     result?: string,
     odds?: {
@@ -23,7 +23,8 @@ interface MatchProps {
     round: string;
     oddsSource: string,
     tournamentId: any,
-    isExist: boolean
+    isExist: boolean,
+    isOver: boolean
 }
 
 class Match extends Component<MatchProps> {
@@ -47,13 +48,20 @@ class Match extends Component<MatchProps> {
         isAwayWin: false,
         goalsHomeTeam: -1,
         goalsAwayTeam: -1,
-        ns: true
+        ns: true,
+        ft: false
     };
 
     componentDidMount() {
         if (this.props.isExist) {
             console.log('onLoad is exists');
           this.initiate();
+        }
+        if (this.props.isOver){
+            const isHomeWin = this.props.homeGoals > this.props.awayGoals;
+            const isTie = this.props.homeGoals === this.props.awayGoals;
+            const isAwayWin = this.props.homeGoals < this.props.awayGoals;
+            this.setState({ns: false ,ft: true, goalsHomeTeam: this.props.homeGoals, goalsAwayTeam: this.props.awayGoals, isHomeWin: isHomeWin, isTie: isTie, isAwayWin: isAwayWin});
         }
         // if (this.props.odds?.HomeWin && this.props.odds?.Tie && this.props.odds?.AwayWin) {
         //     this.setState({editMode: false});
@@ -149,32 +157,55 @@ class Match extends Component<MatchProps> {
     };
 
     getMatchScore = () => {
-        const headers = {
-            "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+        if (!this.state.ft) {
+            const headers = {
+                "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
                 "x-rapidapi-key": "caf2d8bb45msh890d53234504df6p11bfa9jsn11476be6f67b"
-        };
-        axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/id/' + this.props.id, {headers})
-            .then(response => {
-                //console.log(response);
-                if (response.data.api.fixtures[0].statusShort !== 'NS'){
-                    let goalsHomeTeam = response.data.api.fixtures[0].goalsHomeTeam;
-                    let goalsAwayTeam = response.data.api.fixtures[0].goalsAwayTeam;
-                    if (goalsHomeTeam > goalsAwayTeam){
-                        this.setState({isHomeWin: true, isAwayWin: false, isTie: false, ns: false, goalsHomeTeam: goalsHomeTeam, goalsAwayTeam: goalsAwayTeam});
-                    }
-                    else if (goalsHomeTeam < goalsAwayTeam){
-                        this.setState({isHomeWin: false, isAwayWin: true, isTie: false, ns: false,  goalsHomeTeam: goalsHomeTeam, goalsAwayTeam: goalsAwayTeam});
-                    }
-                    else {
-                        this.setState({isHomeWin: false, isAwayWin: false, isTie: true, ns: false,  goalsHomeTeam: goalsHomeTeam, goalsAwayTeam: goalsAwayTeam});
-                    }
+            };
+            axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/id/' + this.props.id, {headers})
+                .then(response => {
+                    //console.log(response);
+                    if (response.data.api.fixtures[0].statusShort !== 'NS') {
+                        let goalsHomeTeam = response.data.api.fixtures[0].goalsHomeTeam;
+                        let goalsAwayTeam = response.data.api.fixtures[0].goalsAwayTeam;
+                        if (goalsHomeTeam > goalsAwayTeam) {
+                            this.setState({
+                                isHomeWin: true,
+                                isAwayWin: false,
+                                isTie: false,
+                                ns: false,
+                                goalsHomeTeam: goalsHomeTeam,
+                                goalsAwayTeam: goalsAwayTeam
+                            });
+                        } else if (goalsHomeTeam < goalsAwayTeam) {
+                            this.setState({
+                                isHomeWin: false,
+                                isAwayWin: true,
+                                isTie: false,
+                                ns: false,
+                                goalsHomeTeam: goalsHomeTeam,
+                                goalsAwayTeam: goalsAwayTeam
+                            });
+                        } else {
+                            this.setState({
+                                isHomeWin: false,
+                                isAwayWin: false,
+                                isTie: true,
+                                ns: false,
+                                goalsHomeTeam: goalsHomeTeam,
+                                goalsAwayTeam: goalsAwayTeam
+                            });
+                        }
 
-                   // console.log('goalsHomeTeam: ' + goalsHomeTeam);
-                  //  console.log('goalsAwayTeam: ' + goalsAwayTeam);
-                    this.updateMatchScore(goalsHomeTeam, goalsAwayTeam);
-                }
-            })
-            .catch(err => {console.log(err)});
+                        // console.log('goalsHomeTeam: ' + goalsHomeTeam);
+                        //  console.log('goalsAwayTeam: ' + goalsAwayTeam);
+                        this.updateMatchScore(goalsHomeTeam, goalsAwayTeam);
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                });
+        }
     };
 
     updateMatchScore = (goalsHomeTeam: number, goalsAwayTeam: number) => {
