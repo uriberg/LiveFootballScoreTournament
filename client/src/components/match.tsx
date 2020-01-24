@@ -158,6 +158,7 @@ class Match extends Component<MatchProps> {
 
     getMatchScore = () => {
         if (!this.state.ft) {
+            console.log(this.props.homeTeamName + ' - ' + this.props.awayTeamName + ': fetching....');
             const headers = {
                 "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
                 "x-rapidapi-key": "caf2d8bb45msh890d53234504df6p11bfa9jsn11476be6f67b"
@@ -205,6 +206,9 @@ class Match extends Component<MatchProps> {
                 .catch(err => {
                     console.log(err)
                 });
+        }
+        else {
+            console.log('match between ' + this.props.homeTeamName + ' and ' + this.props.awayTeamName + ' is already in the database!!');
         }
     };
 
