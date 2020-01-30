@@ -5,6 +5,8 @@ import Tournament from "./tournament";
 import classes from './landing.module.css';
 import {Link, Element} from 'react-scroll'
 import Spinner from '../components/UI/Spinner';
+import {connect} from 'react-redux';
+import * as actions from '../store/actions/index';
 
 const options = [
     {key: 'il', text: 'Israeli Premier League', value: 'Israeli Premier League', flag: 'il'},
@@ -21,9 +23,19 @@ const oddsFetchingOptions = [
     {key: 'manual', text: 'Manual', value: 'Manual'}
 ];
 
+interface PropsFromDispatch {
+    onFetchTournaments: () => void
+}
 
-class Landing extends Component {
+interface PropsFromState {
+    tournamentsArray: []
+}
 
+type AllProps = PropsFromState
+    & PropsFromDispatch;
+
+
+class Landing extends Component<AllProps> {
 
     state = {
         createMode: false,
@@ -33,7 +45,6 @@ class Landing extends Component {
         totalScore: 0,
         tournamentUsers: [],
         showTournament: false,
-        tournamentsArray: [],
         tournamentId: '',
         lastRecordedRound: '',
         fetchMode: false,
@@ -75,15 +86,21 @@ class Landing extends Component {
             });
     };
 
-    fetchTournaments = () => {
-        axiosInstance().get('/tournaments')
-            .then(response => {
-                console.log(response);
-                this.setState({tournamentsArray: response.data, fetchMode: true, createMode: false});
-            })
-            .catch(err => {
-                console.log(err)
-            });
+      fetchTournaments =  async () => {
+        // axiosInstance().get('/tournaments')
+        //     .then(response => {
+        //         console.log(response);
+        //         this.setState({tournamentsArray: response.data, fetchMode: true, createMode: false});
+        //     })
+        //     .catch(err => {
+        //         console.log(err)
+        //     });
+        // @ts-ignore
+          console.log('before fetch');
+           await this.props.onFetchTournaments();
+           console.log(this.props.tournamentsArray);
+           console.log('after fetch');
+            this.setState({fetchMode: true, createMode: false});
     };
 
     tournamentNameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
@@ -167,7 +184,7 @@ class Landing extends Component {
     };
 
     render() {
-        const tournamentsList = this.state.tournamentsArray.map((tournament: any) =>
+        const tournamentsList = this.props.tournamentsArray.map((tournament: any) =>
             <div className={classes.cardItem}>
                 <Link activeClass="active" to="test2" spy={true} smooth="easeInOutQuart"
                       offset={0}
@@ -292,4 +309,16 @@ class Landing extends Component {
     }
 }
 
-export default Landing;
+const mapStateToProps = (state: any) => {
+    return {
+        tournamentsArray: state.landing.tournamentsArray
+    };
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        onFetchTournaments: () => dispatch(actions.fetchTournaments()),
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Landing);

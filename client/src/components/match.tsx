@@ -58,9 +58,11 @@ class Match extends Component<MatchProps> {
           this.initiate();
         }
         if (this.props.isOver){
+            console.log('HomeGoals: ' + this.props.homeGoals);
             const isHomeWin = this.props.homeGoals > this.props.awayGoals;
             const isTie = this.props.homeGoals === this.props.awayGoals;
             const isAwayWin = this.props.homeGoals < this.props.awayGoals;
+            this.updateMatchScore(+this.props.homeGoals, +this.props.awayGoals);
             this.setState({ns: false ,ft: true, goalsHomeTeam: this.props.homeGoals, goalsAwayTeam: this.props.awayGoals, isHomeWin: isHomeWin, isTie: isTie, isAwayWin: isAwayWin});
         }
         // if (this.props.odds?.HomeWin && this.props.odds?.Tie && this.props.odds?.AwayWin) {
@@ -240,6 +242,12 @@ class Match extends Component<MatchProps> {
         if (!prevProps.isExist && this.props.isExist){
             console.log('updated!! Exists!!');
             this.initiate();
+        }
+        if (!prevProps.isOver && this.props.isOver){
+            const isHomeWin = this.props.homeGoals > this.props.awayGoals;
+            const isTie = this.props.homeGoals === this.props.awayGoals;
+            const isAwayWin = this.props.homeGoals < this.props.awayGoals;
+            this.setState({ns: false ,ft: true, goalsHomeTeam: this.props.homeGoals, goalsAwayTeam: this.props.awayGoals, isHomeWin: isHomeWin, isTie: isTie, isAwayWin: isAwayWin});
         }
     }
 

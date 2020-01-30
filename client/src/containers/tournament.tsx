@@ -161,9 +161,11 @@ class Tournament extends Component<TournamentProps> {
         console.log(this.state.leagueCurrentRound);
         axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/league/' + this.props.tournamentLeagueId + '/' + this.state.leagueCurrentRound, {headers})
             .then(response => {
+                console.log(response);
                 this.setState({
                     currFixtures: response.data.api.fixtures,
-                    leagueCurrentRound: response.data.api.fixtures[0].round,
+                     leagueCurrentRound: response.data.api.fixtures[0].round,
+                    //leagueCurrentRound: 'Regular Season - 20',
                     desiredPrevRound: response.data.api.fixtures[0].round
                 });
                 this.checkDatabase();
@@ -703,3 +705,5 @@ class Tournament extends Component<TournamentProps> {
 }
 
 export default Tournament;
+
+
