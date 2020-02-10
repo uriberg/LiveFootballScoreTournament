@@ -6,7 +6,9 @@ import Match from "../components/match";
 import {Button, Form, Menu, Select, Table, Responsive} from "semantic-ui-react";
 import classes from './tournament.module.css';
 import _ from 'lodash';
-
+import {connect} from 'react-redux';
+import * as actions from '../store/actions/index';
+import TournamentTable from "../components/tournamentTable";
 
 interface User {
     name: string;
@@ -31,6 +33,10 @@ interface MatchType {
     statusShort: string;
 }
 
+interface PropsFromDispatch {
+    onDeleteTournament: (id: string) => void
+}
+
 interface TournamentProps {
     tournamentName: string,
     tournamentLeagueId: number,
@@ -41,7 +47,9 @@ interface TournamentProps {
     backHome: () => void
 }
 
-class Tournament extends Component<TournamentProps> {
+type AllProps  = PropsFromDispatch & TournamentProps;
+
+class Tournament extends Component<AllProps> {
     private weeklyScoreinterval: number | undefined;
     private currMatchesInterval: number | undefined;
     private usersInterval: number | undefined;
@@ -49,20 +57,17 @@ class Tournament extends Component<TournamentProps> {
 
 
     state = {
-        users: [],
-        currResult: 0,
+        users: [] = [],
         currFixtures: [],
         selectedUser: '',
         usernameToAddName: '',
         usernameToAddScore: 0,
         currMatches: [],
         leagueId: null,
-        propUsers: this.props.users,
         leagueCurrentRound: '',
         desiredPrevRound: '',
         showPrevMatches: false,
         unhandledMatches: [],
-        activeItem: null,
         editMode: false,
         direction: 'descending',
         column: undefined,
@@ -71,16 +76,10 @@ class Tournament extends Component<TournamentProps> {
 
     componentDidMount() {
         this.getCurrentRound(this.props.tournamentLeagueId);
-        let tempUsers = [...this.state.propUsers];
+        let tempUsers = [...this.props.users];
         this.setState({users: tempUsers});
-        //this.getMatches();
         this.calculateWeeklyScore();
 
-        // @ts-ignore
-        // this.usersInterval = setInterval(() => {
-        //     this.getUsers();
-        // }, 5000);
-        //this.getCurrentRound();
         // @ts-ignore
         this.currMatchesInterval = setInterval(() => {
             this.getMatches();
@@ -91,15 +90,9 @@ class Tournament extends Component<TournamentProps> {
         }, 10000);
 
         // @ts-ignore
-        // this.checkRoundInterval = setInterval( () => {
-        //     this.getCurrentRound(this.props.tournamentLeagueId);
-        // }, 86400000);//i.e every one day
-
         this.checkRoundInterval = setInterval(() => {
             this.getCurrentRound(this.props.tournamentLeagueId);
         }, 120000);//i.e every two minutes
-
-
     }
 
     componentWillUnmount(): void {
@@ -144,9 +137,10 @@ class Tournament extends Component<TournamentProps> {
             .then(response => {
                 // console.log(response.data.api.fixtures[0]);
                 let currentRound = response.data.api.fixtures[0];
+                //let currentRound = 'Regular_Season_-_22';
                 console.log(currentRound);
-                this.setState({leagueCurrentRound: currentRound, desiredPrevRound: currentRound});
-                this.getCurrRoundMatches(this.state.leagueCurrentRound);
+                //this.setState({leagueCurrentRound: currentRound, desiredPrevRound: currentRound});
+                this.getCurrRoundMatches(currentRound);
             })
             .catch(err => console.log(err));
     };
@@ -159,18 +153,71 @@ class Tournament extends Component<TournamentProps> {
         //  console.log(this.state.leagueCurrentRound);
         console.log('currRoundMatches');
         console.log(this.state.leagueCurrentRound);
-        axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/league/' + this.props.tournamentLeagueId + '/' + this.state.leagueCurrentRound, {headers})
+        axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/league/' + this.props.tournamentLeagueId + '/' + currentRound, {headers})
             .then(response => {
                 console.log(response);
-                this.setState({
-                    currFixtures: response.data.api.fixtures,
-                     leagueCurrentRound: response.data.api.fixtures[0].round,
-                    //leagueCurrentRound: 'Regular Season - 20',
-                    desiredPrevRound: response.data.api.fixtures[0].round
-                });
-                this.checkDatabase();
+                this.verifyLastRoundHasEnded(response.data.api.fixtures, currentRound);
             })
             .catch(err => console.log(err));
+    };
+
+    verifyLastRoundHasEnded = (fixtures: any, currentRound: string) => {
+        console.log(fixtures);
+        let roundHasEnded = true;
+        let desiredPrevRound = this.desiredPrevRound(currentRound);
+        let firstNewMatch = this.getClosestNewRoundMatch(fixtures);
+        console.log(desiredPrevRound);
+        console.log(firstNewMatch);
+        const headers = {
+            "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+            "x-rapidapi-key": "caf2d8bb45msh890d53234504df6p11bfa9jsn11476be6f67b"
+        };
+        //  console.log(this.state.leagueCurrentRound);
+        console.log('currRoundMatches');
+        console.log(this.state.leagueCurrentRound);
+        axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/league/' + this.props.tournamentLeagueId + '/' + desiredPrevRound, {headers})
+            .then(response => {
+                let lastFixtures = response.data.api.fixtures;
+                console.log(lastFixtures);
+                for (let i = 0; i < lastFixtures.length; i++){
+                    if (lastFixtures[i].statusShort !== 'FT'){
+                        if (lastFixtures[i].event_date.localeCompare(firstNewMatch) === -1){
+                            console.log('Round not ended! ' + lastFixtures[i]);
+                            roundHasEnded = false;
+                            break;
+                        }
+                    }
+                }
+                if (roundHasEnded){
+                    this.setState({
+                        currFixtures: fixtures,
+                        desiredPrevRound: this.state.leagueCurrentRound,
+                        leagueCurrentRound: fixtures[0].round,
+                        //leagueCurrentRound: 'Regular Season - 22',
+                    });
+                    this.checkDatabase();
+                }
+                else {
+                    this.setState({
+                        leagueCurrentRound: lastFixtures[0].round,
+                        currFixtures: lastFixtures
+                    });
+                    this.checkDatabase();
+                }
+            })
+            .catch(err => {console.log(err)});
+        // for(let i = 0; i < fixtures.length; i++){
+        // }
+    };
+
+    getClosestNewRoundMatch = (fixtures: any) => {
+        let firstEvent = fixtures[0].event_date;
+        for(let i = 1; i < fixtures.length; i++){
+            if (firstEvent.localeCompare(fixtures[i].event_date) === 1){
+                firstEvent = fixtures[i].event_date;
+            }
+        }
+        return firstEvent;
     };
 
     checkDatabase = () => {
@@ -216,21 +263,16 @@ class Tournament extends Component<TournamentProps> {
     };
 
 
-    deleteTournament = () => {
+    deleteTournament = async () => {
         if (window.confirm("Do you want to delete " + this.props.tournamentName + '?') === true) {
-            axiosInstance().delete('/tournaments/' + this.props.tournamentId)
-                .then(() => {
-                    this.props.backHome();
-
-                })
-                .catch(err => {
-                    console.log('Error: ' + err)
-                });
+            await this.props.onDeleteTournament(this.props.tournamentId);
+            this.props.backHome();
         }
     };
 
-    desiredPrevRound = () => {
-        let currentPrevRound = this.state.desiredPrevRound;
+    desiredPrevRound = (currentRound: string) => {
+        //let currentPrevRound = this.state.desiredPrevRound;
+        let currentPrevRound = currentRound;
         let currentPrevRoundNumber = '';
         let newPrevRoundNumber = '';
         let firstNumberIndex = -1;
@@ -248,21 +290,10 @@ class Tournament extends Component<TournamentProps> {
         }
         newPrevRoundNumber = +(currentPrevRoundNumber) - 1 + '';
         console.log(newPrevRoundNumber);
-        const newDesiredPrevRound = this.state.desiredPrevRound.substring(0, firstNumberIndex) + newPrevRoundNumber;
+        const newDesiredPrevRound = currentRound.substring(0, firstNumberIndex) + newPrevRoundNumber;
         console.log(newDesiredPrevRound);
         this.setState({desiredPrevRound: newDesiredPrevRound});
         return newDesiredPrevRound;
-    };
-
-    getUsers = () => {
-        axiosInstance().get('/users')
-            .then(response => {
-                // console.log(response);
-                this.setState({users: response.data});
-            })
-            .catch(err => {
-                console.log(err)
-            });
     };
 
     getMatches = () => {
@@ -279,7 +310,6 @@ class Tournament extends Component<TournamentProps> {
                 });
         }
         console.log(this.state.currMatches);
-
     };
 
 
@@ -430,21 +460,12 @@ class Tournament extends Component<TournamentProps> {
             //console.log('going to push new matches');
             // @ts-ignore
             //matchesToSet.push(newMatch);
-
-
-
             //this.addMatch(this.state.currFixtures[i].fixture_id);
         }
         axios.all(promises).then((results) => {
             this.setState({allMatchesExists: true});
         })
             .catch(err => {console.log(err)});
-        //axiosPutrequest
-        // axiosInstance().put('tournaments/' + this.props.tournamentId + '/matches', {
-        //     tournamentMatches: matchesToSet
-        // })
-        //     .then(response => {console.log(response)})
-        //     .catch(err => {console.log(err)});
     };
 
 
@@ -560,7 +581,7 @@ class Tournament extends Component<TournamentProps> {
             value: user.name,
             text: user.name
         }));
-        const usersList = [...this.state.users];
+        const usersList: User [] = [...this.state.users];
         const direction = this.state.direction;
 
         return (
@@ -636,58 +657,7 @@ class Tournament extends Component<TournamentProps> {
                         </Form>
                         : null}
                     <div className={classes.tableWrapper}>
-                        <Table sortable celled>
-                            <Table.Header style={{display: 'contents'}}>
-                                <Table.Row>
-                                    <Table.HeaderCell
-                                        sorted={this.state.column === 'name' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
-                                        onClick={this.handleSort('name')}
-                                    >
-                                        Name
-                                    </Table.HeaderCell>
-                                    <Table.HeaderCell
-                                        sorted={this.state.column === 'totalScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
-                                        onClick={this.handleSort('totalScore')}
-                                    >
-                                        Score
-                                    </Table.HeaderCell>
-                                    <Table.HeaderCell
-                                        sorted={this.state.column === 'weeklyScore' ? (direction === 'descending' ? 'descending' : 'ascending') : undefined}
-                                        onClick={this.handleSort('weeklyScore')}
-                                    >
-                                        Weekly Score
-                                    </Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body className={classes.tableBody}>
-                                <style>{`
-            @media (max-width: 767px){
-                    .ui.table:not(.unstackable) tbody{
-              display: table-row-group !important;
-            }
-            .ui.table:not(.unstackable) tr>td{
-            display: table-cell !important;
-          
-             }
-             
-             .ui.table:not(.unstackable) tr>th {
-                display: table-cell !important;
-             }
-             
-             .ui.table:not(.unstackable) tr{
-             display: table-row !important;
-             }
-            }
-          `}</style>
-                                {_.map(usersList, ({totalScore, name, weeklyScore}) => (
-                                    <Table.Row key={name}>
-                                        <Table.Cell>{name}</Table.Cell>
-                                        <Table.Cell>{+(parseFloat(totalScore).toFixed(2))}</Table.Cell>
-                                        <Table.Cell>{weeklyScore}</Table.Cell>
-                                    </Table.Row>
-                                ))}
-                            </Table.Body>
-                        </Table>
+                       <TournamentTable usersList={usersList} handleSort={this.handleSort} sortDirection={direction} columnToSort={this.state.column}/>
                     </div>
                     <div className={classes.matchesWrapper}>
                         {this.state.currFixtures.map((match: any) =>
@@ -704,6 +674,18 @@ class Tournament extends Component<TournamentProps> {
     }
 }
 
-export default Tournament;
+// const mapStateToProps = (state: any) => {
+//     return {
+//         tournamentsArray: state.landing.tournamentsArray
+//     };
+// };
+
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        onDeleteTournament: (id: string) => dispatch(actions.deleteTournament(id)),
+    }
+};
+
+export default connect(null, mapDispatchToProps)(Tournament);
 
 

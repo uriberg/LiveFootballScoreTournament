@@ -87,15 +87,6 @@ class Landing extends Component<AllProps> {
     };
 
       fetchTournaments =  async () => {
-        // axiosInstance().get('/tournaments')
-        //     .then(response => {
-        //         console.log(response);
-        //         this.setState({tournamentsArray: response.data, fetchMode: true, createMode: false});
-        //     })
-        //     .catch(err => {
-        //         console.log(err)
-        //     });
-        // @ts-ignore
           console.log('before fetch');
            await this.props.onFetchTournaments();
            console.log(this.props.tournamentsArray);

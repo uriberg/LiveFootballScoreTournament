@@ -59,6 +59,7 @@ class Match extends Component<MatchProps> {
         }
         if (this.props.isOver){
             console.log('HomeGoals: ' + this.props.homeGoals);
+            console.log('match between ' + this.props.homeTeamName + ' and ' + this.props.awayTeamName + ' is over');
             const isHomeWin = this.props.homeGoals > this.props.awayGoals;
             const isTie = this.props.homeGoals === this.props.awayGoals;
             const isAwayWin = this.props.homeGoals < this.props.awayGoals;
@@ -110,7 +111,7 @@ class Match extends Component<MatchProps> {
         // @ts-ignore
         this.interval = setInterval(() => {
             this.getMatchScore();
-        }, 300000);//evert 5 minutes
+        }, 30000);//evert 5 minutes
     };
 
     getMatchOdds = () => {
