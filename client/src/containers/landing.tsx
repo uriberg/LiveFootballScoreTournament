@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import axiosInstance from '../axios';
 import {Button, Card, Image, Icon} from "semantic-ui-react";
 import Tournament from "./tournament";
 import classes from './landing.module.css';
@@ -10,11 +9,19 @@ import * as actions from '../store/actions/index';
 import CreateTournamentForm from '../components/createTournamentForm';
 
 interface PropsFromDispatch {
-    onFetchTournaments: () => void
+    onFetchTournaments: () => void,
+    onCreateTournament: (newTournament: any) => void,
+    onGetTournament: (id: string) => void
 }
 
 interface PropsFromState {
-    tournamentsArray: []
+    tournamentsArray: [],
+    tournamentId: string,
+    lastRecordedRound: string,
+    selectedTournamentName: string,
+    selectedTournamentLeagueId: number,
+    selectedTournamentUsers: [],
+    selectedTournamentOddsSource: string
 }
 
 type AllProps = PropsFromState
@@ -24,24 +31,22 @@ class Landing extends Component<AllProps> {
 
     state = {
         createMode: false,
-        tournamentName: '',
-        tournamentLeagueId: 637,
+        showTournament: false,
+        fetchMode: false,
+        loading: false,
         username: '',
         totalScore: 0,
-        tournamentUsers: [],
-        showTournament: false,
-        tournamentId: '',
-        lastRecordedRound: '',
-        fetchMode: false,
+        tournamentName: '',
+        tournamentLeagueId: 637,
         tournamentOddsSource: '',
-        loading: false
+        tournamentUsers: [],
     };
 
-    turnOnCreateMode = () => {
+    turnOnCreateMode = async () => {
         this.setState({createMode: true, fetchMode: false, tournamentUsers: [], tournamentName: ''});
     };
 
-    createTournament = () => {
+    createTournament = async () => {
         this.setState({loading: true});
         const newTournament = {
             tournamentName: this.state.tournamentName,
@@ -49,31 +54,21 @@ class Landing extends Component<AllProps> {
             tournamentUsers: this.state.tournamentUsers,
             tournamentOddsSource: this.state.tournamentOddsSource
         };
-        axiosInstance().post('/tournaments/newTournament', {newTournament})
-            .then((response: any) => {
-                console.log(response);
-                this.setState({createMode: false, tournamentId: response.data._id, showTournament: true});
-                setTimeout(() => {
-                    //this.getTournament(response.data._id);
-                    // scroll.scrollTo(window.innerHeight);
-                    this.setState({loading: false});
-                    var elmnt = document.getElementById("shownTournament");
-                    if (elmnt) {
-                        elmnt.scrollIntoView();
-                    }
-                }, 3000);
-            })
-            .catch((err: any) => {
-                console.log(err)
-            });
+
+        await this.props.onCreateTournament(newTournament);
+        this.setState({createMode: false, showTournament: true});
+        setTimeout(() => {
+            this.setState({loading: false});
+            var elmnt = document.getElementById("shownTournament");
+            if (elmnt) {
+                elmnt.scrollIntoView();
+            }
+        }, 3000);
     };
 
-      fetchTournaments =  async () => {
-          console.log('before fetch');
-           await this.props.onFetchTournaments();
-           console.log(this.props.tournamentsArray);
-           console.log('after fetch');
-            this.setState({fetchMode: true, createMode: false});
+    fetchTournaments = async () => {
+        await this.props.onFetchTournaments();
+        this.setState({fetchMode: true, createMode: false});
     };
 
     tournamentNameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
@@ -88,17 +83,18 @@ class Landing extends Component<AllProps> {
         this.setState({totalScore: value});
     };
 
+    //combine someway with landing addUser??
     addUser = () => {
-        console.log(this.state.totalScore);
         const newUser = {
             name: this.state.username,
             totalScore: this.state.totalScore,
             weeklyScore: 0
         };
+
         const tournamentUsersArray: any[] = [...this.state.tournamentUsers];
         tournamentUsersArray.push(newUser);
+
         this.setState({tournamentUsers: tournamentUsersArray, username: '', totalScore: 0});
-        console.log(tournamentUsersArray);
     };
 
     selectedLeagueChanged = (event: any, {value}: any) => {
@@ -131,25 +127,10 @@ class Landing extends Component<AllProps> {
         this.setState({showTournament: false, fetchMode: false, createMode: false});
     };
 
-    getTournament = (id: string) => {
+    getTournament = async (id: string) => {
         this.setState({showTournament: false});
-        axiosInstance().get('/tournaments/' + id)
-            .then(response => {
-                console.log(response);
-                this.setState({
-                    tournamentName: response.data.tournamentName,
-                    tournamentLeagueId: response.data.tournamentLeagueId,
-                    tournamentUsers: response.data.tournamentUsers,
-                    tournamentId: id,
-                    lastRecordedRound: response.data.lastRecordedRound,
-                    tournamentOddsSource: response.data.tournamentOddsSource,
-                    showTournament: true
-                });
-                console.log(response.data);
-            })
-            .catch(err => {
-                console.log(err)
-            });
+        await this.props.onGetTournament(id);
+        this.setState({showTournament: true});
     };
 
     render() {
@@ -197,11 +178,15 @@ class Landing extends Component<AllProps> {
                     </div>
                     <Element name="createForm" className="element">
                         {this.state.createMode ?
-                          <CreateTournamentForm tournamentName={this.state.tournamentName} username={this.state.username} totalScore={this.state.totalScore}
-                          handleTournamentNameChange={this.tournamentNameChanged} handleUsernameChanged={this.usernameChanged}
-                          handleTotalScoreChange={this.totalScoreChanged} handleSelectedLeagueChanged={this.selectedLeagueChanged}
-                          handleSelectedOddsSourceChange={this.selectedOddsSourceChanged} handleAddUser={this.addUser}
-                          handleTournamentCreate={this.createTournament}/>
+                            <CreateTournamentForm tournamentName={this.state.tournamentName}
+                                                  username={this.state.username} totalScore={this.state.totalScore}
+                                                  handleTournamentNameChange={this.tournamentNameChanged}
+                                                  handleUsernameChanged={this.usernameChanged}
+                                                  handleTotalScoreChange={this.totalScoreChanged}
+                                                  handleSelectedLeagueChanged={this.selectedLeagueChanged}
+                                                  handleSelectedOddsSourceChange={this.selectedOddsSourceChanged}
+                                                  handleAddUser={this.addUser}
+                                                  handleTournamentCreate={this.createTournament}/>
                             : null}
                     </Element>
                     <Element name="test1" className="element">
@@ -217,11 +202,12 @@ class Landing extends Component<AllProps> {
                     <Element name="test2" className="element" id="shownTournament">
                         {this.state.showTournament ?
                             <div className={classes.showTournament}>
-                                <Tournament tournamentName={this.state.tournamentName}
-                                            tournamentLeagueId={this.state.tournamentLeagueId}
-                                            users={this.state.tournamentUsers} tournamentId={this.state.tournamentId}
-                                            lastRecordedRound={this.state.lastRecordedRound}
-                                            oddsSource={this.state.tournamentOddsSource}
+                                <Tournament tournamentName={this.props.selectedTournamentName}
+                                            tournamentLeagueId={this.props.selectedTournamentLeagueId}
+                                            users={this.props.selectedTournamentUsers}
+                                            tournamentId={this.props.tournamentId}
+                                            lastRecordedRound={this.props.lastRecordedRound}
+                                            oddsSource={this.props.selectedTournamentOddsSource}
                                             backHome={this.backToHomePage}/>
                             </div> : null}
                     </Element>
@@ -232,13 +218,21 @@ class Landing extends Component<AllProps> {
 
 const mapStateToProps = (state: any) => {
     return {
-        tournamentsArray: state.landing.tournamentsArray
+        tournamentsArray: state.landing.tournamentsArray,
+        tournamentId: state.landing.tournamentId,
+        lastRecordedRound: state.landing.lastRecordedRound,
+        selectedTournamentName: state.landing.selectedTournamentName,
+        selectedTournamentLeagueId: state.landing.selectedTournamentLeagueId,
+        selectedTournamentUsers: state.landing.selectedTournamentUsers,
+        selectedTournamentOddsSource: state.landing.selectedTournamentOddsSource
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
         onFetchTournaments: () => dispatch(actions.fetchTournaments()),
+        onCreateTournament: (newTournament: any) => dispatch(actions.createTournament(newTournament)),
+        onGetTournament: (id: string) => dispatch(actions.getTournament(id))
     }
 };
 

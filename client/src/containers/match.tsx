@@ -12,13 +12,6 @@ interface MatchProps {
     awayTeamName: string,
     homeGoals: string,
     awayGoals: string,
-    currWinner?: string,
-    result?: string,
-    odds?: {
-        HomeWin: number,
-        AwayWin: number,
-        Tie: number
-    },
     selectedUser: string
     leagueId: number,
     round: string;
@@ -30,10 +23,11 @@ interface MatchProps {
 
 class Match extends Component<MatchProps> {
     private interval : number | undefined;
-    private oddsInterval : number | undefined;
 
     state = {
         editMode: false,
+        selectionChanged: false,
+
         homeOdd: '',
         tieOdd: '',
         awayOdd: '',
@@ -43,7 +37,6 @@ class Match extends Component<MatchProps> {
         userChoseHome: false,
         userChoseTie: false,
         userChoseAway: false,
-        selectionChanged: false,
         isTie: false,
         isHomeWin: false,
         isAwayWin: false,

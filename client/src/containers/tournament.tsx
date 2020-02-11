@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import axiosInstance from '../axios';
-import Match from "../components/match";
+import Match from "./match";
 import {Button, Form, Menu, Select, Responsive} from "semantic-ui-react";
 import classes from './tournament.module.css';
 import _ from 'lodash';
