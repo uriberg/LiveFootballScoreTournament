@@ -1,3 +1,6 @@
 export const ADD_TOURNAMENT = 'ADD_TOURNAMENT';
 export const SET_TOURNAMENTS = 'SET_TOURNAMENTS';
 export const GET_TOURNAMENT = 'GET_TOURNAMENT';
+
+export const GET_MATCHES = 'GET_MATCHES';
+export const SET_MATCHES = 'SET_MATCHES';

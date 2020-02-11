@@ -3,6 +3,7 @@ import {Button, Icon} from "semantic-ui-react";
 import axios from 'axios';
 import axiosInstance from '../axios';
 import classes from './match.module.css';
+import {headers} from '../constants/objects';
 
 
 interface MatchProps {
@@ -66,9 +67,6 @@ class Match extends Component<MatchProps> {
             this.updateMatchScore(+this.props.homeGoals, +this.props.awayGoals);
             this.setState({ns: false ,ft: true, goalsHomeTeam: this.props.homeGoals, goalsAwayTeam: this.props.awayGoals, isHomeWin: isHomeWin, isTie: isTie, isAwayWin: isAwayWin});
         }
-        // if (this.props.odds?.HomeWin && this.props.odds?.Tie && this.props.odds?.AwayWin) {
-        //     this.setState({editMode: false});
-        // }
     }
 
     componentWillUnmount(): void {
@@ -103,11 +101,6 @@ class Match extends Component<MatchProps> {
             this.getMatchOdds();
         }
 
-        // // @ts-ignore
-        // this.oddsInterval = setTimeout(() => {
-        //     this.submitOdds();
-        // }, 10000);
-
         // @ts-ignore
         this.interval = setInterval(() => {
             this.getMatchScore();
@@ -115,11 +108,6 @@ class Match extends Component<MatchProps> {
     };
 
     getMatchOdds = () => {
-        const headers = {
-            "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
-            "x-rapidapi-key": "caf2d8bb45msh890d53234504df6p11bfa9jsn11476be6f67b"
-        };
-
         axios.get('https://api-football-v1.p.rapidapi.com/v2/odds/fixture/' + this.props.id, {headers})
             .then(response => {
                 console.log(this.props.oddsSource);
@@ -162,10 +150,6 @@ class Match extends Component<MatchProps> {
     getMatchScore = () => {
         if (!this.state.ft) {
             console.log(this.props.homeTeamName + ' - ' + this.props.awayTeamName + ': fetching....');
-            const headers = {
-                "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
-                "x-rapidapi-key": "caf2d8bb45msh890d53234504df6p11bfa9jsn11476be6f67b"
-            };
             axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/id/' + this.props.id, {headers})
                 .then(response => {
                     //console.log(response);
@@ -200,9 +184,6 @@ class Match extends Component<MatchProps> {
                                 goalsAwayTeam: goalsAwayTeam
                             });
                         }
-
-                        // console.log('goalsHomeTeam: ' + goalsHomeTeam);
-                        //  console.log('goalsAwayTeam: ' + goalsAwayTeam);
                         this.updateMatchScore(goalsHomeTeam, goalsAwayTeam);
                     }
                 })
@@ -255,29 +236,6 @@ class Match extends Component<MatchProps> {
             this.setState({ns: false ,ft: true, goalsHomeTeam: this.props.homeGoals, goalsAwayTeam: this.props.awayGoals, isHomeWin: isHomeWin, isTie: isTie, isAwayWin: isAwayWin});
         }
     }
-
-    // componentWillUpdate(nextProps: Readonly<MatchProps>, nextState: Readonly<{}>, nextContext: any): void {
-    //     console.log('mathc upadted!! ' + this.props.selectedUser + ' ' + this.props.leagueId);
-    //     if (nextProps.selectedUser !== this.props.selectedUser || this.state.selectionChanged || nextProps.leagueId !== this.props.leagueId) {
-    //         axiosInstance().get('/matches/' + this.props.id)
-    //             .then(response => {
-    //                 console.log(response);
-    //                 let selectionHasChanged = true;
-    //                 if (nextProps.selectedUser === this.props.selectedUser){
-    //                     selectionHasChanged = false;
-    //                 }
-    //                 this.setState({
-    //                     userChoseAway: response.data.awayWinUsers.indexOf(nextProps.selectedUser) > -1,
-    //                     userChoseHome: response.data.homeWinUsers.indexOf(nextProps.selectedUser) > -1,
-    //                     userChoseTie: response.data.tieUsers.indexOf(nextProps.selectedUser) > -1,
-    //                     selectionChanged: selectionHasChanged
-    //                 });
-    //             })
-    //             .catch(err => {
-    //                 console.log('Error: ' + err)
-    //             });
-    //     }
-    // }
 
     toggleEditMode = () => {
         const editMode = this.state.editMode;
@@ -454,9 +412,6 @@ class Match extends Component<MatchProps> {
 
 
     render() {
-        // @ts-ignore
-        // @ts-ignore
-        // @ts-ignore
         return (
             <div className={classes.matchContainer}>
                     <Button onClick={this.pushUserToHomeWin} basic color={
@@ -504,10 +459,6 @@ class Match extends Component<MatchProps> {
                     <Button onClick={this.toggleEditMode} icon>
                         <Icon name={this.state.editMode ? 'check' : 'edit'}/>
                     </Button>
-                    {/*<Button onClick={this.submitOdds}>Submit</Button>*/}
-                {/*{!this.state.ns ?*/}
-                {/*    <div>{this.state.goalsHomeTeam} - {this.state.goalsAwayTeam}</div>*/}
-                {/*     : null}*/}
             </div>
         );
     }

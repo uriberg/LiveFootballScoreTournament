@@ -1,27 +1,13 @@
 import React, {Component} from 'react';
 import axiosInstance from '../axios';
-import {Button, Form, Card, Image, Icon} from "semantic-ui-react";
+import {Button, Card, Image, Icon} from "semantic-ui-react";
 import Tournament from "./tournament";
 import classes from './landing.module.css';
 import {Link, Element} from 'react-scroll'
 import Spinner from '../components/UI/Spinner';
 import {connect} from 'react-redux';
 import * as actions from '../store/actions/index';
-
-const options = [
-    {key: 'il', text: 'Israeli Premier League', value: 'Israeli Premier League', flag: 'il'},
-    {key: 'gb eng', text: 'Premier League', value: 'Premier League', flag: 'gb eng'},
-    {key: 'es', text: 'La Liga', value: 'La Liga', flag: 'es'},
-    {key: 'it', text: 'Serie A', value: 'Serie A', flag: 'it'},
-    {key: 'de', text: 'Bundesliga', value: 'Bundesliga', flag: 'de'},
-    {key: 'fr', text: 'Ligue 1', value: 'Ligue 1', flag: 'fr'}
-];
-
-const oddsFetchingOptions = [
-    {key: '365', text: 'Bet365', value: 'Bet365'},
-    {key: 'Bwin', text: 'Bwin', value: 'Bwin'},
-    {key: 'manual', text: 'Manual', value: 'Manual'}
-];
+import CreateTournamentForm from '../components/createTournamentForm';
 
 interface PropsFromDispatch {
     onFetchTournaments: () => void
@@ -33,7 +19,6 @@ interface PropsFromState {
 
 type AllProps = PropsFromState
     & PropsFromDispatch;
-
 
 class Landing extends Component<AllProps> {
 
@@ -58,9 +43,6 @@ class Landing extends Component<AllProps> {
 
     createTournament = () => {
         this.setState({loading: true});
-        console.log('tournamentName: ', this.state.tournamentName);
-        console.log('leagueId: ', this.state.tournamentLeagueId);
-        console.log('tournamentUsers: ', this.state.tournamentUsers);
         const newTournament = {
             tournamentName: this.state.tournamentName,
             tournamentLeagueId: this.state.tournamentLeagueId,
@@ -103,7 +85,6 @@ class Landing extends Component<AllProps> {
     };
 
     totalScoreChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
-        console.log(value);
         this.setState({totalScore: value});
     };
 
@@ -121,7 +102,6 @@ class Landing extends Component<AllProps> {
     };
 
     selectedLeagueChanged = (event: any, {value}: any) => {
-        console.log(value);
         if (value === 'Israeli Premier League') {
             this.setState({tournamentLeagueId: 637});
         } else if (value === 'Premier League') {
@@ -138,7 +118,6 @@ class Landing extends Component<AllProps> {
     };
 
     selectedOddsSourceChanged = (event: any, {value}: any) => {
-        console.log(value);
         if (value === 'Bet365') {
             this.setState({tournamentOddsSource: 'Bet365'});
         } else if (value === 'Bwin') {
@@ -171,7 +150,6 @@ class Landing extends Component<AllProps> {
             .catch(err => {
                 console.log(err)
             });
-        //console.log(event.target._id);
     };
 
     render() {
@@ -185,7 +163,6 @@ class Landing extends Component<AllProps> {
                         <Image
                             src='https://images.unsplash.com/photo-1552667466-07770ae110d0?ixlib=rb-1.2.1&dpr=1&auto=format&fit=crop&w=416&h=312&q=60'
                             wrapped ui={false}/>
-
                         <Card.Content>
                             <Card.Header style={{textAlign: 'center'}}>{tournament.tournamentName}</Card.Header>
                         </Card.Content>
@@ -204,7 +181,6 @@ class Landing extends Component<AllProps> {
         return (
             this.state.loading ? <div className={classes.loadingWrapper}><Spinner/></div> :
                 <div className={classes.container}>
-
                     <div className={classes.mainButtons}>
                         <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
                               offset={0}
@@ -221,54 +197,11 @@ class Landing extends Component<AllProps> {
                     </div>
                     <Element name="createForm" className="element">
                         {this.state.createMode ?
-                            <Form className={classes.createFormStyle}>
-                                <Form.Field>
-                                    <label>Tournament's name</label>
-                                    <input placeholder='name' value={this.state.tournamentName}
-                                           onChange={this.tournamentNameChanged}/>
-                                </Form.Field>
-                                <Form.Field>
-                                    <Form.Select
-                                        fluid
-                                        label='League'
-                                        options={options}
-                                        placeholder='League'
-                                        onChange={this.selectedLeagueChanged}
-                                    />
-                                </Form.Field>
-                                <Form.Field>
-                                    <Form.Select
-                                        fluid
-                                        label='Odds source'
-                                        options={oddsFetchingOptions}
-                                        placeholder='Source'
-                                        onChange={this.selectedOddsSourceChanged}
-                                    />
-                                </Form.Field>
-                                <div className={classes.addUsersTitle}>Add Users</div>
-                                <br/>
-                                <Form>
-                                    <Form.Field>
-                                        <label>Username</label>
-                                        <input placeholder='name' value={this.state.username}
-                                               onChange={this.usernameChanged}/>
-                                    </Form.Field>
-                                    <Form.Field>
-                                        <label>Initial score</label>
-                                        <input placeholder='score' value={this.state.totalScore}
-                                               onChange={this.totalScoreChanged}/>
-                                    </Form.Field>
-                                    <Button type='submit' onClick={this.addUser}>Add User</Button>
-                                </Form>
-                                <div className={classes.createTournamentButton}>
-                                    <Link activeClass="active" to="test2" spy={true} smooth="easeInOutQuart"
-                                          offset={0}
-                                          duration={800}>
-                                        <Button type='submit' onClick={this.createTournament} style={{width: '100%'}}>Create
-                                            Tournament</Button>
-                                    </Link>
-                                </div>
-                            </Form>
+                          <CreateTournamentForm tournamentName={this.state.tournamentName} username={this.state.username} totalScore={this.state.totalScore}
+                          handleTournamentNameChange={this.tournamentNameChanged} handleUsernameChanged={this.usernameChanged}
+                          handleTotalScoreChange={this.totalScoreChanged} handleSelectedLeagueChanged={this.selectedLeagueChanged}
+                          handleSelectedOddsSourceChange={this.selectedOddsSourceChanged} handleAddUser={this.addUser}
+                          handleTournamentCreate={this.createTournament}/>
                             : null}
                     </Element>
                     <Element name="test1" className="element">
@@ -281,7 +214,6 @@ class Landing extends Component<AllProps> {
                             : null}
                     </Element>
 
-
                     <Element name="test2" className="element" id="shownTournament">
                         {this.state.showTournament ?
                             <div className={classes.showTournament}>
@@ -293,8 +225,6 @@ class Landing extends Component<AllProps> {
                                             backHome={this.backToHomePage}/>
                             </div> : null}
                     </Element>
-
-
                 </div>
         );
     }

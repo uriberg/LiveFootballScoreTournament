@@ -1,2 +1,2 @@
 export {fetchTournaments} from './landing';
-export {deleteTournament} from './tournament';
+export {deleteTournament, getMatches, setMatches} from './tournament';

@@ -5,6 +5,7 @@ import App from './App';
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware, compose, combineReducers} from "redux";
 import landingReducer from "./store/reducers/landing";
+import tournamentReducer from './store/reducers/tournament';
 import thunk from 'redux-thunk';
 import * as serviceWorker from './serviceWorker';
 import 'semantic-ui-css/semantic.min.css';
@@ -13,7 +14,8 @@ import 'semantic-ui-css/semantic.min.css';
 const composeEnhancers = (window && (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
 const rootReducer = combineReducers({
-    landing: landingReducer
+    landing: landingReducer,
+    tournament: tournamentReducer
 });
 
 const store = createStore(rootReducer, composeEnhancers(

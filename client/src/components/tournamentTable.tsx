@@ -5,7 +5,7 @@ import _ from "lodash";
 
 interface User {
     name: string;
-    totalScore: number;
+    totalScore: any;
     weeklyScore: number;
 }
 
@@ -63,7 +63,7 @@ const TournamentTable = (props: TournamentTableProps) => (
             {_.map(props.usersList, ({totalScore, name, weeklyScore}) => (
                 <Table.Row key={name}>
                     <Table.Cell>{name}</Table.Cell>
-                    <Table.Cell>{totalScore.toFixed(2)}</Table.Cell>
+                    <Table.Cell>{parseFloat(totalScore).toFixed(2)}</Table.Cell>
                     <Table.Cell>{weeklyScore}</Table.Cell>
                 </Table.Row>
             ))}
