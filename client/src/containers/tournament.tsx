@@ -41,19 +41,18 @@ class Tournament extends Component<AllProps> {
 
 
     state = {
-        users: [] = [],
-        currFixtures: [],
-        selectedUser: '',
         usernameToAddName: '',
         usernameToAddScore: 0,
-        leagueId: null,
-        leagueCurrentRound: '',
-        desiredPrevRound: '',
-        showPrevMatches: false,
-        unhandledMatches: [],
         editMode: false,
         direction: 'descending',
         column: undefined,
+
+        users: [] = [],
+        currFixtures: [],
+        selectedUser: '',
+        leagueCurrentRound: '',
+        desiredPrevRound: '',
+        unhandledMatches: [],
         allMatchesExists: false
     };
 
@@ -134,6 +133,7 @@ class Tournament extends Component<AllProps> {
                     }
                 }
                 if (roundHasEnded){
+                    //redux functions for all vars
                     this.setState({
                         currFixtures: fixtures,
                         desiredPrevRound: this.state.leagueCurrentRound,
@@ -143,6 +143,7 @@ class Tournament extends Component<AllProps> {
                     this.checkDatabase(fixtures[0].round);
                 }
                 else {
+                    //redux functions for all vars
                     this.setState({
                         leagueCurrentRound: lastFixtures[0].round,
                         currFixtures: lastFixtures
@@ -450,6 +451,7 @@ class Tournament extends Component<AllProps> {
         }
     };
 
+    //pure redux
     updateUsersScore = (users: any) => {
         axiosInstance().put('/tournaments/' + this.props.tournamentId + '/updateUsersScore', {users: users})
             .then(response => {
