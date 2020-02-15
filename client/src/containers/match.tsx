@@ -259,6 +259,7 @@ class Match extends Component<MatchProps> {
         const homeOdd = {value: +this.state.homeOdd, tournamentId: this.props.tournamentId, source: this.props.oddsSource};
         const tieOdd = {value: +this.state.tieOdd, tournamentId: this.props.tournamentId, source: this.props.oddsSource};
         const awayOdd = {value: +this.state.awayOdd, tournamentId: this.props.tournamentId, source: this.props.oddsSource};
+
             axiosInstance().put('/matches/' + this.props.id + '/odds', {
                 homeOdd: homeOdd,
                 tieOdd: tieOdd,
@@ -272,6 +273,7 @@ class Match extends Component<MatchProps> {
                 });
     };
 
+    //matches redux
     pushUserToHomeWin = () => {
 
         if (this.props.selectedUser) {
@@ -317,6 +319,7 @@ class Match extends Component<MatchProps> {
             }
     };
 
+    //matches redux
     pushUserToAwayWin = () => {
         if (this.props.selectedUser) {
             console.log('selected');
@@ -340,6 +343,7 @@ class Match extends Component<MatchProps> {
                 }
                 // @ts-ignore
                 awayWinUsers.push({name: this.props.selectedUser, tournamentId: this.props.tournamentId});
+                //possible duplicate
                 axiosInstance().put('/matches/' + this.props.id + '/bet', {
                     homeWinUsers,
                     awayWinUsers,
@@ -360,6 +364,7 @@ class Match extends Component<MatchProps> {
         }
     };
 
+    //matches redux
     pushUserToTie = () => {
         if (this.props.selectedUser) {
             console.log('selected');

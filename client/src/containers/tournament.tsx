@@ -10,6 +10,8 @@ import * as actions from '../store/actions/index';
 import {User, MatchType} from '../constants/interfaces';
 import {headers} from "../constants/objects";
 import TournamentTable from "../components/tournamentTable";
+import TournamentMenu from "../components/tournamentMenu";
+import AddUserForm from "../components/addUserForm";
 
 interface PropsFromDispatch {
     onDeleteTournament: (id: string) => void,
@@ -31,7 +33,7 @@ interface TournamentProps {
     backHome: () => void
 }
 
-type AllProps  = PropsFromDispatch & TournamentProps & PropsFromState;
+type AllProps = PropsFromDispatch & TournamentProps & PropsFromState;
 
 class Tournament extends Component<AllProps> {
     private weeklyScoreinterval: number | undefined;
@@ -84,6 +86,7 @@ class Tournament extends Component<AllProps> {
         clearInterval(this.checkRoundInterval);
     }
 
+    //redux - tournament
     getCurrentRound = (leagueId: number) => {
         axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/rounds/' + leagueId + '/current', {headers})
             .then(response => {
@@ -97,6 +100,7 @@ class Tournament extends Component<AllProps> {
             .catch(err => console.log(err));
     };
 
+    //tournament redux
     getCurrRoundMatches = (currentRound: string) => {
         //  console.log(this.state.leagueCurrentRound);
         console.log('currRoundMatches');
@@ -109,6 +113,7 @@ class Tournament extends Component<AllProps> {
             .catch(err => console.log(err));
     };
 
+    //tournament redux
     verifyLastRoundHasEnded = (fixtures: any, currentRound: string) => {
         console.log(fixtures);
         let roundHasEnded = true;
@@ -123,16 +128,16 @@ class Tournament extends Component<AllProps> {
             .then(response => {
                 let lastFixtures = response.data.api.fixtures;
                 console.log(lastFixtures);
-                for (let i = 0; i < lastFixtures.length; i++){
-                    if (lastFixtures[i].statusShort !== 'FT'){
-                        if (lastFixtures[i].event_date.localeCompare(firstNewMatch) === -1){
+                for (let i = 0; i < lastFixtures.length; i++) {
+                    if (lastFixtures[i].statusShort !== 'FT') {
+                        if (lastFixtures[i].event_date.localeCompare(firstNewMatch) === -1) {
                             console.log('Round not ended! ' + lastFixtures[i]);
                             roundHasEnded = false;
                             break;
                         }
                     }
                 }
-                if (roundHasEnded){
+                if (roundHasEnded) {
                     //redux functions for all vars
                     this.setState({
                         currFixtures: fixtures,
@@ -141,8 +146,7 @@ class Tournament extends Component<AllProps> {
                         //leagueCurrentRound: 'Regular Season - 22',
                     });
                     this.checkDatabase(fixtures[0].round);
-                }
-                else {
+                } else {
                     //redux functions for all vars
                     this.setState({
                         leagueCurrentRound: lastFixtures[0].round,
@@ -151,15 +155,17 @@ class Tournament extends Component<AllProps> {
                     this.checkDatabase(lastFixtures[0].round);
                 }
             })
-            .catch(err => {console.log(err)});
+            .catch(err => {
+                console.log(err)
+            });
         // for(let i = 0; i < fixtures.length; i++){
         // }
     };
 
     getClosestNewRoundMatch = (fixtures: any) => {
         let firstEvent = fixtures[0].event_date;
-        for(let i = 1; i < fixtures.length; i++){
-            if (firstEvent.localeCompare(fixtures[i].event_date) === 1){
+        for (let i = 1; i < fixtures.length; i++) {
+            if (firstEvent.localeCompare(fixtures[i].event_date) === 1) {
                 firstEvent = fixtures[i].event_date;
             }
         }
@@ -264,6 +270,7 @@ class Tournament extends Component<AllProps> {
             });
     };
 
+    //matches redux
     loopUnhandledMatches = () => {
         console.log(this.state.unhandledMatches);
         let promises = [];
@@ -324,6 +331,7 @@ class Tournament extends Component<AllProps> {
         this.setState({unhandledMatches: []});
     };
 
+    //matches redux
     updateMatchesScore = () => {
         let unhandledMatches: MatchType [] = [...this.state.unhandledMatches];
         let promises = [];
@@ -378,7 +386,9 @@ class Tournament extends Component<AllProps> {
         axios.all(promises).then((results) => {
             this.setState({allMatchesExists: true});
         })
-            .catch(err => {console.log(err)});
+            .catch(err => {
+                console.log(err)
+            });
     };
 
 
@@ -406,7 +416,7 @@ class Tournament extends Component<AllProps> {
         axiosInstance().put('/tournaments/' + this.props.tournamentId + '/addUser', {users: users})
             .then(response => {
                 console.log(response);
-                this.setState({users: response.data.tournamentUsers});
+                this.setState({users: response.data.tournamentUsers, usernameToAddName: '', usernameToAddScore: 0});
             })
             .catch(err => {
                 console.log(err)
@@ -502,76 +512,30 @@ class Tournament extends Component<AllProps> {
             <div>
                 <div style={{display: 'flex', justifyContent: 'center'}}>
                     <Responsive {...Responsive.onlyMobile}>
-                        <Menu inverted floated={"right"}>
-                            <Menu.Item
-                                icon='home'
-                                onClick={this.props.backHome}
-                            />
-                            <Menu.Item
-                                // name='add'
-                                icon='plus user'
-                                onClick={this.toggleEditMode}
-                            />
-                            <Menu.Item
-                                // name='deleteTournament'
-                                icon='delete'
-                                onClick={this.deleteTournament}
-                            />
-                            <Menu.Menu className={classes.width25} icon='user'>
-                                <Select options={participants} onChange={this.selectedUserChanged}
-                                        placeholder="Participants"
-                                        style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>
-
-                            </Menu.Menu>
-                        </Menu>
+                        <TournamentMenu onBackHome={this.props.backHome} onToggleEditMode={this.toggleEditMode}
+                                        onDeleteTournament={this.deleteTournament}
+                                        onSelectedUserChanged={this.selectedUserChanged} participants={participants}/>
                     </Responsive>
                 </div>
 
-                <div>
+                <div className={classes.desktopMenu}>
                     <Responsive minWidth={Responsive.onlyTablet.minWidth}>
-                        <Menu inverted floated={"right"}>
-                            <Menu.Item
-                                icon='home'
-                                onClick={this.props.backHome}
-                            />
-                            <Menu.Item
-                                // name='add'
-                                icon='plus user'
-                                onClick={this.toggleEditMode}
-                            />
-                            <Menu.Item
-                                // name='deleteTournament'
-                                icon='delete'
-                                onClick={this.deleteTournament}
-                            />
-                            <Menu.Item className={classes.width25} icon='user'>
-                                <Select options={participants} onChange={this.selectedUserChanged}
-                                        placeholder="Participants"
-                                        style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>
-
-                            </Menu.Item>
-                        </Menu>
+                        <TournamentMenu onBackHome={this.props.backHome} onToggleEditMode={this.toggleEditMode}
+                                        onDeleteTournament={this.deleteTournament}
+                                        onSelectedUserChanged={this.selectedUserChanged} participants={participants}/>
                     </Responsive>
                 </div>
 
                 <div className={classes.tournamentBody}>
                     {this.state.editMode ?
-                        <Form className={classes.padding5}>
-                            <Form.Field>
-                                <label>Username</label>
-                                <input placeholder='Full name' value={this.state.usernameToAddName}
-                                       onChange={this.newUsernameChanged}/>
-                            </Form.Field>
-                            <Form.Field>
-                                <label>Initial score</label>
-                                <input placeholder='score' value={this.state.usernameToAddScore}
-                                       onChange={this.newUserScoreChanged}/>
-                            </Form.Field>
-                            <Button type='submit' onClick={this.addUser}>Submit</Button>
-                        </Form>
+                        <AddUserForm usernameToAddName={this.state.usernameToAddName}
+                                     usernameToAddScore={this.state.usernameToAddScore}
+                                     onNewUsernameChanged={this.newUsernameChanged}
+                                     onNewUserScoreChanged={this.newUserScoreChanged} onAddUser={this.addUser}/>
                         : null}
                     <div className={classes.tableWrapper}>
-                       <TournamentTable usersList={usersList} handleSort={this.handleSort} sortDirection={direction} columnToSort={this.state.column}/>
+                        <TournamentTable usersList={usersList} handleSort={this.handleSort} sortDirection={direction}
+                                         columnToSort={this.state.column}/>
                     </div>
                     <div className={classes.matchesWrapper}>
                         {this.state.currFixtures.map((match: any) =>
@@ -579,8 +543,10 @@ class Tournament extends Component<AllProps> {
                                    awayTeamName={match.awayTeam.team_name} key={match.fixture_id}
                                    selectedUser={this.state.selectedUser}
                                    leagueId={this.props.tournamentLeagueId} round={this.state.leagueCurrentRound}
-                                    oddsSource={this.props.oddsSource} tournamentId={this.props.tournamentId} isExist={this.state.allMatchesExists}
-                            homeGoals={match.goalsHomeTeam} awayGoals={match.goalsAwayTeam} isOver={match.statusShort === "FT"}/>)}
+                                   oddsSource={this.props.oddsSource} tournamentId={this.props.tournamentId}
+                                   isExist={this.state.allMatchesExists}
+                                   homeGoals={match.goalsHomeTeam} awayGoals={match.goalsAwayTeam}
+                                   isOver={match.statusShort === "FT"}/>)}
                     </div>
                 </div>
             </div>
