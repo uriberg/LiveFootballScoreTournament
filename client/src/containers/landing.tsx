@@ -7,6 +7,7 @@ import Spinner from '../components/UI/Spinner';
 import {connect} from 'react-redux';
 import * as actions from '../store/actions/index';
 import CreateTournamentForm from '../components/createTournamentForm';
+import {User} from "../constants/interfaces";
 
 interface PropsFromDispatch {
     onFetchTournaments: () => void,
@@ -20,7 +21,7 @@ interface PropsFromState {
     lastRecordedRound: string,
     selectedTournamentName: string,
     selectedTournamentLeagueId: number,
-    selectedTournamentUsers: [],
+    selectedTournamentUsers: User [],
     selectedTournamentOddsSource: string
 }
 
@@ -135,11 +136,11 @@ class Landing extends Component<AllProps> {
 
     render() {
         const tournamentsList = this.props.tournamentsArray.map((tournament: any) =>
-            <div className={classes.cardItem}>
+            <div className={classes.cardItem} key={tournament._id}>
                 <Link activeClass="active" to="test2" spy={true} smooth="easeInOutQuart"
                       offset={0}
                       duration={800}
-                      key={tournament._id} onClick={() => this.getTournament(tournament._id)}>
+                      onClick={() => this.getTournament(tournament._id)}>
                     <Card>
                         <Image
                             src='https://images.unsplash.com/photo-1552667466-07770ae110d0?ixlib=rb-1.2.1&dpr=1&auto=format&fit=crop&w=416&h=312&q=60'
@@ -204,11 +205,11 @@ class Landing extends Component<AllProps> {
                             <div className={classes.showTournament}>
                                 <Tournament tournamentName={this.props.selectedTournamentName}
                                             tournamentLeagueId={this.props.selectedTournamentLeagueId}
-                                            users={this.props.selectedTournamentUsers}
                                             tournamentId={this.props.tournamentId}
                                             lastRecordedRound={this.props.lastRecordedRound}
                                             oddsSource={this.props.selectedTournamentOddsSource}
-                                            backHome={this.backToHomePage}/>
+                                            backHome={this.backToHomePage}
+                                            initialUsers={this.props.selectedTournamentUsers}/>
                             </div> : null}
                     </Element>
                 </div>

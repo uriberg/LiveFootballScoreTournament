@@ -47,6 +47,7 @@ class Match extends Component<MatchProps> {
     };
 
     componentDidMount() {
+        console.log(this.props.isExist);
         if (this.props.isExist) {
             console.log('onLoad is exists');
           this.initiate();
