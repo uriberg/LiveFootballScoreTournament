@@ -2,14 +2,12 @@ import React, {Component} from 'react';
 import Match from "./match";
 import {Responsive} from "semantic-ui-react";
 import classes from './tournament.module.css';
-import _ from 'lodash';
 import {connect} from 'react-redux';
 import * as actions from '../store/actions/index';
-import {User, MatchType} from '../constants/interfaces';
+import {User} from '../constants/interfaces';
 import TournamentTable from "../components/tournamentTable";
 import TournamentMenu from "../components/tournamentMenu";
 import AddUserForm from "../components/addUserForm";
-import {setIntervalAndExecute} from "../utils/setIntervalAndExecute";
 
 interface PropsFromDispatch {
     onDeleteTournament: (id: string) => void,
@@ -19,7 +17,9 @@ interface PropsFromDispatch {
     getCurrentRound: (tournamentId: string, leagueId: number, users: any) => void,
     setTournamentUsers: (users: User []) => void,
     addUser: (tournamentId: string, users: User []) => void,
-    calculateWeeklyScore: (tournamentId: string) => void
+    calculateWeeklyScore: (tournamentId: string) => void,
+    onSortByUsers: (clickedColumn: any) => void,
+    onReverseUsers: () => void
 }
 
 interface PropsFromState {
@@ -56,7 +56,8 @@ class Tournament extends Component<AllProps> {
         column: undefined,
         selectedUser: '',
         leagueCurrentRound: '',
-        usersList: []
+        usersList: [],
+        userAdded: false
     };
 
     componentDidMount() {
@@ -80,7 +81,14 @@ class Tournament extends Component<AllProps> {
         //this.roundI = setIntervalAndExecute(this.props.getCurrentRound(this.props.tournamentId, this.props.tournamentLeagueId, this.props.users), 5000);
     }
 
+    componentDidUpdate(prevProps: Readonly<AllProps>, prevState: Readonly<{}>, snapshot?: any): void {
+        if (this.state.userAdded){
+            this.setState({usersList: this.props.users, userAdded: false});
+        }
+    }
+
     componentWillUnmount(): void {
+
         clearInterval(this.weeklyScoreInterval);
         clearInterval(this.currMatchesInterval);
         clearInterval(this.checkRoundInterval);
@@ -116,25 +124,28 @@ class Tournament extends Component<AllProps> {
 
         users.push(newUser);
         this.props.addUser(this.props.tournamentId, users);
-        this.setState({usernameToAddName: '', usernameToAddScore: 0, usersList: users});
+        this.setState({usernameToAddName: '', usernameToAddScore: 0, usersList: users, userAdded: true});
     };
 
     handleSort = (clickedColumn: any) => () => {
-        let users = [...this.state.usersList];
-
+        //let users = [...this.props.users];
         if (this.state.column !== clickedColumn) {
+
             this.setState({
                 column: clickedColumn,
-                usersList: _.sortBy(users, [clickedColumn]),
+                // usersList: _.sortBy(users, [clickedColumn]),
                 direction: 'ascending',
             });
+            this.props.onSortByUsers(clickedColumn);
             return
         }
 
+        this.props.onReverseUsers();
         this.setState({
-            usersList: users.reverse(),
+            // usersList: users.reverse(),
             direction: this.state.direction === 'ascending' ? 'descending' : 'ascending',
-        })
+        });
+
     };
 
     toggleEditMode = () => {
@@ -145,12 +156,13 @@ class Tournament extends Component<AllProps> {
 
 
     render() {
+        //console.log('render again');
         const participants = this.props.users.map((user: User) => ({
             key: user.name,
             value: user.name,
             text: user.name
         }));
-        const usersList: User [] = [...this.state.usersList];
+        //const usersList: User [] = [...this.props.users];
         const direction = this.state.direction;
 
         return (
@@ -179,7 +191,7 @@ class Tournament extends Component<AllProps> {
                                      onNewUserScoreChanged={this.newUserScoreChanged} onAddUser={this.addUser}/>
                         : null}
                     <div className={classes.tableWrapper}>
-                        <TournamentTable usersList={usersList} handleSort={this.handleSort} sortDirection={direction}
+                        <TournamentTable usersList={this.props.users} handleSort={this.handleSort} sortDirection={direction}
                                          columnToSort={this.state.column}/>
                     </div>
                     <div className={classes.matchesWrapper}>
@@ -187,7 +199,7 @@ class Tournament extends Component<AllProps> {
                             <Match id={match.fixture_id} homeTeamName={match.homeTeam.team_name}
                                    awayTeamName={match.awayTeam.team_name} key={match.fixture_id}
                                    selectedUser={this.state.selectedUser}
-                                   leagueId={this.props.tournamentLeagueId} round={this.state.leagueCurrentRound}
+                                   leagueId={this.props.tournamentLeagueId} round={this.props.leagueCurrentRound}
                                    oddsSource={this.props.oddsSource} tournamentId={this.props.tournamentId}
                                    isExist={this.props.allMatchesExists}
                                    homeGoals={match.goalsHomeTeam} awayGoals={match.goalsAwayTeam}
@@ -218,7 +230,9 @@ const mapDispatchToProps = (dispatch: any) => {
         getCurrentRound: (tournamentId: string, leagueId: number, users: any) => dispatch(actions.getCurrentRound(tournamentId, leagueId, users)),
         setTournamentUsers: (users: User []) => dispatch(actions.setUsers(users)),
         addUser: (tournamentId: string, users: User []) => dispatch(actions.addUser(tournamentId, users)),
-        calculateWeeklyScore: (tournamentId: string) => dispatch(actions.onCalculateWeeklyScore(tournamentId))
+        calculateWeeklyScore: (tournamentId: string) => dispatch(actions.onCalculateWeeklyScore(tournamentId)),
+        onSortByUsers: (clickedColumn: any) => dispatch(actions.sortUsers(clickedColumn)),
+        onReverseUsers: () => dispatch(actions.reverseUsers())
     }
 };
 

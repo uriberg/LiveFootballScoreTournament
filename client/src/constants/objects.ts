@@ -4,7 +4,9 @@ export const options = [
     {key: 'es', text: 'La Liga', value: 'La Liga', flag: 'es'},
     {key: 'it', text: 'Serie A', value: 'Serie A', flag: 'it'},
     {key: 'de', text: 'Bundesliga', value: 'Bundesliga', flag: 'de'},
-    {key: 'fr', text: 'Ligue 1', value: 'Ligue 1', flag: 'fr'}
+    {key: 'fr', text: 'Ligue 1', value: 'Ligue 1', flag: 'fr'},
+    {key: 'ch', text: 'Primera B', value: 'Primera B'},
+    {key: 'slov', text: 'Slovenia League', value: 'Slovenia League'}
 ];
 
 export const oddsFetchingOptions = [

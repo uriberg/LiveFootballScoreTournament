@@ -50,6 +50,7 @@ const landing = (state = initialState, action) => {
         case actionTypes.SET_TOURNAMENT_ID: return setTournamentId(state, action);
         case actionTypes.SET_CREATED_TOURNAMENT: return setCreatedTournament(state, action);
         case actionTypes.SET_CURRENT_TOURNAMENT: return setCurrentTournament(state, action);
+        case actionTypes.CLEAR_LANDING: return {...initialState};
         default:
             return state;
     }

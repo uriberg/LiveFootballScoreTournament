@@ -1,4 +1,4 @@
-import axiosInstance from "../axios";
+import axiosInstance from "../../axios";
 import axios from "axios";
 
 export const setCurrentDatabase = async (currFixtures: any) => {
@@ -26,7 +26,7 @@ export const setCurrentDatabase = async (currFixtures: any) => {
             leagueId: leagueId
         }));
     }
-   await axios.all(promises).then((results) => {
+   await axios.all(promises).then(() => {
         console.log('finish all Axios in setCurrent Database');
         //this.setState({allMatchesExists: true});
     })

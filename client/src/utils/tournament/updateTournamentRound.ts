@@ -8,5 +8,6 @@ export const updateTournamentRound = (users: any) => {
         // @ts-ignore
         updatedScore[i].weeklyScore = 0;
     }
+    console.log(updatedScore);
     return updatedScore;
 };

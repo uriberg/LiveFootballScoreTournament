@@ -1,5 +1,6 @@
 import * as actionTypes from '../actions/actionsTypes';
 import {updateObject} from "../../shared/utility";
+import _ from 'lodash';
 
 const initialState = {
     tournamentLeagueId: null,
@@ -15,7 +16,7 @@ const initialState = {
 
 
 const setMatches = (state, action) => {
-    console.log('set matches in reducer');
+    //console.log('set matches in reducer');
     return updateObject(state, {currMatches: action.currMatches});
 };
 
@@ -35,6 +36,18 @@ const setUsers = (state, action) => {
     return updateObject(state, {users: action.users});
 };
 
+const reverseUsers = (state) => {
+    let reversedUsers = [...state.users];
+    reversedUsers.reverse();
+    return updateObject(state, {users: reversedUsers});
+};
+
+const sortByUsers = (state, action) => {
+    let copiedUsers = [...state.users];
+    const sortedUsers =  _.sortBy(copiedUsers, [action.clickedColumn]);
+    return updateObject(state, {users: sortedUsers});
+};
+
 const tournament = (state = initialState, action) => {
     switch (action.type) {
         case actionTypes.GET_MATCHES: return setMatches(state, action);
@@ -43,6 +56,9 @@ const tournament = (state = initialState, action) => {
         case actionTypes.SET_ALL_MATCHES_EXISTS: return setAllMatchesExists(state, action);
         case actionTypes.SET_UNHANDLED_MATCHES: return setUnhandledMatches(state, action);
         case actionTypes.SET_USERS: return setUsers(state, action);
+        case actionTypes.REVERSE_USERS: return reverseUsers(state);
+        case actionTypes.SORT_BY_USERS: return sortByUsers(state, action);
+        case actionTypes.CLEAR_TOURNAMENT: return {...initialState};
         default:
             return state;
     }

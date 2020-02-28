@@ -1,11 +1,11 @@
-import {MatchType} from "../constants/interfaces";
-import axiosInstance from "../axios";
+import {MatchType} from "../../constants/interfaces";
+import axiosInstance from "../../axios";
 import axios from "axios";
 
 export  const updateMatchesScore = (matchesToHandles: any) => {
     let unhandledMatches: MatchType [] = [...matchesToHandles];
     let promises = [];
-    console.log(unhandledMatches);
+   // console.log(unhandledMatches);
     for (let i = 0; i < unhandledMatches.length; i++) {
         // @ts-ignore
         let matchId = unhandledMatches[i].fixture_id;

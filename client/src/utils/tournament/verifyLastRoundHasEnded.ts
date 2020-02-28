@@ -1,32 +1,32 @@
 import axios from "axios";
-import {headers} from "../constants/objects";
+import {headers} from "../../constants/objects";
 
 export const  verifyLastRoundHasEnded = async (fixtures: any, currentRound: string, leagueId: number) => {
-    console.log(fixtures);
+  //  console.log(fixtures);
     let roundHasEnded = true;
     let desiredPrevRound = getDesiredPrevRound(currentRound);
     let firstNewMatch = getClosestNewRoundMatch(fixtures);
     let lastFixtures =  null;
-    console.log(desiredPrevRound);
-    console.log(firstNewMatch);
+    //console.log(desiredPrevRound);
+    //console.log(firstNewMatch);
     //  console.log(this.state.leagueCurrentRound);
-    console.log('currRoundMatches');
+    //console.log('currRoundMatches');
     //console.log(this.state.leagueCurrentRound);
    await axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/league/' + leagueId + '/' + desiredPrevRound, {headers})
         .then(async response => {
             lastFixtures = response.data.api.fixtures;
-            console.log(lastFixtures);
+            //console.log(lastFixtures);
             for (let i = 0; i < lastFixtures.length; i++) {
                 if (lastFixtures[i].statusShort !== 'FT') {
                     if (lastFixtures[i].event_date.localeCompare(firstNewMatch) === -1) {
-                        console.log('Round not ended! ' + lastFixtures[i]);
+                       // console.log('Round not ended! ' + lastFixtures[i]);
                         roundHasEnded = false;
                         break;
                     }
                 }
             }
         })
-        .catch(error => {console.log(error)})
+        .catch(error => {console.log(error)});
     if (roundHasEnded){
         return fixtures;
     } else {
@@ -44,11 +44,10 @@ const getClosestNewRoundMatch = (fixtures: any) =>  {
     return firstEvent;
 };
 
-const getDesiredPrevRound = (currentRound: string) => {
+export const getDesiredPrevRound = (currentRound: string) => {
     //let currentPrevRound = this.state.desiredPrevRound;
     let currentPrevRound = currentRound;
     let currentPrevRoundNumber = '';
-    let newPrevRoundNumber = '';
     let firstNumberIndex = -1;
     for (let i = 0; i < currentPrevRound.length; i++) {
 
@@ -57,15 +56,15 @@ const getDesiredPrevRound = (currentRound: string) => {
                 firstNumberIndex = i;
             } else {
             }
-            console.log(currentPrevRound.charAt(i));
+           //console.log(currentPrevRound.charAt(i));
             currentPrevRoundNumber = currentPrevRoundNumber + currentPrevRound.charAt(i);
-            console.log(currentPrevRoundNumber);
+            //console.log(currentPrevRoundNumber);
         }
     }
-    newPrevRoundNumber = +(currentPrevRoundNumber) - 1 + '';
-    console.log(newPrevRoundNumber);
+    const newPrevRoundNumber = +(currentPrevRoundNumber) - 1 + '';
+    //console.log(newPrevRoundNumber);
     const newDesiredPrevRound = currentRound.substring(0, firstNumberIndex) + newPrevRoundNumber;
-    console.log(newDesiredPrevRound);
+    //console.log(newDesiredPrevRound);
     //this.setState({desiredPrevRound: newDesiredPrevRound});
     return newDesiredPrevRound;
 };

@@ -1,5 +1,5 @@
 import axios from "axios";
-import {headers} from "../constants/objects";
+import {headers} from "../../constants/objects";
 
 export const loopUnhandledMatches = (unhandledMatches: any) => {
     console.log(unhandledMatches);
@@ -19,4 +19,4 @@ export const loopUnhandledMatches = (unhandledMatches: any) => {
         }
         return manipulatedResults;
     });
-}
+};

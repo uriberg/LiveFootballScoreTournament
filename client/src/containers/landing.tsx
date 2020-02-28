@@ -12,7 +12,8 @@ import {User} from "../constants/interfaces";
 interface PropsFromDispatch {
     onFetchTournaments: () => void,
     onCreateTournament: (newTournament: any) => void,
-    onGetTournament: (id: string) => void
+    onGetTournament: (id: string) => void,
+    onClearStore: () => void
 }
 
 interface PropsFromState {
@@ -68,8 +69,8 @@ class Landing extends Component<AllProps> {
     };
 
     fetchTournaments = async () => {
-        await this.props.onFetchTournaments();
         this.setState({fetchMode: true, createMode: false});
+        await this.props.onFetchTournaments();
     };
 
     tournamentNameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
@@ -112,6 +113,12 @@ class Landing extends Component<AllProps> {
         } else if (value === 'Ligue 1') {
             this.setState({tournamentLeagueId: 525});
         }
+        else if (value === 'Primera B') {
+            this.setState({tournamentLeagueId: 1369});
+        }
+        else if (value === 'Slovenia League'){
+            this.setState({tournamentLeagueId: 609});
+        }
     };
 
     selectedOddsSourceChanged = (event: any, {value}: any) => {
@@ -126,10 +133,12 @@ class Landing extends Component<AllProps> {
 
     backToHomePage = () => {
         this.setState({showTournament: false, fetchMode: false, createMode: false});
+        this.props.onClearStore();
     };
 
     getTournament = async (id: string) => {
         this.setState({showTournament: false});
+        console.log(id);
         await this.props.onGetTournament(id);
         this.setState({showTournament: true});
     };
@@ -233,7 +242,8 @@ const mapDispatchToProps = (dispatch: any) => {
     return {
         onFetchTournaments: () => dispatch(actions.fetchTournaments()),
         onCreateTournament: (newTournament: any) => dispatch(actions.createTournament(newTournament)),
-        onGetTournament: (id: string) => dispatch(actions.getTournament(id))
+        onGetTournament: (id: string) => dispatch(actions.getTournament(id)),
+        onClearStore: () => dispatch(actions.clearStore())
     }
 };
 

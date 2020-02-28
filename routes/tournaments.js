@@ -112,7 +112,7 @@ router.route('/:tournamentId/updateCurrentRound').put((req, res) => {
     Tournament.findByIdAndUpdate(req.params.tournamentId)
         .then(tournament => {
             tournament.lastRecordedRound = req.body.newRecordedRound;
-            tournament.tournamentUsers = req.body.updatedTotalScore;
+            //tournament.tournamentUsers = req.body.updatedTotalScore;
            // console.log(tournament);
             tournament.save();
             res.json(tournament);

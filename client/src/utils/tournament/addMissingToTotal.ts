@@ -1,4 +1,4 @@
-import {MatchType, User} from "../constants/interfaces";
+import {MatchType, User} from "../../constants/interfaces";
 
 export const  addMissingToTotal = (matchesToHandle: any, stateUsers: any) => {
     let unhandledMatches: MatchType [] = [...matchesToHandle];

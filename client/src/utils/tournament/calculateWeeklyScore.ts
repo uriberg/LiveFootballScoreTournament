@@ -1,4 +1,4 @@
-import {MatchType, User} from "../constants/interfaces";
+import {MatchType, User} from "../../constants/interfaces";
 
 export const calculateWeeklyScore = (stateUsers: any, stateCurrMatches: any, tournamentId: string) => {
     let users: User [] = [...stateUsers];
