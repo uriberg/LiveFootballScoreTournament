@@ -1,5 +1,5 @@
 .container {
-    background-image: url('../images/sport_2-wallpaper-1920x1200.jpg');
+    background-image: url('../images/sport_2-wallpaper-1920x1200.jpg') !important;
     background-repeat: no-repeat;
     background-size: cover;
     width: 100vw;

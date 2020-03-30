@@ -50,6 +50,7 @@ class Landing extends Component<AllProps> {
 
     createTournament = async () => {
         this.setState({loading: true});
+        console.log(this.state.tournamentLeagueId);
         const newTournament = {
             tournamentName: this.state.tournamentName,
             tournamentLeagueId: this.state.tournamentLeagueId,
@@ -100,6 +101,7 @@ class Landing extends Component<AllProps> {
     };
 
     selectedLeagueChanged = (event: any, {value}: any) => {
+        console.log(value);
         if (value === 'Israeli Premier League') {
             this.setState({tournamentLeagueId: 637});
         } else if (value === 'Premier League') {
@@ -113,11 +115,8 @@ class Landing extends Component<AllProps> {
         } else if (value === 'Ligue 1') {
             this.setState({tournamentLeagueId: 525});
         }
-        else if (value === 'Primera B') {
-            this.setState({tournamentLeagueId: 1369});
-        }
-        else if (value === 'Slovenia League'){
-            this.setState({tournamentLeagueId: 609});
+        else if (value === 'Belarus Premier League') {
+            this.setState({tournamentLeagueId: 1383});
         }
     };
 
