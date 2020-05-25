@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Card, Image, Icon} from "semantic-ui-react";
+import {Card, Image, Icon} from "semantic-ui-react";
 import Tournament from "./tournament";
 import classes from './landing.module.css';
 import {Link, Element} from 'react-scroll'
@@ -8,6 +8,7 @@ import {connect} from 'react-redux';
 import * as actions from '../store/actions/index';
 import CreateTournamentForm from '../components/createTournamentForm';
 import {User} from "../constants/interfaces";
+import Button from "../components/button";
 
 interface PropsFromDispatch {
     onFetchTournaments: () => void,
@@ -174,14 +175,16 @@ class Landing extends Component<AllProps> {
                     <div className={classes.mainButtons}>
                         <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
                               offset={0}
-                              duration={800}>
-                            <Button onClick={this.fetchTournaments}>Fetch existing tournaments</Button>
+                              duration={800}
+                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                            <Button onHandleClick={this.fetchTournaments} name={"Fetch existing tournaments"}/>
                         </Link>
 
                         <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
                               offset={0}
-                              duration={800}>
-                            <Button onClick={this.turnOnCreateMode}>Create New Tournament</Button>
+                              duration={800}
+                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                            <Button onHandleClick={this.turnOnCreateMode} name={"Create New Tournament"}/>
                         </Link>
 
                     </div>

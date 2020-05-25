@@ -1,0 +1,15 @@
+
+.btn {
+    color: #fff;
+    background-color: #55c57a;
+    padding: 1rem 1.5rem;
+    display: inline-block;/*fot the padding to be applied */
+    transition: all .2s;
+    border-radius: 2rem;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+
+
