@@ -1,5 +1,5 @@
 .container {
-    background-image: url('../images/sport_2-wallpaper-1920x1200.jpg');
+    background-image: url('../images/LargeDark.webp');
     background-repeat: no-repeat;
     background-size: cover;
     width: 100vw;
@@ -56,6 +56,11 @@
 }
 
 @media (max-width : 775px) {
+
+    .container {
+        background-image: url('../images/mobileDark.webp');
+    }
+
     .cardsWrapper {
         font-size: 12px;
     }

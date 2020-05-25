@@ -113,11 +113,8 @@ class Landing extends Component<AllProps> {
         } else if (value === 'Ligue 1') {
             this.setState({tournamentLeagueId: 525});
         }
-        else if (value === 'Primera B') {
-            this.setState({tournamentLeagueId: 1369});
-        }
-        else if (value === 'Slovenia League'){
-            this.setState({tournamentLeagueId: 609});
+        else if (value === 'Belarus Premier League') {
+            this.setState({tournamentLeagueId: 1383});
         }
     };
 
