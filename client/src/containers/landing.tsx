@@ -50,6 +50,7 @@ class Landing extends Component<AllProps> {
 
     createTournament = async () => {
         this.setState({loading: true});
+        console.log(this.state.tournamentLeagueId);
         const newTournament = {
             tournamentName: this.state.tournamentName,
             tournamentLeagueId: this.state.tournamentLeagueId,
@@ -100,6 +101,7 @@ class Landing extends Component<AllProps> {
     };
 
     selectedLeagueChanged = (event: any, {value}: any) => {
+        console.log(value);
         if (value === 'Israeli Premier League') {
             this.setState({tournamentLeagueId: 637});
         } else if (value === 'Premier League') {
