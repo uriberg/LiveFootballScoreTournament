@@ -7,6 +7,8 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+app.enable('trust proxy');
+
 app.use (function (req, res, next) {
     if (req.secure) {
         // request was via https, so do no special handling
