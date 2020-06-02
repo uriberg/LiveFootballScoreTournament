@@ -9,6 +9,7 @@ import * as actions from '../store/actions/index';
 import CreateTournamentForm from '../components/createTournamentForm';
 import {User} from "../constants/interfaces";
 import Button from "../components/button";
+import SocialButton from '../components/socialButton';
 
 interface PropsFromDispatch {
     onFetchTournaments: () => void,
@@ -43,7 +44,15 @@ class Landing extends Component<AllProps> {
         tournamentLeagueId: 637,
         tournamentOddsSource: '',
         tournamentUsers: [],
+
+
+        logged: false,
+        user: {},
+        currentProvider: ''
     };
+
+    nodes = {};
+
 
     turnOnCreateMode = async () => {
         this.setState({createMode: true, fetchMode: false, tournamentUsers: [], tournamentName: ''});
@@ -115,8 +124,7 @@ class Landing extends Component<AllProps> {
             this.setState({tournamentLeagueId: 754});
         } else if (value === 'Ligue 1') {
             this.setState({tournamentLeagueId: 525});
-        }
-        else if (value === 'Belarus Premier League') {
+        } else if (value === 'Belarus Premier League') {
             this.setState({tournamentLeagueId: 1383});
         }
     };
@@ -141,6 +149,54 @@ class Landing extends Component<AllProps> {
         console.log(id);
         await this.props.onGetTournament(id);
         this.setState({showTournament: true});
+    };
+
+    handleSocialLogin = (user: any, err: any) => {
+        console.log(user);
+
+        this.setState({
+            logged: true,
+            currentProvider: user._provider,
+            user
+        });
+    };
+
+    handleSocialLoginFailure = (err: any) => {
+        console.error(err);
+    };
+
+    onLogoutSuccess = () => {
+        this.setState({
+            logged: false,
+            currentProvider: '',
+            user: {}
+        });
+    };
+
+    onLogoutFailure = (err: any) => {
+        console.error(err);
+    };
+
+    logout = () => {
+        const {logged, currentProvider} = this.state;
+        console.log(this.nodes);
+
+        if (logged && currentProvider) {
+            (this.nodes as any)[currentProvider].props.triggerLogout();
+        }
+    };
+
+    setNodeRef (provider: any, node: any) {
+        console.log(node);
+        console.log(provider);
+        if (node) {
+            console.log(node);
+            console.log(this.nodes);
+            (this.nodes as any)[ provider ] = node;
+            // this.setState({
+            //     nodes: {...this.state.nodes, [provider]: node}
+            // });
+        }
     };
 
     render() {
@@ -179,6 +235,37 @@ class Landing extends Component<AllProps> {
                               className={[classes.link, classes.btnMarginSmall].join(' ')}>
                             <Button onHandleClick={this.fetchTournaments} name={"Fetch existing tournaments"}/>
                         </Link>
+
+                        <div>
+                            {!this.state.logged ? <div>
+                                <SocialButton
+                                    provider='facebook'
+                                    appId='2689386027831977'
+                                    onLoginSuccess={this.handleSocialLogin}
+                                    onLoginFailure={this.handleSocialLoginFailure}
+                                    getInstance={this.setNodeRef.bind(this, 'facebook')}
+                                    onLogoutFailure={this.onLogoutFailure}
+                                    onLogoutSuccess={this.onLogoutSuccess}
+                                    autoLogin={true}
+                                >
+                                    <button>Login with Facebook</button>
+                                </SocialButton>
+
+                                <SocialButton
+                                    provider='google'
+                                    appId='734310093470-6q1lsdl5epaefrqgt9mq6nrkvjth44ke.apps.googleusercontent.com'
+                                    onLoginSuccess={this.handleSocialLogin}
+                                    onLoginFailure={this.handleSocialLoginFailure}
+                                    getInstance={this.setNodeRef.bind(this, 'google')}
+                                    onLogoutFailure={this.onLogoutFailure}
+                                    onLogoutSuccess={this.onLogoutSuccess}
+                                    autoLogin={true}
+                                >
+                                    <button>Login with Google</button>
+                                </SocialButton>
+                            </div> :
+                            <button onClick={this.logout}>Logout from {this.state.currentProvider} </button>}
+                        </div>
 
                         <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
                               offset={0}
