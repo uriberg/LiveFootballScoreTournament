@@ -236,36 +236,36 @@ class Landing extends Component<AllProps> {
                             <Button onHandleClick={this.fetchTournaments} name={"Fetch existing tournaments"}/>
                         </Link>
 
-                        <div>
-                            {!this.state.logged ? <div>
-                                <SocialButton
-                                    provider='facebook'
-                                    appId='2689386027831977'
-                                    onLoginSuccess={this.handleSocialLogin}
-                                    onLoginFailure={this.handleSocialLoginFailure}
-                                    getInstance={this.setNodeRef.bind(this, 'facebook')}
-                                    onLogoutFailure={this.onLogoutFailure}
-                                    onLogoutSuccess={this.onLogoutSuccess}
-                                    autoLogin={true}
-                                >
-                                    <button>Login with Facebook</button>
-                                </SocialButton>
+                        {/*<div>*/}
+                        {/*    {!this.state.logged ? <div>*/}
+                        {/*        <SocialButton*/}
+                        {/*            provider='facebook'*/}
+                        {/*            appId='2689386027831977'*/}
+                        {/*            onLoginSuccess={this.handleSocialLogin}*/}
+                        {/*            onLoginFailure={this.handleSocialLoginFailure}*/}
+                        {/*            getInstance={this.setNodeRef.bind(this, 'facebook')}*/}
+                        {/*            onLogoutFailure={this.onLogoutFailure}*/}
+                        {/*            onLogoutSuccess={this.onLogoutSuccess}*/}
+                        {/*            autoLogin={true}*/}
+                        {/*        >*/}
+                        {/*            <button>Login with Facebook</button>*/}
+                        {/*        </SocialButton>*/}
 
-                                <SocialButton
-                                    provider='google'
-                                    appId='734310093470-6q1lsdl5epaefrqgt9mq6nrkvjth44ke.apps.googleusercontent.com'
-                                    onLoginSuccess={this.handleSocialLogin}
-                                    onLoginFailure={this.handleSocialLoginFailure}
-                                    getInstance={this.setNodeRef.bind(this, 'google')}
-                                    onLogoutFailure={this.onLogoutFailure}
-                                    onLogoutSuccess={this.onLogoutSuccess}
-                                    autoLogin={true}
-                                >
-                                    <button>Login with Google</button>
-                                </SocialButton>
-                            </div> :
-                            <button onClick={this.logout}>Logout from {this.state.currentProvider} </button>}
-                        </div>
+                        {/*        <SocialButton*/}
+                        {/*            provider='google'*/}
+                        {/*            appId='734310093470-6q1lsdl5epaefrqgt9mq6nrkvjth44ke.apps.googleusercontent.com'*/}
+                        {/*            onLoginSuccess={this.handleSocialLogin}*/}
+                        {/*            onLoginFailure={this.handleSocialLoginFailure}*/}
+                        {/*            getInstance={this.setNodeRef.bind(this, 'google')}*/}
+                        {/*            onLogoutFailure={this.onLogoutFailure}*/}
+                        {/*            onLogoutSuccess={this.onLogoutSuccess}*/}
+                        {/*            autoLogin={true}*/}
+                        {/*        >*/}
+                        {/*            <button>Login with Google</button>*/}
+                        {/*        </SocialButton>*/}
+                        {/*    </div> :*/}
+                        {/*    <button onClick={this.logout}>Logout from {this.state.currentProvider} </button>}*/}
+                        {/*</div>*/}
 
                         <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
                               offset={0}
