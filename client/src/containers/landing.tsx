@@ -269,7 +269,7 @@ class Landing extends Component<AllProps> {
 
                         <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
                               offset={0}
-                              duration={799}
+                              duration={800}
                               className={[classes.link, classes.btnMarginSmall].join(' ')}>
                             <Button onHandleClick={this.turnOnCreateMode} name={"Create New Tournament"}/>
                         </Link>
