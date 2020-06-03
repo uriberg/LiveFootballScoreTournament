@@ -10,9 +10,9 @@ class SocialButton extends React.Component<socialProps> {
 
     render() {
         return (
-            <button onClick={this.props.triggerLogin} {...this.props}>
-                { this.props.children }
-            </button>
+            <div onClick={this.props.triggerLogin} {...this.props}>
+                {this.props.children}
+            </div>
         );
     }
 }

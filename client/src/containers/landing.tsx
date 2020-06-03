@@ -10,6 +10,7 @@ import CreateTournamentForm from '../components/createTournamentForm';
 import {User} from "../constants/interfaces";
 import Button from "../components/button";
 import SocialButton from '../components/socialButton';
+import {FacebookLoginButton, GoogleLoginButton} from 'react-social-login-buttons';
 
 interface PropsFromDispatch {
     onFetchTournaments: () => void,
@@ -248,7 +249,7 @@ class Landing extends Component<AllProps> {
                                     onLogoutSuccess={this.onLogoutSuccess}
                                     autoLogin={true}
                                 >
-                                    <button>Login with Facebook</button>
+                                    <FacebookLoginButton/>
                                 </SocialButton>
 
                                 <SocialButton
@@ -261,10 +262,10 @@ class Landing extends Component<AllProps> {
                                     onLogoutSuccess={this.onLogoutSuccess}
                                     autoLogin={true}
                                 >
-                                    <button>Login with Google</button>
+                                   <GoogleLoginButton/>
                                 </SocialButton>
                             </div> :
-                            <button onClick={this.logout}>Logout from {this.state.currentProvider} </button>}
+                            <Button onHandleClick={this.logout} name={`Logout from ${this.state.currentProvider}`}/>}
                         </div>
 
                         <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
