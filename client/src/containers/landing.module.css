@@ -8,6 +8,10 @@
     background-position:center;
 }
 
+.loginButton {
+    border-radius: 2rem !important;
+}
+
 .mainButtons {
     display: flex;
     justify-content: center;

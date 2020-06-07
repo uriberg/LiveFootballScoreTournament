@@ -1,6 +1,37 @@
 import * as actionTypes from './actionsTypes';
 import axiosInstance from "../../axios";
 
+export const login = (name, id) => {
+    return dispatch => {
+        return axiosInstance().get('/users/' + id)
+            .then(response => {
+                console.log(response);
+                if (response.data === null){
+                    console.log('user is null');
+                    console.log(id);
+                    dispatch(addUser(name, id));
+                }
+                //dispatch(setCurrentTournament(id, response.data));
+            })
+            .catch(error => {
+                console.log(error)
+            });
+    };
+}
+
+export const addUser = (name, id) => {
+    return dispatch => {
+        return axiosInstance().post('/users/addUser', {name: name, id: id})
+            .then(response => {
+                console.log(response);
+                //dispatch(setCurrentTournament(id, response.data));
+            })
+            .catch(error => {
+                console.log(error)
+            });
+    };
+}
+
 export const setTournaments = (tournaments) => {//sync function
     return {
         type: actionTypes.SET_TOURNAMENTS,

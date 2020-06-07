@@ -16,7 +16,8 @@ interface PropsFromDispatch {
     onFetchTournaments: () => void,
     onCreateTournament: (newTournament: any) => void,
     onGetTournament: (id: string) => void,
-    onClearStore: () => void
+    onClearStore: () => void,
+    onLogin: (name: string, id: number) => void
 }
 
 interface PropsFromState {
@@ -153,13 +154,16 @@ class Landing extends Component<AllProps> {
     };
 
     handleSocialLogin = (user: any, err: any) => {
-        console.log(user);
+        console.log(user.profile.name);
+        console.log(user.profile.id);
 
         this.setState({
             logged: true,
             currentProvider: user._provider,
             user
         });
+        //action creator for adding user
+        this.props.onLogin(user.profile.name, user.profile.id);
     };
 
     handleSocialLoginFailure = (err: any) => {
@@ -237,7 +241,6 @@ class Landing extends Component<AllProps> {
                             <Button onHandleClick={this.fetchTournaments} name={"Fetch existing tournaments"}/>
                         </Link>
 
-                        <div>
                             {!this.state.logged ? <div>
                                 <SocialButton
                                     provider='facebook'
@@ -249,7 +252,7 @@ class Landing extends Component<AllProps> {
                                     onLogoutSuccess={this.onLogoutSuccess}
                                     autoLogin={true}
                                 >
-                                    <FacebookLoginButton/>
+                                    <FacebookLoginButton className={classes.loginButton}/>
                                 </SocialButton>
 
                                 <SocialButton
@@ -262,11 +265,12 @@ class Landing extends Component<AllProps> {
                                     onLogoutSuccess={this.onLogoutSuccess}
                                     autoLogin={true}
                                 >
-                                   <GoogleLoginButton/>
+                                   <GoogleLoginButton className={classes.loginButton}/>
                                 </SocialButton>
                             </div> :
-                            <Button onHandleClick={this.logout} name={`Logout from ${this.state.currentProvider}`}/>}
-                        </div>
+                                <a className={classes.link}>
+                                    <Button onHandleClick={this.logout} name={`Logout from ${this.state.currentProvider}`}/>
+                                </a>}
 
                         <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
                               offset={0}
@@ -333,7 +337,8 @@ const mapDispatchToProps = (dispatch: any) => {
         onFetchTournaments: () => dispatch(actions.fetchTournaments()),
         onCreateTournament: (newTournament: any) => dispatch(actions.createTournament(newTournament)),
         onGetTournament: (id: string) => dispatch(actions.getTournament(id)),
-        onClearStore: () => dispatch(actions.clearStore())
+        onClearStore: () => dispatch(actions.clearStore()),
+        onLogin: (name: string, id: number) => dispatch(actions.login(name, id))
     }
 };
 
