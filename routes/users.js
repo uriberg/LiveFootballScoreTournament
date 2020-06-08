@@ -27,6 +27,17 @@ router.route('/:userId').get((req, res) => {
         .catch(err => res.status(400).json('Error ' + err));
 });
 
+router.route('/tournaments/:userId').get((req, res) => {
+    console.log(req.params);
+    User.findById(req.params.userId)
+        .then(user => {
+            console.log('looking for tournaments');
+            console.log(user);
+            res.json(user.tournamentsId);
+        })
+        .catch(err => {console.log(err)});
+});
+
 router.route('/addUser').post((req, res) => {
     console.log(req.body);
     const id = req.body.id
@@ -77,6 +88,21 @@ router.route('/:userId/updateScore').put((req,res) => {
            res.json(user);
        });
 });
+
+router.route('/setCreator').put((req,res) => {
+    // console.log(req.body);
+    User.findByIdAndUpdate(req.body.userId)
+        .then(user => {
+            // console.log(user);
+            user.createdTournaments.push(req.body.tournamentId);
+            user.tournamentsId.push(req.body.tournamentId);
+            user.save();
+            res.json(user);
+        })
+        .catch(err => {console.log(err)});
+});
+
+
 //
 // router.route('/:id').delete((req, res) => {
 //     Note.findByIdAndDelete(req.params.id)

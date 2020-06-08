@@ -1,4 +1,5 @@
 export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
 export const SET_TOURNAMENTS = 'SET_TOURNAMENTS';
 export const SET_TOURNAMENT_ID = 'SET_TOURNAMENT_ID';
 export const SET_CURRENT_TOURNAMENT = 'SET_CURRENT_TOURNAMENT';

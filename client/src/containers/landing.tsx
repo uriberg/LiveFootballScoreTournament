@@ -13,11 +13,12 @@ import SocialButton from '../components/socialButton';
 import {FacebookLoginButton, GoogleLoginButton} from 'react-social-login-buttons';
 
 interface PropsFromDispatch {
-    onFetchTournaments: () => void,
-    onCreateTournament: (newTournament: any) => void,
+    onFetchTournaments: (userId: string) => void,
+    onCreateTournament: (newTournament: any, userId: string) => void,
     onGetTournament: (id: string) => void,
     onClearStore: () => void,
-    onLogin: (name: string, id: number) => void
+    onLogin: (name: string, id: number) => void,
+    onLogout: () => void
 }
 
 interface PropsFromState {
@@ -27,7 +28,9 @@ interface PropsFromState {
     selectedTournamentName: string,
     selectedTournamentLeagueId: number,
     selectedTournamentUsers: User [],
-    selectedTournamentOddsSource: string
+    selectedTournamentOddsSource: string,
+    currUserName: string,
+    currUserId: string
 }
 
 type AllProps = PropsFromState
@@ -70,7 +73,8 @@ class Landing extends Component<AllProps> {
             tournamentOddsSource: this.state.tournamentOddsSource
         };
 
-        await this.props.onCreateTournament(newTournament);
+        await this.props.onCreateTournament(newTournament, this.props.currUserId);
+        //this.props.setTournamentCreator(this.props.currUserId);
         this.setState({createMode: false, showTournament: true});
         setTimeout(() => {
             this.setState({loading: false});
@@ -83,7 +87,7 @@ class Landing extends Component<AllProps> {
 
     fetchTournaments = async () => {
         this.setState({fetchMode: true, createMode: false});
-        await this.props.onFetchTournaments();
+        await this.props.onFetchTournaments(this.props.currUserId);
     };
 
     tournamentNameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
@@ -188,6 +192,7 @@ class Landing extends Component<AllProps> {
 
         if (logged && currentProvider) {
             (this.nodes as any)[currentProvider].props.triggerLogout();
+            this.props.onLogout();
         }
     };
 
@@ -280,8 +285,9 @@ class Landing extends Component<AllProps> {
                         </Link>
 
                     </div>
-                    <Element name="createForm" className="element">
+                    <Element name="createForm">
                         {this.state.createMode ?
+                            <div className={classes.createForm}>
                             <CreateTournamentForm tournamentName={this.state.tournamentName}
                                                   username={this.state.username} totalScore={this.state.totalScore}
                                                   handleTournamentNameChange={this.tournamentNameChanged}
@@ -291,6 +297,7 @@ class Landing extends Component<AllProps> {
                                                   handleSelectedOddsSourceChange={this.selectedOddsSourceChanged}
                                                   handleAddUser={this.addUser}
                                                   handleTournamentCreate={this.createTournament}/>
+                            </div>
                             : null}
                     </Element>
                     <Element name="test1" className="element">
@@ -328,17 +335,20 @@ const mapStateToProps = (state: any) => {
         selectedTournamentName: state.landing.selectedTournamentName,
         selectedTournamentLeagueId: state.landing.selectedTournamentLeagueId,
         selectedTournamentUsers: state.landing.selectedTournamentUsers,
-        selectedTournamentOddsSource: state.landing.selectedTournamentOddsSource
+        selectedTournamentOddsSource: state.landing.selectedTournamentOddsSource,
+        currUserName: state.user.currUserName,
+        currUserId: state.user.currUserId
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        onFetchTournaments: () => dispatch(actions.fetchTournaments()),
-        onCreateTournament: (newTournament: any) => dispatch(actions.createTournament(newTournament)),
+        onFetchTournaments: (userId: string) => dispatch(actions.fetchTournaments(userId)),
+        onCreateTournament: (newTournament: any, userId: string) => dispatch(actions.createTournament(newTournament, userId)),
         onGetTournament: (id: string) => dispatch(actions.getTournament(id)),
         onClearStore: () => dispatch(actions.clearStore()),
-        onLogin: (name: string, id: number) => dispatch(actions.login(name, id))
+        onLogin: (name: string, id: number) => dispatch(actions.login(name, id)),
+        onLogout: () => dispatch(actions.logout())
     }
 };
 

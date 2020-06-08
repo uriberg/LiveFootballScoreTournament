@@ -1,36 +1,7 @@
 import * as actionTypes from './actionsTypes';
 import axiosInstance from "../../axios";
-
-export const login = (name, id) => {
-    return dispatch => {
-        return axiosInstance().get('/users/' + id)
-            .then(response => {
-                console.log(response);
-                if (response.data === null){
-                    console.log('user is null');
-                    console.log(id);
-                    dispatch(addUser(name, id));
-                }
-                //dispatch(setCurrentTournament(id, response.data));
-            })
-            .catch(error => {
-                console.log(error)
-            });
-    };
-}
-
-export const addUser = (name, id) => {
-    return dispatch => {
-        return axiosInstance().post('/users/addUser', {name: name, id: id})
-            .then(response => {
-                console.log(response);
-                //dispatch(setCurrentTournament(id, response.data));
-            })
-            .catch(error => {
-                console.log(error)
-            });
-    };
-}
+import {setTournamentCreator} from "../../utils/tournament/setTournamentCreator";
+import {getTournamentsByIds} from "../../utils/tournament/getTournamentsByIds";
 
 export const setTournaments = (tournaments) => {//sync function
     return {
@@ -84,13 +55,14 @@ export const clearLanding = () => {
     };
 };
 
-export const createTournament = (newTournament) => {
+export const createTournament = (newTournament, userId) => {
     return dispatch => {
         return axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then(response => {
                 console.log('adding tournament');
                 dispatch(setTournamentId(response.data._id));
                 dispatch(setCreatedTournament(newTournament));
+                setTournamentCreator(userId, response.data._id);
             })
             .catch(error => {
                 console.log(error)
@@ -112,12 +84,15 @@ export const getTournament = (id) => {
     };
 };
 
-export const fetchTournaments = () => {//async func
+export const fetchTournaments = (userId) => {//async func
+    console.log(userId);
     return dispatch => {//available due to redux-thunk
-        return axiosInstance().get('/tournaments')
-            .then(response => {
-                //   console.log('dispatching...');
-                dispatch(setTournaments(response.data));
+        return axiosInstance().get('/users/tournaments/' + userId)
+            .then( async response => {
+                console.log(response);
+                const tournamentsArray = await getTournamentsByIds(response.data);
+                console.log(tournamentsArray);
+                dispatch(setTournaments(tournamentsArray));
             })
             .catch(error => {
                 console.log(error);

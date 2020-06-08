@@ -43,21 +43,21 @@ const CreateTournamentForm = (props: createTournamentForm) => (
                 onChange={props.handleSelectedOddsSourceChange}
             />
         </Form.Field>
-        <div className={classes.addUsersTitle}>Add Users</div>
-        <br/>
-        <Form>
-            <Form.Field>
-                <label>Username</label>
-                <input placeholder='name' value={props.username}
-                       onChange={props.handleUsernameChanged}/>
-            </Form.Field>
-            <Form.Field>
-                <label>Initial score</label>
-                <input placeholder='score' value={props.totalScore}
-                       onChange={props.handleTotalScoreChange}/>
-            </Form.Field>
-            <Button type='submit' onClick={props.handleAddUser}>Add User</Button>
-        </Form>
+        {/*/!*<div className={classes.addUsersTitle}>Add Users</div>*!/*/}
+        {/*/!*<br/>*!/*/}
+        {/*/!*<Form>*!/*/}
+        {/*/!*    <Form.Field>*!/*/}
+        {/*/!*        <label>Username</label>*!/*/}
+        {/*/!*        <input placeholder='name' value={props.username}*!/*/}
+        {/*/!*               onChange={props.handleUsernameChanged}/>*!/*/}
+        {/*/!*    </Form.Field>*!/*/}
+        {/*/!*    <Form.Field>*!/*/}
+        {/*/!*        <label>Initial score</label>*!/*/}
+        {/*/!*        <input placeholder='score' value={props.totalScore}*!/*/}
+        {/*/!*               onChange={props.handleTotalScoreChange}/>*!/*/}
+        {/*/!*    </Form.Field>*!/*/}
+        {/*/!*    <Button type='submit' onClick={props.handleAddUser}>Add User</Button>*!/*/}
+        {/*</Form>*/}
         <div className={classes.createTournamentButton}>
             <Link activeClass="active" to="test2" spy={true} smooth="easeInOutQuart"
                   offset={0}

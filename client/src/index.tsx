@@ -7,6 +7,7 @@ import {createStore, applyMiddleware, compose, combineReducers} from "redux";
 import landingReducer from "./store/reducers/landing";
 import tournamentReducer from './store/reducers/tournament';
 import matchReducer from './store/reducers/match';
+import userReducer from './store/reducers/user';
 import thunk from 'redux-thunk';
 import * as serviceWorker from './serviceWorker';
 import 'semantic-ui-css/semantic.min.css';
@@ -17,7 +18,8 @@ const composeEnhancers = (window && (window as any).__REDUX_DEVTOOLS_EXTENSION_C
 const rootReducer = combineReducers({
     landing: landingReducer,
     tournament: tournamentReducer,
-    match: matchReducer
+    match: matchReducer,
+    user: userReducer
 });
 
 const store = createStore(rootReducer, composeEnhancers(

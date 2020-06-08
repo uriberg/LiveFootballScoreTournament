@@ -19,6 +19,17 @@ router.route('/:tournamentId').get((req, res) => {
         .catch(err => res.status(400).json('Error ' + err));
 });
 
+router.route('/Ids').put((req, res) => {
+    console.log('tournamentsListRequest');
+    console.log(req.body);
+    Tournament.find( { _id : { $in : req.body.desiredTournamentsIds } } )
+        .then(result => {
+            console.log(result);
+            res.json(result);
+        })
+        .catch(err => {console.log(err)});
+});
+
 router.route('/:tournamentId/matches/:desiredRound').get((req, res) => {
     Tournament.findById(req.params.tournamentId)
         .then(tournament => {

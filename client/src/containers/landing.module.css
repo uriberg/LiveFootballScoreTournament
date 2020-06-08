@@ -41,8 +41,15 @@
 }
 
 .createFormStyle {
-    padding: 5%;
+    width: 100%;
+}
+
+.createForm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 100vh;
+    padding: 5%;
 }
 
 .addUsersTitle {

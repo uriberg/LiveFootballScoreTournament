@@ -8,16 +8,7 @@ const initialState = {
     selectedTournamentName: '',
     selectedTournamentLeagueId: null,
     selectedTournamentUsers: [],
-    selectedTournamentOddsSource: '',
-    currUserName: '',
-    currUserId: ''
-};
-
-const login = (state, action) => {
-    return updateObject(state, {
-        currUserName: action.currUserName,
-        currUserId: action.currUserId
-    });
+    selectedTournamentOddsSource: ''
 };
 
 
@@ -55,8 +46,6 @@ const setCurrentTournament = (state, action) => {
 
 const landing = (state = initialState, action) => {
     switch (action.type) {
-        case actionTypes.LOGIN:
-            return login(state, action);
         case actionTypes.SET_TOURNAMENTS:
             return setTournaments(state, action);
         case actionTypes.SET_TOURNAMENT_ID:

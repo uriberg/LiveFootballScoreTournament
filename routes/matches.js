@@ -150,13 +150,16 @@ router.route('/:matchId/bet').put((req, res) => {
 });
 
 router.route('/:matchId/result').put((req, res) => {
+    console.log(req.params);
     Matches.findByIdAndUpdate(req.params.matchId)
         .then(match => {
+            console.log(match);
             match.goalsHomeTeam = req.body.goalsHomeTeam;
             match.goalsAwayTeam = req.body.goalsAwayTeam;
             match.save();
             res.json(match);
-        });
+        })
+        .catch(err => {console.log(err)});
 });
 
 module.exports = router;
