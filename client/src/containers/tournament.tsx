@@ -37,6 +37,8 @@ interface TournamentProps {
     oddsSource: string,
     backHome: () => void,
     initialUsers: User [],
+    admin: boolean,
+    currUserNickname: string
 }
 
 type AllProps = PropsFromDispatch & TournamentProps & PropsFromState;
@@ -170,7 +172,8 @@ class Tournament extends Component<AllProps> {
                     <Responsive {...Responsive.onlyMobile}>
                         <TournamentMenu onBackHome={this.props.backHome} onToggleEditMode={this.toggleEditMode}
                                         onDeleteTournament={this.deleteTournament}
-                                        onSelectedUserChanged={this.selectedUserChanged} participants={participants}/>
+                                        selectedUser={this.props.currUserNickname}
+                                        showDeleteMenu={this.props.admin}/>
                     </Responsive>
                 </div>
 
@@ -178,7 +181,8 @@ class Tournament extends Component<AllProps> {
                     <Responsive minWidth={Responsive.onlyTablet.minWidth}>
                         <TournamentMenu onBackHome={this.props.backHome} onToggleEditMode={this.toggleEditMode}
                                         onDeleteTournament={this.deleteTournament}
-                                        onSelectedUserChanged={this.selectedUserChanged} participants={participants}/>
+                                        selectedUser={this.props.currUserNickname}
+                                        showDeleteMenu={this.props.admin}/>
                     </Responsive>
                 </div>
 

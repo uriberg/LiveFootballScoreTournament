@@ -17,7 +17,7 @@ interface PropsFromDispatch {
     onFetchTournaments: (userId: string) => void,
     onCreateTournament: (newTournament: any, userId: string, nickname: string) => void,
     onJoinToTournament: (tournamentSerialNumber: any,  joinedUser: any) => void,
-    onGetTournament: (id: string) => void,
+    onGetTournament: (id: string, currUserId: any) => void,
     onClearStore: () => void,
     onLogin: (name: string, id: number) => void,
     onLogout: () => void
@@ -32,7 +32,9 @@ interface PropsFromState {
     selectedTournamentUsers: User [],
     selectedTournamentOddsSource: string,
     currUserName: string,
-    currUserId: string
+    currUserId: string,
+    isTournamentAdmin: boolean,
+    userNicknames: []
 }
 
 type AllProps = PropsFromState
@@ -82,7 +84,8 @@ class Landing extends Component<AllProps> {
             tournamentLeagueId: this.state.tournamentLeagueId,
             tournamentUsers: tournamentUsers,
             tournamentOddsSource: this.state.tournamentOddsSource,
-            nickname: this.state.nickname
+            nickname: this.state.nickname,
+            tournamentCreator: this.props.currUserId
         };
 
         await this.props.onCreateTournament(newTournament, this.props.currUserId, this.state.nickname);
@@ -99,6 +102,7 @@ class Landing extends Component<AllProps> {
     fetchTournaments = async () => {
         this.setState({fetchMode: true, createMode: false, joinMode: false, nickname: ''});
         await this.props.onFetchTournaments(this.props.currUserId);
+        console.log(this.props.tournamentsArray);
     };
 
     tournamentNameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
@@ -154,8 +158,20 @@ class Landing extends Component<AllProps> {
     getTournament = async (id: string) => {
         this.setState({showTournament: false});
         console.log(id);
-        await this.props.onGetTournament(id);
-        this.setState({showTournament: true});
+        await this.props.onGetTournament(id, this.props.currUserId);
+        let nickname = '';
+        console.log(this.props.currUserId);
+        for(let i = 0; i < this.props.userNicknames.length; i++){
+            console.log(this.props.userNicknames[i]);
+            // @ts-ignore
+            if(this.props.userNicknames[i]._id === id){
+                // @ts-ignore
+                nickname = this.props.userNicknames[i].nickname;
+                break;
+            }
+        }
+        console.log(this.state.nickname);
+        this.setState({showTournament: true, nickname: nickname});
     };
 
     handleSocialLogin = (user: any) => {
@@ -211,24 +227,49 @@ class Landing extends Component<AllProps> {
     };
 
     joinTournament = async () => {
-        this.setState({loading: true});
-        console.log(this.state.tournamentSerialNumber);
-        let joinedUser = {
-            _id: this.props.currUserId,
-            nickname: this.state.nickname,
-            totalScore: 0,
-            weeklyScore: 0
-        };
-
-        await this.props.onJoinToTournament(this.state.tournamentSerialNumber, joinedUser);
-        this.setState({joinMode: false, showTournament: true});
-        setTimeout(() => {
-            this.setState({loading: false});
-            var elmnt = document.getElementById("shownTournament");
-            if (elmnt) {
-                elmnt.scrollIntoView();
+        let validToJoin = true;
+        await this.props.onFetchTournaments(this.props.currUserId);
+        for(let i = 0; i < this.props.tournamentsArray.length; i++){
+            // @ts-ignore
+            if(this.props.tournamentsArray[i]._id === this.state.tournamentSerialNumber) {
+                validToJoin = false;
+                console.log('You are already part of this tournament');
+                alert('you are already part of this tournament');
+                break;
             }
-        }, 3000);
+        }
+
+        await this.props.onGetTournament(this.state.tournamentSerialNumber, this.props.currUserId);
+        for(let i = 0; i < this.props.selectedTournamentUsers.length; i++){
+            if(this.props.selectedTournamentUsers[i].nickname === this.state.nickname){
+                validToJoin = false;
+                alert('nickname is occupied');
+                console.log('nickname is occupied');
+                break;
+            }
+        }
+
+        if (validToJoin) {
+            this.setState({loading: true});
+            console.log(this.state.tournamentSerialNumber);
+            let joinedUser = {
+                _id: this.props.currUserId,
+                nickname: this.state.nickname,
+                totalScore: 0,
+                weeklyScore: 0
+            };
+
+
+            await this.props.onJoinToTournament(this.state.tournamentSerialNumber, joinedUser);
+            this.setState({joinMode: false, showTournament: true});
+            setTimeout(() => {
+                this.setState({loading: false});
+                var elmnt = document.getElementById("shownTournament");
+                if (elmnt) {
+                    elmnt.scrollIntoView();
+                }
+            }, 3000);
+        }
     };
 
     render() {
@@ -363,7 +404,9 @@ class Landing extends Component<AllProps> {
                                             lastRecordedRound={this.props.lastRecordedRound}
                                             oddsSource={this.props.selectedTournamentOddsSource}
                                             backHome={this.backToHomePage}
-                                            initialUsers={this.props.selectedTournamentUsers}/>
+                                            initialUsers={this.props.selectedTournamentUsers}
+                                            admin={this.props.isTournamentAdmin}
+                                            currUserNickname={this.state.nickname}/>
                             </div> : null}
                     </Element>
                 </div>
@@ -381,7 +424,9 @@ const mapStateToProps = (state: any) => {
         selectedTournamentUsers: state.landing.selectedTournamentUsers,
         selectedTournamentOddsSource: state.landing.selectedTournamentOddsSource,
         currUserName: state.user.currUserName,
-        currUserId: state.user.currUserId
+        currUserId: state.user.currUserId,
+        isTournamentAdmin: state.landing.isTournamentAdmin,
+        userNicknames: state.landing.userNicknames
     };
 };
 
@@ -390,7 +435,7 @@ const mapDispatchToProps = (dispatch: any) => {
         onFetchTournaments: (userId: string) => dispatch(actions.fetchTournaments(userId)),
         onCreateTournament: (newTournament: any, userId: string, nickname: string) => dispatch(actions.createTournament(newTournament, userId, nickname)),
         onJoinToTournament: (tournamentSerialNumber: any,  joinedUser: any) => dispatch(actions.joinTournament(tournamentSerialNumber, joinedUser)),
-        onGetTournament: (id: string) => dispatch(actions.getTournament(id)),
+        onGetTournament: (id: string, currUserId:any) => dispatch(actions.getTournament(id, currUserId)),
         onClearStore: () => dispatch(actions.clearStore()),
         onLogin: (name: string, id: number) => dispatch(actions.login(name, id)),
         onLogout: () => dispatch(actions.logout())

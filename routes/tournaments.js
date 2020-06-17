@@ -92,6 +92,7 @@ router.route('/newTournament').post((req, res) => {
         tournamentUsers: req.body.newTournament.tournamentUsers,
         tournamentOddsSource: req.body.newTournament.tournamentOddsSource,
         lastRecordedRound: '',
+        tournamentCreator: req.body.newTournament.tournamentCreator
     });
    // console.log(newTournament);
 
@@ -109,6 +110,17 @@ router.route('/:tournamentId/addUser').put((req, res) => {
             res.json(tournament);
         })
         .catch(err => res.status(400).json('Error ' + err));
+});
+
+router.route('/joinUser/:tournamentId').put((req, res) => {
+    Tournament.findByIdAndUpdate(req.params.tournamentId)
+        .then(tournament => {
+            let tournamentUsers = tournament.tournamentUsers;
+            tournamentUsers.push(req.body.joinedUser);
+            tournament.save();
+            res.json(tournament);
+        })
+        .catch(err => {console.log(err)});
 });
 
 router.route('/:tournamentId/updateUsersScore').put((req, res) => {

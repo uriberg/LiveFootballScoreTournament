@@ -8,7 +8,10 @@ const initialState = {
     selectedTournamentName: '',
     selectedTournamentLeagueId: null,
     selectedTournamentUsers: [],
-    selectedTournamentOddsSource: ''
+    selectedTournamentOddsSource: '',
+    isTournamentAdmin: false,
+    userNicknames: [],
+    currUserNickname: ''
 };
 
 
@@ -43,6 +46,23 @@ const setCurrentTournament = (state, action) => {
     });
 };
 
+const checkAdmin = (state, action) => {
+    return updateObject(state, {
+        isTournamentAdmin: action.isTournamentAdmin
+    });
+};
+
+const setUserNicknames = (state, action) => {
+    return updateObject(state, {
+        userNicknames: action.userNicknames
+    });
+};
+
+const setCurrUserNickname = (state, action) => {
+    return updateObject(state, {
+        currUserNickname: action.currUserNickname
+    });
+};
 
 const landing = (state = initialState, action) => {
     switch (action.type) {
@@ -54,6 +74,12 @@ const landing = (state = initialState, action) => {
             return setCreatedTournament(state, action);
         case actionTypes.SET_CURRENT_TOURNAMENT:
             return setCurrentTournament(state, action);
+        case actionTypes.CHECK_ADMIN:
+            return checkAdmin(state, action);
+        case actionTypes.SET_USER_NICKNAMES:
+            return setUserNicknames(state, action);
+        case actionTypes.SET_CURR_USER_NICKNAME:
+            return setCurrUserNickname(state, action);
         case actionTypes.CLEAR_LANDING:
             return {...initialState};
         default:

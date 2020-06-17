@@ -6,8 +6,8 @@ interface TournamentMenuProps {
     onBackHome: () => void,
     onToggleEditMode: () => void,
     onDeleteTournament: () => void,
-    onSelectedUserChanged: (event: any, {value}: any) => void,
-    participants: any
+    selectedUser: string,
+    showDeleteMenu: boolean
 }
 
 const TournamentMenu = (props: TournamentMenuProps) => (
@@ -17,21 +17,22 @@ const TournamentMenu = (props: TournamentMenuProps) => (
             onClick={props.onBackHome}
         />
         <Menu.Item
-            // name='add'
-            icon='plus user'
-            onClick={props.onToggleEditMode}
-        />
+            icon='user'
+        >{props.selectedUser}
+        </Menu.Item>
+
+        {props.showDeleteMenu ?
         <Menu.Item
             // name='deleteTournament'
             icon='delete'
             onClick={props.onDeleteTournament}
-        />
-        <Menu.Menu className={classes.width25} icon='user'>
-            <Select options={props.participants} onChange={props.onSelectedUserChanged}
-                    placeholder="Participants"
-                    style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>
+        /> : null }
+        {/*<Menu.Menu className={classes.width25} icon='user'>*/}
+        {/*    <Select options={props.participants} onChange={props.onSelectedUserChanged}*/}
+        {/*            placeholder="Participants"*/}
+        {/*            style={{backgroundColor: '#1B1C1D', color: 'rgba(255,255,255,.9)'}}/>*/}
 
-        </Menu.Menu>
+        {/*</Menu.Menu>*/}
     </Menu>
 );
 
