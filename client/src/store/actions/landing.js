@@ -2,6 +2,7 @@ import * as actionTypes from './actionsTypes';
 import axiosInstance from "../../axios";
 import {setTournamentCreator} from "../../utils/tournament/setTournamentCreator";
 import {getTournamentsByIds} from "../../utils/tournament/getTournamentsByIds";
+import {setUserTournaments} from "../../utils/landing/setUserTournaments";
 
 export const setTournaments = (tournaments) => {//sync function
     return {
@@ -55,14 +56,28 @@ export const clearLanding = () => {
     };
 };
 
-export const createTournament = (newTournament, userId) => {
+export const joinTournament = (tournamentSerialNumber, joinedUser) => {
+    console.log(tournamentSerialNumber);
+    console.log(joinedUser);
+    return dispatch => {
+        return axiosInstance().put('/tournaments/joinUser/' + tournamentSerialNumber)
+            .then(response => {
+                console.log(response);
+                dispatch(setCurrentTournament(response.data._id, response.data));
+                setUserTournaments(response.data._id, joinedUser);
+            })
+    }
+};
+
+export const createTournament = (newTournament, userId, nickname) => {
     return dispatch => {
         return axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then(response => {
                 console.log('adding tournament');
+                console.log(response);
                 dispatch(setTournamentId(response.data._id));
                 dispatch(setCreatedTournament(newTournament));
-                setTournamentCreator(userId, response.data._id);
+                setTournamentCreator(userId, response.data._id, nickname);
             })
             .catch(error => {
                 console.log(error)

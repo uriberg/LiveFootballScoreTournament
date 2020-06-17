@@ -11,10 +11,12 @@ import {User} from "../constants/interfaces";
 import Button from "../components/button";
 import SocialButton from '../components/socialButton';
 import {FacebookLoginButton, GoogleLoginButton} from 'react-social-login-buttons';
+import JoinTournamentForm from "../components/joinTournamentForm";
 
 interface PropsFromDispatch {
     onFetchTournaments: (userId: string) => void,
-    onCreateTournament: (newTournament: any, userId: string) => void,
+    onCreateTournament: (newTournament: any, userId: string, nickname: string) => void,
+    onJoinToTournament: (tournamentSerialNumber: any,  joinedUser: any) => void,
     onGetTournament: (id: string) => void,
     onClearStore: () => void,
     onLogin: (name: string, id: number) => void,
@@ -43,14 +45,14 @@ class Landing extends Component<AllProps> {
         showTournament: false,
         fetchMode: false,
         loading: false,
-        username: '',
+        nickname: '',
         totalScore: 0,
         tournamentName: '',
         tournamentLeagueId: 637,
         tournamentOddsSource: '',
         tournamentUsers: [],
-
-
+        tournamentSerialNumber: '',
+        joinMode: false,
         logged: false,
         user: {},
         currentProvider: ''
@@ -58,23 +60,32 @@ class Landing extends Component<AllProps> {
 
     nodes = {};
 
-
     turnOnCreateMode = async () => {
-        this.setState({createMode: true, fetchMode: false, tournamentUsers: [], tournamentName: ''});
+        this.setState({createMode: true, fetchMode: false, joinMode: false, tournamentUsers: [], tournamentName: ''});
     };
 
     createTournament = async () => {
         this.setState({loading: true});
         console.log(this.state.tournamentLeagueId);
+         let tournamentCreator = {
+            _id: this.props.currUserId,
+             nickname: this.state.nickname,
+             totalScore: 0,
+             weeklyScore: 0
+         };
+
+         let tournamentUsers = [];
+         tournamentUsers.push(tournamentCreator);
+
         const newTournament = {
             tournamentName: this.state.tournamentName,
             tournamentLeagueId: this.state.tournamentLeagueId,
-            tournamentUsers: this.state.tournamentUsers,
-            tournamentOddsSource: this.state.tournamentOddsSource
+            tournamentUsers: tournamentUsers,
+            tournamentOddsSource: this.state.tournamentOddsSource,
+            nickname: this.state.nickname
         };
 
-        await this.props.onCreateTournament(newTournament, this.props.currUserId);
-        //this.props.setTournamentCreator(this.props.currUserId);
+        await this.props.onCreateTournament(newTournament, this.props.currUserId, this.state.nickname);
         this.setState({createMode: false, showTournament: true});
         setTimeout(() => {
             this.setState({loading: false});
@@ -86,7 +97,7 @@ class Landing extends Component<AllProps> {
     };
 
     fetchTournaments = async () => {
-        this.setState({fetchMode: true, createMode: false});
+        this.setState({fetchMode: true, createMode: false, joinMode: false, nickname: ''});
         await this.props.onFetchTournaments(this.props.currUserId);
     };
 
@@ -94,26 +105,16 @@ class Landing extends Component<AllProps> {
         this.setState({tournamentName: value});
     };
 
-    usernameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
-        this.setState({username: value});
+    nicknameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
+        this.setState({nickname: value});
     };
 
     totalScoreChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
         this.setState({totalScore: value});
     };
 
-    //combine someway with landing addUser??
-    addUser = () => {
-        const newUser = {
-            name: this.state.username,
-            totalScore: this.state.totalScore,
-            weeklyScore: 0
-        };
-
-        const tournamentUsersArray: any[] = [...this.state.tournamentUsers];
-        tournamentUsersArray.push(newUser);
-
-        this.setState({tournamentUsers: tournamentUsersArray, username: '', totalScore: 0});
+    tournamentSerialChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
+        this.setState({tournamentSerialNumber: value});
     };
 
     selectedLeagueChanged = (event: any, {value}: any) => {
@@ -157,7 +158,7 @@ class Landing extends Component<AllProps> {
         this.setState({showTournament: true});
     };
 
-    handleSocialLogin = (user: any, err: any) => {
+    handleSocialLogin = (user: any) => {
         console.log(user.profile.name);
         console.log(user.profile.id);
 
@@ -166,7 +167,6 @@ class Landing extends Component<AllProps> {
             currentProvider: user._provider,
             user
         });
-        //action creator for adding user
         this.props.onLogin(user.profile.name, user.profile.id);
     };
 
@@ -203,10 +203,32 @@ class Landing extends Component<AllProps> {
             console.log(node);
             console.log(this.nodes);
             (this.nodes as any)[ provider ] = node;
-            // this.setState({
-            //     nodes: {...this.state.nodes, [provider]: node}
-            // });
         }
+    };
+
+    turnOnJoinMode = () => {
+        this.setState({createMode: false, fetchMode: false, joinMode: true, tournamentUsers: [], tournamentName: ''});
+    };
+
+    joinTournament = async () => {
+        this.setState({loading: true});
+        console.log(this.state.tournamentSerialNumber);
+        let joinedUser = {
+            _id: this.props.currUserId,
+            nickname: this.state.nickname,
+            totalScore: 0,
+            weeklyScore: 0
+        };
+
+        await this.props.onJoinToTournament(this.state.tournamentSerialNumber, joinedUser);
+        this.setState({joinMode: false, showTournament: true});
+        setTimeout(() => {
+            this.setState({loading: false});
+            var elmnt = document.getElementById("shownTournament");
+            if (elmnt) {
+                elmnt.scrollIntoView();
+            }
+        }, 3000);
     };
 
     render() {
@@ -239,12 +261,13 @@ class Landing extends Component<AllProps> {
             this.state.loading ? <div className={classes.loadingWrapper}><Spinner/></div> :
                 <div className={classes.container}>
                     <div className={classes.mainButtons}>
+                        {this.state.logged ?
                         <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
                               offset={0}
                               duration={800}
                               className={[classes.link, classes.btnMarginSmall].join(' ')}>
                             <Button onHandleClick={this.fetchTournaments} name={"Fetch existing tournaments"}/>
-                        </Link>
+                        </Link> : null}
 
                             {!this.state.logged ? <div>
                                 <SocialButton
@@ -277,29 +300,50 @@ class Landing extends Component<AllProps> {
                                     <Button onHandleClick={this.logout} name={`Logout from ${this.state.currentProvider}`}/>
                                 </a>}
 
+                        {this.state.logged ?
                         <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
                               offset={0}
                               duration={800}
                               className={[classes.link, classes.btnMarginSmall].join(' ')}>
                             <Button onHandleClick={this.turnOnCreateMode} name={"Create New Tournament"}/>
-                        </Link>
+                        </Link> : null}
+
+                        {this.state.logged ? <Link activeClass="active" to="joinForm" spy={true} smooth="easeInOutQuart"
+                              offset={0}
+                              duration={800}
+                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                            <Button onHandleClick={this.turnOnJoinMode} name={"Join a Tournament"}/>
+                        </Link> : null}
 
                     </div>
                     <Element name="createForm">
                         {this.state.createMode ?
                             <div className={classes.createForm}>
                             <CreateTournamentForm tournamentName={this.state.tournamentName}
-                                                  username={this.state.username} totalScore={this.state.totalScore}
+                                                  nickname={this.state.nickname} totalScore={this.state.totalScore}
                                                   handleTournamentNameChange={this.tournamentNameChanged}
-                                                  handleUsernameChanged={this.usernameChanged}
+                                                  handleNicknameChanged={this.nicknameChanged}
                                                   handleTotalScoreChange={this.totalScoreChanged}
                                                   handleSelectedLeagueChanged={this.selectedLeagueChanged}
                                                   handleSelectedOddsSourceChange={this.selectedOddsSourceChanged}
-                                                  handleAddUser={this.addUser}
                                                   handleTournamentCreate={this.createTournament}/>
                             </div>
                             : null}
                     </Element>
+
+                    <Element name="joinForm">
+                        {this.state.joinMode ?
+                            <div className={classes.joinForm}>
+                                <JoinTournamentForm
+                                    nickname={this.state.nickname}
+                                    tournamentSerialNumber={this.state.tournamentSerialNumber}
+                                    handleTournamentSerialChange={this.tournamentSerialChanged}
+                                    handleNicknameChanged={this.nicknameChanged}
+                                    handleJoinToTournament={this.joinTournament}/>
+                            </div>
+                            : null}
+                    </Element>
+
                     <Element name="test1" className="element">
                         {this.state.fetchMode ?
                             <div className={classes.cardsWrapper}>
@@ -344,7 +388,8 @@ const mapStateToProps = (state: any) => {
 const mapDispatchToProps = (dispatch: any) => {
     return {
         onFetchTournaments: (userId: string) => dispatch(actions.fetchTournaments(userId)),
-        onCreateTournament: (newTournament: any, userId: string) => dispatch(actions.createTournament(newTournament, userId)),
+        onCreateTournament: (newTournament: any, userId: string, nickname: string) => dispatch(actions.createTournament(newTournament, userId, nickname)),
+        onJoinToTournament: (tournamentSerialNumber: any,  joinedUser: any) => dispatch(actions.joinTournament(tournamentSerialNumber, joinedUser)),
         onGetTournament: (id: string) => dispatch(actions.getTournament(id)),
         onClearStore: () => dispatch(actions.clearStore()),
         onLogin: (name: string, id: number) => dispatch(actions.login(name, id)),

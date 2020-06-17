@@ -6,14 +6,13 @@ import React from "react";
 
 interface createTournamentForm {
     tournamentName: string,
-    username: string,
+    nickname: string,
     totalScore: number,
     handleTournamentNameChange: ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => void,
     handleSelectedLeagueChanged: (event: any, {value}: any) => void,
     handleSelectedOddsSourceChange: (event: any, {value}: any) => void,
-    handleUsernameChanged: ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => void,
+    handleNicknameChanged: ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => void,
     handleTotalScoreChange: ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => void,
-    handleAddUser: () => void,
     handleTournamentCreate: () => void
 }
 
@@ -43,21 +42,14 @@ const CreateTournamentForm = (props: createTournamentForm) => (
                 onChange={props.handleSelectedOddsSourceChange}
             />
         </Form.Field>
-        {/*/!*<div className={classes.addUsersTitle}>Add Users</div>*!/*/}
-        {/*/!*<br/>*!/*/}
-        {/*/!*<Form>*!/*/}
-        {/*/!*    <Form.Field>*!/*/}
-        {/*/!*        <label>Username</label>*!/*/}
-        {/*/!*        <input placeholder='name' value={props.username}*!/*/}
-        {/*/!*               onChange={props.handleUsernameChanged}/>*!/*/}
-        {/*/!*    </Form.Field>*!/*/}
-        {/*/!*    <Form.Field>*!/*/}
-        {/*/!*        <label>Initial score</label>*!/*/}
-        {/*/!*        <input placeholder='score' value={props.totalScore}*!/*/}
-        {/*/!*               onChange={props.handleTotalScoreChange}/>*!/*/}
-        {/*/!*    </Form.Field>*!/*/}
-        {/*/!*    <Button type='submit' onClick={props.handleAddUser}>Add User</Button>*!/*/}
-        {/*</Form>*/}
+        <br/>
+        <Form>
+            <Form.Field>
+                <label>Your nickname</label>
+                <input placeholder='nickname' value={props.nickname}
+                       onChange={props.handleNicknameChanged}/>
+            </Form.Field>
+        </Form>
         <div className={classes.createTournamentButton}>
             <Link activeClass="active" to="test2" spy={true} smooth="easeInOutQuart"
                   offset={0}

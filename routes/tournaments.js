@@ -83,6 +83,9 @@ router.route('/:tournamentId/matches/:matchId/odds').put((req, res) => {
 router.route('/newTournament').post((req, res) => {
     //console.log(req.body);
     //console.log(req.body.newTournament.tournamentUsers[0]);
+    console.log(req.body.newTournament);
+
+
     const newTournament = new Tournament ({
         tournamentName: req.body.newTournament.tournamentName,
         tournamentLeagueId: req.body.newTournament.tournamentLeagueId,

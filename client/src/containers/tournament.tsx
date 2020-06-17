@@ -7,7 +7,6 @@ import * as actions from '../store/actions/index';
 import {User} from '../constants/interfaces';
 import TournamentTable from "../components/tournamentTable";
 import TournamentMenu from "../components/tournamentMenu";
-import AddUserForm from "../components/addUserForm";
 
 interface PropsFromDispatch {
     onDeleteTournament: (id: string) => void,
@@ -114,18 +113,18 @@ class Tournament extends Component<AllProps> {
         this.setState({usernameToAddName: value});
     };
 
-    addUser = () => {
-        let users: User [] = [...this.props.users];
-        const newUser = {
-            name: this.state.usernameToAddName,
-            totalScore: this.state.usernameToAddScore,
-            weeklyScore: 0
-        };
-
-        users.push(newUser);
-        this.props.addUser(this.props.tournamentId, users);
-        this.setState({usernameToAddName: '', usernameToAddScore: 0, usersList: users, userAdded: true});
-    };
+    // addUser = () => {
+    //     let users: User [] = [...this.props.users];
+    //     const newUser = {
+    //         name: this.state.usernameToAddName,
+    //         totalScore: this.state.usernameToAddScore,
+    //         weeklyScore: 0
+    //     };
+    //
+    //     users.push(newUser);
+    //     this.props.addUser(this.props.tournamentId, users);
+    //     this.setState({usernameToAddName: '', usernameToAddScore: 0, usersList: users, userAdded: true});
+    // };
 
     handleSort = (clickedColumn: any) => () => {
         //let users = [...this.props.users];
@@ -158,9 +157,9 @@ class Tournament extends Component<AllProps> {
     render() {
         //console.log('render again');
         const participants = this.props.users.map((user: User) => ({
-            key: user.name,
-            value: user.name,
-            text: user.name
+            key: user.nickname,
+            value: user.nickname,
+            text: user.nickname
         }));
         //const usersList: User [] = [...this.props.users];
         const direction = this.state.direction;
@@ -184,12 +183,12 @@ class Tournament extends Component<AllProps> {
                 </div>
 
                 <div className={classes.tournamentBody}>
-                    {this.state.editMode ?
-                        <AddUserForm usernameToAddName={this.state.usernameToAddName}
-                                     usernameToAddScore={this.state.usernameToAddScore}
-                                     onNewUsernameChanged={this.newUsernameChanged}
-                                     onNewUserScoreChanged={this.newUserScoreChanged} onAddUser={this.addUser}/>
-                        : null}
+                    {/*{this.state.editMode ?*/}
+                    {/*    <AddUserForm usernameToAddName={this.state.usernameToAddName}*/}
+                    {/*                 usernameToAddScore={this.state.usernameToAddScore}*/}
+                    {/*                 onNewUsernameChanged={this.newUsernameChanged}*/}
+                    {/*                 onNewUserScoreChanged={this.newUserScoreChanged} onAddUser={this.addUser}/>*/}
+                    {/*    : null}*/}
                     <div className={classes.tableWrapper}>
                         <TournamentTable usersList={this.props.users} handleSort={this.handleSort} sortDirection={direction}
                                          columnToSort={this.state.column}/>

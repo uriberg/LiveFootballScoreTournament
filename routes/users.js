@@ -40,7 +40,7 @@ router.route('/tournaments/:userId').get((req, res) => {
 
 router.route('/addUser').post((req, res) => {
     console.log(req.body);
-    const id = req.body.id
+    const id = req.body.id;
     console.log(id);
     const newUser = new User ({
         _id: id,
@@ -94,8 +94,27 @@ router.route('/setCreator').put((req,res) => {
     User.findByIdAndUpdate(req.body.userId)
         .then(user => {
             // console.log(user);
-            user.createdTournaments.push(req.body.tournamentId);
-            user.tournamentsId.push(req.body.tournamentId);
+            let tournamentObj = {
+                _id: req.body.tournamentId,
+                nickname: req.body.nickname
+            };
+            user.createdTournaments.push(tournamentObj);
+            user.tournamentsId.push(tournamentObj);
+            user.save();
+            res.json(user);
+        })
+        .catch(err => {console.log(err)});
+});
+
+router.route('/joinTournament').put((req, res) => {
+    User.findByIdAndUpdate(req.body.userId)
+        .then(user => {
+            let tournamentObj = {
+                _id: req.body.tournamentId,
+                nickname: req.body.nickname
+            };
+
+            user.tournamentsId.push(tournamentObj);
             user.save();
             res.json(user);
         })

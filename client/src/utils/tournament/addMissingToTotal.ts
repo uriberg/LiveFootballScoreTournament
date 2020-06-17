@@ -11,8 +11,8 @@ export const  addMissingToTotal = (matchesToHandle: any, stateUsers: any) => {
             if (unhandledMatches[k].goalsHomeTeam > unhandledMatches[k].goalsAwayTeam) {
                 console.log('the result is home win with odd: ' + unhandledMatches[k].homeOdd);
                 // @ts-ignore
-                if (unhandledMatches[k].homeWinUsers.indexOf(users[m].name) > -1) {
-                    console.log('Add  ' + unhandledMatches[k].homeOdd + ' to ' + users[m].name);
+                if (unhandledMatches[k].homeWinUsers.indexOf(users[m].nickname) > -1) {
+                    console.log('Add  ' + unhandledMatches[k].homeOdd + ' to ' + users[m].nickname);
                     // @ts-ignore
                     users[m].totalScore = +parseFloat((users[m].totalScore + unhandledMatches[k].homeOdd).toFixed(2));
 
@@ -20,15 +20,15 @@ export const  addMissingToTotal = (matchesToHandle: any, stateUsers: any) => {
             } else if (unhandledMatches[k].goalsHomeTeam < unhandledMatches[k].goalsAwayTeam) {
                 console.log('the result is away win with odd: ' + unhandledMatches[k].awayOdd);
                 // @ts-ignore
-                if (unhandledMatches[k].awayWinUsers.indexOf(users[m].name) > -1) {
-                    console.log('Add  ' + unhandledMatches[k].awayOdd + ' to ' + users[m].name);
+                if (unhandledMatches[k].awayWinUsers.indexOf(users[m].nickname) > -1) {
+                    console.log('Add  ' + unhandledMatches[k].awayOdd + ' to ' + users[m].nickname);
                     users[m].totalScore = +parseFloat((users[m].totalScore + unhandledMatches[k].awayOdd).toFixed(2));
                 }
             } else if (unhandledMatches[k].goalsHomeTeam === unhandledMatches[k].goalsAwayTeam) {
                 console.log('the result is a tie with odd: ' + unhandledMatches[k].tieOdd);
                 // @ts-ignore
-                if (unhandledMatches[k].tieUsers.indexOf(users[m].name) > -1) {
-                    console.log('Add  ' + unhandledMatches[k].tieOdd + ' to ' + users[m].name);
+                if (unhandledMatches[k].tieUsers.indexOf(users[m].nickname) > -1) {
+                    console.log('Add  ' + unhandledMatches[k].tieOdd + ' to ' + users[m].nickname);
                     users[m].totalScore = +parseFloat((users[m].totalScore + unhandledMatches[k].tieOdd).toFixed(2));
                 }
             }

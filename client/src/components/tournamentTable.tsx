@@ -4,7 +4,7 @@ import classes from "../containers/tournament.module.css";
 import _ from "lodash";
 
 interface User {
-    name: string;
+    nickname: string;
     totalScore: any;
     weeklyScore: number;
 }
@@ -60,9 +60,9 @@ const TournamentTable = (props: TournamentTableProps) => (
              }
             }
           `}</style>
-            {_.map(props.usersList, ({totalScore, name, weeklyScore}) => (
-                <Table.Row key={name}>
-                    <Table.Cell>{name}</Table.Cell>
+            {_.map(props.usersList, ({totalScore, nickname, weeklyScore}) => (
+                <Table.Row key={nickname}>
+                    <Table.Cell>{nickname}</Table.Cell>
                     <Table.Cell>{parseFloat(totalScore).toFixed(2)}</Table.Cell>
                     <Table.Cell>{weeklyScore}</Table.Cell>
                 </Table.Row>

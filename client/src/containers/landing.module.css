@@ -40,11 +40,11 @@
     height: 100vh;
 }
 
-.createFormStyle {
+.createFormStyle, .joinFormStyle {
     width: 100%;
 }
 
-.createForm {
+.createForm, .joinForm {
     display: flex;
     align-items: center;
     justify-content: center;

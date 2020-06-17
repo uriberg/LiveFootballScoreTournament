@@ -16,7 +16,8 @@ export interface MatchType {
 }
 
 export interface User {
-    name: string;
+    _id: string;
+    nickname: string;
     totalScore: any;
     weeklyScore: number;
 }
