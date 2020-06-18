@@ -201,7 +201,7 @@ class Tournament extends Component<AllProps> {
                         {this.props.currFixtures.map((match: any) =>
                             <Match id={match.fixture_id} homeTeamName={match.homeTeam.team_name}
                                    awayTeamName={match.awayTeam.team_name} key={match.fixture_id}
-                                   selectedUser={this.state.selectedUser}
+                                   selectedUser={this.props.currUserNickname}
                                    leagueId={this.props.tournamentLeagueId} round={this.props.leagueCurrentRound}
                                    oddsSource={this.props.oddsSource} tournamentId={this.props.tournamentId}
                                    isExist={this.props.allMatchesExists}
