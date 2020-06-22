@@ -17,6 +17,21 @@
     justify-content: center;
     align-items: center;
     height: 100%;
+    position: relative;
+}
+
+.socialButtons {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.centerFlexColumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .link {

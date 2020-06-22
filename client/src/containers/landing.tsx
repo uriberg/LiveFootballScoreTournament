@@ -12,6 +12,7 @@ import Button from "../components/button";
 import SocialButton from '../components/socialButton';
 import {FacebookLoginButton, GoogleLoginButton} from 'react-social-login-buttons';
 import JoinTournamentForm from "../components/joinTournamentForm";
+import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 const Fade = require('react-reveal/Fade');
 const Zoom = require('react-reveal/Zoom');
@@ -305,64 +306,74 @@ class Landing extends Component<AllProps> {
             this.state.loading ? <div className={classes.loadingWrapper}><Spinner/></div> :
                 <Zoom>
                     <div className={classes.container}>
-                        <div className={classes.mainButtons}>
-                            {this.state.logged ?
-                                <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
-                                      offset={0}
-                                      duration={800}
-                                      className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                    <Button onHandleClick={this.fetchTournaments} name={"Fetch existing tournaments"}/>
-                                </Link> : null}
+                        <Fade top>
+                            <div className={classes.mainButtons}>
+                                {!this.state.logged ? <Fade bottom>
+                                    <div>
+                                        <SocialButton
+                                            provider='facebook'
+                                            appId='2689386027831977'
+                                            onLoginSuccess={this.handleSocialLogin}
+                                            onLoginFailure={this.handleSocialLoginFailure}
+                                            getInstance={this.setNodeRef.bind(this, 'facebook')}
+                                            onLogoutFailure={this.onLogoutFailure}
+                                            onLogoutSuccess={this.onLogoutSuccess}
+                                            autoLogin={true}
+                                        >
+                                            <FacebookLoginButton className={classes.loginButton}/>
+                                        </SocialButton>
 
-                            {!this.state.logged ? <div>
-                                    <SocialButton
-                                        provider='facebook'
-                                        appId='2689386027831977'
-                                        onLoginSuccess={this.handleSocialLogin}
-                                        onLoginFailure={this.handleSocialLoginFailure}
-                                        getInstance={this.setNodeRef.bind(this, 'facebook')}
-                                        onLogoutFailure={this.onLogoutFailure}
-                                        onLogoutSuccess={this.onLogoutSuccess}
-                                        autoLogin={true}
-                                    >
-                                        <FacebookLoginButton className={classes.loginButton}/>
-                                    </SocialButton>
 
-                                    <SocialButton
-                                        provider='google'
-                                        appId='734310093470-6q1lsdl5epaefrqgt9mq6nrkvjth44ke.apps.googleusercontent.com'
-                                        onLoginSuccess={this.handleSocialLogin}
-                                        onLoginFailure={this.handleSocialLoginFailure}
-                                        getInstance={this.setNodeRef.bind(this, 'google')}
-                                        onLogoutFailure={this.onLogoutFailure}
-                                        onLogoutSuccess={this.onLogoutSuccess}
-                                        autoLogin={true}
-                                    >
-                                        <GoogleLoginButton className={classes.loginButton}/>
-                                    </SocialButton>
-                                </div> :
-                                <a className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                    <Button onHandleClick={this.logout}
-                                            name={`Logout from ${this.state.currentProvider}`}/>
-                                </a>}
+                                        <SocialButton
+                                            provider='google'
+                                            appId='734310093470-6q1lsdl5epaefrqgt9mq6nrkvjth44ke.apps.googleusercontent.com'
+                                            onLoginSuccess={this.handleSocialLogin}
+                                            onLoginFailure={this.handleSocialLoginFailure}
+                                            getInstance={this.setNodeRef.bind(this, 'google')}
+                                            onLogoutFailure={this.onLogoutFailure}
+                                            onLogoutSuccess={this.onLogoutSuccess}
+                                            autoLogin={true}
+                                        >
+                                            <GoogleLoginButton className={classes.loginButton}/>
+                                        </SocialButton>
+                                    </div>
+                                </Fade> : null}
 
-                            {this.state.logged ?
-                                <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
-                                      offset={0}
-                                      duration={800}
-                                      className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                    <Button onHandleClick={this.turnOnCreateMode} name={"Create New Tournament"}/>
-                                </Link> : null}
+                                {this.state.logged ?
+                                <Fade bottom>
+                                    <div className={classes.centerFlexColumn}>
+                                        <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
+                                              offset={0}
+                                              duration={800}
+                                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                            <Button onHandleClick={this.fetchTournaments}
+                                                    name={"Fetch existing tournaments"}/>
+                                        </Link>
 
-                            {this.state.logged ?
-                                <Link activeClass="active" to="joinForm" spy={true} smooth="easeInOutQuart"
-                                      offset={0}
-                                      duration={800}
-                                      className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                    <Button onHandleClick={this.turnOnJoinMode} name={"Join a Tournament"}/>
-                                </Link> : null}
+                                        <a className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                            <Button onHandleClick={this.logout}
+                                                    name={`Logout from ${this.state.currentProvider}`}/>
+                                        </a>
 
-                        </div>
+                                        <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
+                                              offset={0}
+                                              duration={800}
+                                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                            <Button onHandleClick={this.turnOnCreateMode}
+                                                    name={"Create New Tournament"}/>
+                                        </Link>
+
+                                        <Link activeClass="active" to="joinForm" spy={true} smooth="easeInOutQuart"
+                                              offset={0}
+                                              duration={800}
+                                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                            <Button onHandleClick={this.turnOnJoinMode} name={"Join a Tournament"}/>
+                                        </Link>
+                                    </div>
+                                </Fade>: null}
+                            </div>
+                        </Fade>
+
                         <Element name="createForm">
                             {this.state.createMode ?
                                 <div className={classes.createForm}>
