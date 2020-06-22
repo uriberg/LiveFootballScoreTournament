@@ -307,7 +307,7 @@ class Landing extends Component<AllProps> {
                 <Zoom>
                     <div className={classes.container}>
                             <div className={classes.mainButtons}>
-                                {!this.state.logged ? <Fade top>
+                                {!this.state.logged ? <Fade left>
                                     <div>
                                         <SocialButton
                                             provider='facebook'
