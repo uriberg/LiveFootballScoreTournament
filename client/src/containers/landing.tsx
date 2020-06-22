@@ -306,7 +306,6 @@ class Landing extends Component<AllProps> {
             this.state.loading ? <div className={classes.loadingWrapper}><Spinner/></div> :
                 <Zoom>
                     <div className={classes.container}>
-                        <Fade top>
                             <div className={classes.mainButtons}>
                                 <Fade top when={!this.state.logged}>
                                     <div className={classes.socialButtons}>
@@ -372,7 +371,7 @@ class Landing extends Component<AllProps> {
                                     </div>
                                 </Fade>: null}
                             </div>
-                        </Fade>
+
                         <Element name="createForm">
                             {this.state.createMode ?
                                 <div className={classes.createForm}>
