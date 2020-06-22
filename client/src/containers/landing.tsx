@@ -307,132 +307,133 @@ class Landing extends Component<AllProps> {
         //{this.state.loading ? <div className={classes.loadingWrapper}><Spinner/></div> : null}
 
         return (
-            <Zoom>
-                <div className={classes.container}>
-                    {/*<Fade top when={this.state.loading}>*/}
-                    {/*    <div className={classes.loadingWrapper}><Spinner/></div>*/}
-                    {/*</Fade>*/}
-                    <div className={classes.mainButtons}>
-                        <Fade top when={!this.state.logged}>
-                            <div className={classes.socialButtons}>
-                                <SocialButton
-                                    provider='facebook'
-                                    appId='2689386027831977'
-                                    onLoginSuccess={this.handleSocialLogin}
-                                    onLoginFailure={this.handleSocialLoginFailure}
-                                    getInstance={this.setNodeRef.bind(this, 'facebook')}
-                                    onLogoutFailure={this.onLogoutFailure}
-                                    onLogoutSuccess={this.onLogoutSuccess}
-                                    autoLogin={true}
-                                >
-                                    <FacebookLoginButton className={classes.loginButton}/>
-                                </SocialButton>
+            this.state.loading ? <div className={classes.loadingWrapper}><Spinner/></div> :
+                <Zoom when={!this.state.loading}>
+                    <div className={classes.container}>
+                        {/*<Fade top when={this.state.loading}>*/}
+                        {/*    <div className={classes.loadingWrapper}><Spinner/></div>*/}
+                        {/*</Fade>*/}
+                        <div className={classes.mainButtons}>
+                            <Fade top when={!this.state.logged}>
+                                <div className={classes.socialButtons}>
+                                    <SocialButton
+                                        provider='facebook'
+                                        appId='2689386027831977'
+                                        onLoginSuccess={this.handleSocialLogin}
+                                        onLoginFailure={this.handleSocialLoginFailure}
+                                        getInstance={this.setNodeRef.bind(this, 'facebook')}
+                                        onLogoutFailure={this.onLogoutFailure}
+                                        onLogoutSuccess={this.onLogoutSuccess}
+                                        autoLogin={true}
+                                    >
+                                        <FacebookLoginButton className={classes.loginButton}/>
+                                    </SocialButton>
 
 
-                                <SocialButton
-                                    provider='google'
-                                    appId='734310093470-6q1lsdl5epaefrqgt9mq6nrkvjth44ke.apps.googleusercontent.com'
-                                    onLoginSuccess={this.handleSocialLogin}
-                                    onLoginFailure={this.handleSocialLoginFailure}
-                                    getInstance={this.setNodeRef.bind(this, 'google')}
-                                    onLogoutFailure={this.onLogoutFailure}
-                                    onLogoutSuccess={this.onLogoutSuccess}
-                                    autoLogin={true}
-                                >
-                                    <GoogleLoginButton className={classes.loginButton}/>
-                                </SocialButton>
-                            </div>
-                        </Fade>
-
-                        {this.state.logged ?
-                            <Fade bottom>
-                                <div className={classes.centerItems}>
-                                    <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
-                                          offset={0}
-                                          duration={800}
-                                          className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                        <Button onHandleClick={this.fetchTournaments}
-                                                name={"Fetch existing tournaments"}/>
-                                    </Link>
-
-                                    <a className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                        <Button onHandleClick={this.logout}
-                                                name={`Logout from ${this.state.currentProvider}`}/>
-                                    </a>
-
-                                    <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
-                                          offset={0}
-                                          duration={800}
-                                          className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                        <Button onHandleClick={this.turnOnCreateMode}
-                                                name={"Create New Tournament"}/>
-                                    </Link>
-
-                                    <Link activeClass="active" to="joinForm" spy={true} smooth="easeInOutQuart"
-                                          offset={0}
-                                          duration={800}
-                                          className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                        <Button onHandleClick={this.turnOnJoinMode} name={"Join a Tournament"}/>
-                                    </Link>
+                                    <SocialButton
+                                        provider='google'
+                                        appId='734310093470-6q1lsdl5epaefrqgt9mq6nrkvjth44ke.apps.googleusercontent.com'
+                                        onLoginSuccess={this.handleSocialLogin}
+                                        onLoginFailure={this.handleSocialLoginFailure}
+                                        getInstance={this.setNodeRef.bind(this, 'google')}
+                                        onLogoutFailure={this.onLogoutFailure}
+                                        onLogoutSuccess={this.onLogoutSuccess}
+                                        autoLogin={true}
+                                    >
+                                        <GoogleLoginButton className={classes.loginButton}/>
+                                    </SocialButton>
                                 </div>
-                            </Fade> : null}
+                            </Fade>
+
+                            {this.state.logged ?
+                                <Fade bottom>
+                                    <div className={classes.centerItems}>
+                                        <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
+                                              offset={0}
+                                              duration={800}
+                                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                            <Button onHandleClick={this.fetchTournaments}
+                                                    name={"Fetch existing tournaments"}/>
+                                        </Link>
+
+                                        <a className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                            <Button onHandleClick={this.logout}
+                                                    name={`Logout from ${this.state.currentProvider}`}/>
+                                        </a>
+
+                                        <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
+                                              offset={0}
+                                              duration={800}
+                                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                            <Button onHandleClick={this.turnOnCreateMode}
+                                                    name={"Create New Tournament"}/>
+                                        </Link>
+
+                                        <Link activeClass="active" to="joinForm" spy={true} smooth="easeInOutQuart"
+                                              offset={0}
+                                              duration={800}
+                                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                            <Button onHandleClick={this.turnOnJoinMode} name={"Join a Tournament"}/>
+                                        </Link>
+                                    </div>
+                                </Fade> : null}
+                        </div>
+
+                        <Element name="createForm">
+                            {this.state.createMode ?
+                                <div className={classes.createForm}>
+                                    <CreateTournamentForm tournamentName={this.state.tournamentName}
+                                                          nickname={this.state.nickname}
+                                                          totalScore={this.state.totalScore}
+                                                          handleTournamentNameChange={this.tournamentNameChanged}
+                                                          handleNicknameChanged={this.nicknameChanged}
+                                                          handleTotalScoreChange={this.totalScoreChanged}
+                                                          handleSelectedLeagueChanged={this.selectedLeagueChanged}
+                                                          handleSelectedOddsSourceChange={this.selectedOddsSourceChanged}
+                                                          handleTournamentCreate={this.createTournament}/>
+                                </div>
+                                : null}
+                        </Element>
+
+                        <Element name="joinForm">
+                            {this.state.joinMode ?
+                                <div className={classes.joinForm}>
+                                    <JoinTournamentForm
+                                        nickname={this.state.nickname}
+                                        tournamentSerialNumber={this.state.tournamentSerialNumber}
+                                        handleTournamentSerialChange={this.tournamentSerialChanged}
+                                        handleNicknameChanged={this.nicknameChanged}
+                                        handleJoinToTournament={this.joinTournament}/>
+                                </div>
+                                : null}
+                        </Element>
+
+                        <Element name="test1" className="element">
+                            {this.state.fetchMode ?
+                                <div className={classes.cardsWrapper}>
+                                    <div className="ui grid" style={{margin: '0 5%'}}>
+                                        {tournamentsList}
+                                    </div>
+                                </div>
+                                : null}
+                        </Element>
+
+                        <Element name="test2" className="element" id="shownTournament">
+                            {this.state.showTournament ?
+                                <div className={classes.showTournament}>
+                                    <Tournament tournamentName={this.props.selectedTournamentName}
+                                                tournamentLeagueId={this.props.selectedTournamentLeagueId}
+                                                tournamentId={this.props.tournamentId}
+                                                lastRecordedRound={this.props.lastRecordedRound}
+                                                oddsSource={this.props.selectedTournamentOddsSource}
+                                                backHome={this.backToHomePage}
+                                                initialUsers={this.props.selectedTournamentUsers}
+                                                admin={this.props.isTournamentAdmin}
+                                                currUserNickname={this.state.nickname}/>
+                                </div> : null}
+                        </Element>
                     </div>
-
-                    <Element name="createForm">
-                        {this.state.createMode ?
-                            <div className={classes.createForm}>
-                                <CreateTournamentForm tournamentName={this.state.tournamentName}
-                                                      nickname={this.state.nickname}
-                                                      totalScore={this.state.totalScore}
-                                                      handleTournamentNameChange={this.tournamentNameChanged}
-                                                      handleNicknameChanged={this.nicknameChanged}
-                                                      handleTotalScoreChange={this.totalScoreChanged}
-                                                      handleSelectedLeagueChanged={this.selectedLeagueChanged}
-                                                      handleSelectedOddsSourceChange={this.selectedOddsSourceChanged}
-                                                      handleTournamentCreate={this.createTournament}/>
-                            </div>
-                            : null}
-                    </Element>
-
-                    <Element name="joinForm">
-                        {this.state.joinMode ?
-                            <div className={classes.joinForm}>
-                                <JoinTournamentForm
-                                    nickname={this.state.nickname}
-                                    tournamentSerialNumber={this.state.tournamentSerialNumber}
-                                    handleTournamentSerialChange={this.tournamentSerialChanged}
-                                    handleNicknameChanged={this.nicknameChanged}
-                                    handleJoinToTournament={this.joinTournament}/>
-                            </div>
-                            : null}
-                    </Element>
-
-                    <Element name="test1" className="element">
-                        {this.state.fetchMode ?
-                            <div className={classes.cardsWrapper}>
-                                <div className="ui grid" style={{margin: '0 5%'}}>
-                                    {tournamentsList}
-                                </div>
-                            </div>
-                            : null}
-                    </Element>
-
-                    <Element name="test2" className="element" id="shownTournament">
-                        {this.state.showTournament ?
-                            <div className={classes.showTournament}>
-                                <Tournament tournamentName={this.props.selectedTournamentName}
-                                            tournamentLeagueId={this.props.selectedTournamentLeagueId}
-                                            tournamentId={this.props.tournamentId}
-                                            lastRecordedRound={this.props.lastRecordedRound}
-                                            oddsSource={this.props.selectedTournamentOddsSource}
-                                            backHome={this.backToHomePage}
-                                            initialUsers={this.props.selectedTournamentUsers}
-                                            admin={this.props.isTournamentAdmin}
-                                            currUserNickname={this.state.nickname}/>
-                            </div> : null}
-                    </Element>
-                </div>
-            </Zoom>
+                </Zoom>
         );
     }
 }
