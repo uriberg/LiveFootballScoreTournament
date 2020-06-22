@@ -308,7 +308,7 @@ class Landing extends Component<AllProps> {
                     <div className={classes.container}>
                         <Fade top>
                             <div className={classes.mainButtons}>
-                                {!this.state.logged ? <Fade bottom>
+                                {!this.state.logged ? <Fade top>
                                     <div>
                                         <SocialButton
                                             provider='facebook'
@@ -341,7 +341,7 @@ class Landing extends Component<AllProps> {
 
                                 {this.state.logged ?
                                 <Fade bottom>
-                                    <div className={classes.centerFlexColumn}>
+                                    <div className={classes.centerItems}>
                                         <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
                                               offset={0}
                                               duration={800}
