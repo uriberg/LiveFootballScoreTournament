@@ -12,7 +12,7 @@ import Button from "../components/button";
 import SocialButton from '../components/socialButton';
 import {FacebookLoginButton, GoogleLoginButton} from 'react-social-login-buttons';
 import JoinTournamentForm from "../components/joinTournamentForm";
-import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+
 
 const Fade = require('react-reveal/Fade');
 const Zoom = require('react-reveal/Zoom');
