@@ -47,7 +47,6 @@ class Tournament extends Component<AllProps> {
     private weeklyScoreInterval: number | undefined;
     private currMatchesInterval: number | undefined;
     private checkRoundInterval: number | undefined;
-    //private roundI: any;
 
     state = {
         usernameToAddName: '',
@@ -79,7 +78,6 @@ class Tournament extends Component<AllProps> {
             this.props.getCurrentRound(this.props.tournamentId, this.props.tournamentLeagueId, this.props.users);
         }, 120000);//i.e every two minutes
 
-        //this.roundI = setIntervalAndExecute(this.props.getCurrentRound(this.props.tournamentId, this.props.tournamentLeagueId, this.props.users), 5000);
     }
 
     componentDidUpdate(prevProps: Readonly<AllProps>, prevState: Readonly<{}>, snapshot?: any): void {
@@ -93,7 +91,6 @@ class Tournament extends Component<AllProps> {
         clearInterval(this.weeklyScoreInterval);
         clearInterval(this.currMatchesInterval);
         clearInterval(this.checkRoundInterval);
-       //clearInterval(this.roundI);
     }
 
     deleteTournament = async () => {
@@ -103,33 +100,8 @@ class Tournament extends Component<AllProps> {
         }
     };
 
-    selectedUserChanged = (event: any, {value}: any) => {
-        this.setState({selectedUser: value});
-    };
-
-    newUserScoreChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
-        this.setState({usernameToAddScore: value});
-    };
-
-    newUsernameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
-        this.setState({usernameToAddName: value});
-    };
-
-    // addUser = () => {
-    //     let users: User [] = [...this.props.users];
-    //     const newUser = {
-    //         name: this.state.usernameToAddName,
-    //         totalScore: this.state.usernameToAddScore,
-    //         weeklyScore: 0
-    //     };
-    //
-    //     users.push(newUser);
-    //     this.props.addUser(this.props.tournamentId, users);
-    //     this.setState({usernameToAddName: '', usernameToAddScore: 0, usersList: users, userAdded: true});
-    // };
-
     handleSort = (clickedColumn: any) => () => {
-        //let users = [...this.props.users];
+
         if (this.state.column !== clickedColumn) {
 
             this.setState({
@@ -157,13 +129,7 @@ class Tournament extends Component<AllProps> {
 
 
     render() {
-        //console.log('render again');
-        const participants = this.props.users.map((user: User) => ({
-            key: user.nickname,
-            value: user.nickname,
-            text: user.nickname
-        }));
-        //const usersList: User [] = [...this.props.users];
+
         const direction = this.state.direction;
 
         return (
@@ -187,12 +153,6 @@ class Tournament extends Component<AllProps> {
                 </div>
 
                 <div className={classes.tournamentBody}>
-                    {/*{this.state.editMode ?*/}
-                    {/*    <AddUserForm usernameToAddName={this.state.usernameToAddName}*/}
-                    {/*                 usernameToAddScore={this.state.usernameToAddScore}*/}
-                    {/*                 onNewUsernameChanged={this.newUsernameChanged}*/}
-                    {/*                 onNewUserScoreChanged={this.newUserScoreChanged} onAddUser={this.addUser}/>*/}
-                    {/*    : null}*/}
                     <div className={classes.tableWrapper}>
                         <TournamentTable usersList={this.props.users} handleSort={this.handleSort} sortDirection={direction}
                                          columnToSort={this.state.column}/>
@@ -206,7 +166,8 @@ class Tournament extends Component<AllProps> {
                                    oddsSource={this.props.oddsSource} tournamentId={this.props.tournamentId}
                                    isExist={this.props.allMatchesExists}
                                    homeGoals={match.goalsHomeTeam} awayGoals={match.goalsAwayTeam}
-                                   isOver={match.statusShort === "FT"}/>)}
+                                   isOver={match.statusShort === "FT"}
+                                    admin={this.props.admin}/>)}
                     </div>
                 </div>
             </div>

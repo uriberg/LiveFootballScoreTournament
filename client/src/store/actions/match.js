@@ -11,8 +11,8 @@ import {setUserToTieWin} from "../../utils/match/setUserToTieWin";
 
 
 export const setOdds = (matchOdds, matchId) => {
-    console.log(matchId);
-    console.log(matchOdds);
+    //console.log(matchId);
+    //console.log(matchOdds);
     return {
         type: actionTypes.SET_ODDS,
         homeOdd: matchOdds.homeOdd,
@@ -63,7 +63,7 @@ export const setSelectionChanged = (value, matchId) => {
 };
 
 export const setUsersChoices = (data, userChoseHome, userChoseTie, userChoseAway, matchId) => {
-    console.log(data.homeWinUsers);
+   // console.log(data.homeWinUsers);
     return {
         type: actionTypes.SET_USERS_CHOICES,
         homeWinUsers: data.homeWinUsers,
@@ -131,7 +131,7 @@ export const setFinalResult = (goalsHomeTeam, goalsAwayTeam, matchId) => {
 
 
 export const setInitialOdds = (data, tournamentId, matchId) => {
-    console.log(data);
+  //  console.log(data);
     return dispatch => {
         const homeOddIndex = data.homeOdd.findIndex((item) => item.tournamentId === tournamentId);
         const tieOddIndex = data.tieOdd.findIndex((item) => item.tournamentId === tournamentId);
@@ -141,7 +141,7 @@ export const setInitialOdds = (data, tournamentId, matchId) => {
             tieOdd: tieOddIndex > -1 ? data.tieOdd[tieOddIndex].value : '',
             awayOdd: awayOddIndex > -1 ? data.awayOdd[awayOddIndex].value : '',
         };
-        console.log(matchId);
+       // console.log(matchId);
         dispatch(setOdds(matchOdds, matchId));
     }
 };
@@ -152,7 +152,7 @@ export const getMatchDetails = (tournamentId, matchId, oddsSource, homeTeamName,
     return dispatch => {//available due to redux-thunk
         axiosInstance().get('/matches/' + matchId)
             .then(response => {
-                console.log(response);
+               // console.log(response);
                 if (response.data) {
                     dispatch(setInitialOdds(response.data, tournamentId, matchId));
                     dispatch(setUsersChoices(response.data, false, false, false, matchId));
@@ -194,21 +194,21 @@ export const getMatchScore = (matchId, homeTeamName, awayTeamName) => {
                     console.log(err)
                 });
         } else {
-            console.log('match between ' + homeTeamName + ' and ' + awayTeamName + ' is already in the database!!');
+           // console.log('match between ' + homeTeamName + ' and ' + awayTeamName + ' is already in the database!!');
         }
     }
 };
 
 export const getMatchOdds = (tournamentId, matchId, oddsSource) => {
-    console.log(matchId);
+   // console.log(matchId);
     return dispatch => {
         axios.get('https://api-football-v1.p.rapidapi.com/v2/odds/fixture/' + matchId, {headers})
             .then(response => {
-                console.log(response);
+               // console.log(response);
                 let bookmakers = response.data.api.odds[0].bookmakers;
                 const matchOdds = getBookmakersOdds(bookmakers, oddsSource);
-                console.log(matchId);
-                console.log(matchOdds);
+                //console.log(matchId);
+                //console.log(matchOdds);
                 dispatch(setOdds(matchOdds, matchId));
                 //dispatch editMode to be false, then it's a pure util.
                 dispatch(setEditMode(false, matchId));
@@ -265,7 +265,7 @@ export const pushUserToHomeWin = (selectedUser, tournamentId, matchId) => {
 
             //util
             const userPushToHomeWin = setUserToHomeWin(tournamentId, selectedUser, homeWinUsers, tieUsers, awayWinUsers);
-            console.log(userPushToHomeWin.homeWinUsers);
+           // console.log(userPushToHomeWin.homeWinUsers);
             //updatechoices
             dispatch(updateUserSelection(matchId, userPushToHomeWin, true, false, false));
         }

@@ -13,7 +13,6 @@ import SocialButton from '../components/socialButton';
 import {FacebookLoginButton, GoogleLoginButton} from 'react-social-login-buttons';
 import JoinTournamentForm from "../components/joinTournamentForm";
 
-
 const Fade = require('react-reveal/Fade');
 const Zoom = require('react-reveal/Zoom');
 
@@ -72,7 +71,7 @@ class Landing extends Component<AllProps> {
 
     createTournament = async () => {
         this.setState({loading: true});
-        console.log(this.state.tournamentLeagueId);
+        //  console.log(this.state.tournamentLeagueId);
         let tournamentCreator = {
             _id: this.props.currUserId,
             nickname: this.state.nickname,
@@ -98,6 +97,7 @@ class Landing extends Component<AllProps> {
             this.setState({loading: false});
             var elmnt = document.getElementById("shownTournament");
             if (elmnt) {
+                console.log('shold now show tournament');
                 elmnt.scrollIntoView();
             }
         }, 3000);
@@ -106,7 +106,7 @@ class Landing extends Component<AllProps> {
     fetchTournaments = async () => {
         this.setState({fetchMode: true, createMode: false, joinMode: false, nickname: ''});
         await this.props.onFetchTournaments(this.props.currUserId);
-        console.log(this.props.tournamentsArray);
+        //  console.log(this.props.tournamentsArray);
     };
 
     tournamentNameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
@@ -126,7 +126,7 @@ class Landing extends Component<AllProps> {
     };
 
     selectedLeagueChanged = (event: any, {value}: any) => {
-        console.log(value);
+        // console.log(value);
         if (value === 'Israeli Premier League') {
             this.setState({tournamentLeagueId: 637});
         } else if (value === 'Premier League') {
@@ -161,12 +161,12 @@ class Landing extends Component<AllProps> {
 
     getTournament = async (id: string) => {
         this.setState({showTournament: false});
-        console.log(id);
+        //  console.log(id);
         await this.props.onGetTournament(id, this.props.currUserId);
         let nickname = '';
-        console.log(this.props.currUserId);
+        //console.log(this.props.currUserId);
         for (let i = 0; i < this.props.userNicknames.length; i++) {
-            console.log(this.props.userNicknames[i]);
+            //  console.log(this.props.userNicknames[i]);
             // @ts-ignore
             if (this.props.userNicknames[i]._id === id) {
                 // @ts-ignore
@@ -174,13 +174,13 @@ class Landing extends Component<AllProps> {
                 break;
             }
         }
-        console.log(this.state.nickname);
+        //   console.log(this.state.nickname);
         this.setState({showTournament: true, nickname: nickname});
     };
 
     handleSocialLogin = (user: any) => {
-        console.log(user.profile.name);
-        console.log(user.profile.id);
+        //console.log(user.profile.name);
+        //console.log(user.profile.id);
 
         this.setState({
             logged: true,
@@ -217,10 +217,10 @@ class Landing extends Component<AllProps> {
     };
 
     setNodeRef(provider: any, node: any) {
-        console.log(node);
-        console.log(provider);
+        // console.log(node);
+        //console.log(provider);
         if (node) {
-            console.log(node);
+            //  console.log(node);
             console.log(this.nodes);
             (this.nodes as any)[provider] = node;
         }
@@ -237,7 +237,7 @@ class Landing extends Component<AllProps> {
             // @ts-ignore
             if (this.props.tournamentsArray[i]._id === this.state.tournamentSerialNumber) {
                 validToJoin = false;
-                console.log('You are already part of this tournament');
+                //  console.log('You are already part of this tournament');
                 alert('you are already part of this tournament');
                 break;
             }
@@ -248,14 +248,14 @@ class Landing extends Component<AllProps> {
             if (this.props.selectedTournamentUsers[i].nickname === this.state.nickname) {
                 validToJoin = false;
                 alert('nickname is occupied');
-                console.log('nickname is occupied');
+                //  console.log('nickname is occupied');
                 break;
             }
         }
 
         if (validToJoin) {
             this.setState({loading: true});
-            console.log(this.state.tournamentSerialNumber);
+            // console.log(this.state.tournamentSerialNumber);
             let joinedUser = {
                 _id: this.props.currUserId,
                 nickname: this.state.nickname,
@@ -270,7 +270,9 @@ class Landing extends Component<AllProps> {
                 this.setState({loading: false});
                 var elmnt = document.getElementById("shownTournament");
                 if (elmnt) {
+                    console.log('should now show tournament');
                     elmnt.scrollIntoView();
+                    console.log('afterScroll');
                 }
             }, 3000);
         }
@@ -302,131 +304,135 @@ class Landing extends Component<AllProps> {
             </div>
         );
 
+        //{this.state.loading ? <div className={classes.loadingWrapper}><Spinner/></div> : null}
+
         return (
-            this.state.loading ? <div className={classes.loadingWrapper}><Spinner/></div> :
-                <Zoom>
-                    <div className={classes.container}>
-                            <div className={classes.mainButtons}>
-                                <Fade top when={!this.state.logged}>
-                                    <div className={classes.socialButtons}>
-                                        <SocialButton
-                                            provider='facebook'
-                                            appId='2689386027831977'
-                                            onLoginSuccess={this.handleSocialLogin}
-                                            onLoginFailure={this.handleSocialLoginFailure}
-                                            getInstance={this.setNodeRef.bind(this, 'facebook')}
-                                            onLogoutFailure={this.onLogoutFailure}
-                                            onLogoutSuccess={this.onLogoutSuccess}
-                                            autoLogin={true}
-                                        >
-                                            <FacebookLoginButton className={classes.loginButton}/>
-                                        </SocialButton>
+            <Zoom>
+                <div className={classes.container}>
+                    {/*<Fade top when={this.state.loading}>*/}
+                    {/*    <div className={classes.loadingWrapper}><Spinner/></div>*/}
+                    {/*</Fade>*/}
+                    <div className={classes.mainButtons}>
+                        <Fade top when={!this.state.logged}>
+                            <div className={classes.socialButtons}>
+                                <SocialButton
+                                    provider='facebook'
+                                    appId='2689386027831977'
+                                    onLoginSuccess={this.handleSocialLogin}
+                                    onLoginFailure={this.handleSocialLoginFailure}
+                                    getInstance={this.setNodeRef.bind(this, 'facebook')}
+                                    onLogoutFailure={this.onLogoutFailure}
+                                    onLogoutSuccess={this.onLogoutSuccess}
+                                    autoLogin={true}
+                                >
+                                    <FacebookLoginButton className={classes.loginButton}/>
+                                </SocialButton>
 
 
-                                        <SocialButton
-                                            provider='google'
-                                            appId='734310093470-6q1lsdl5epaefrqgt9mq6nrkvjth44ke.apps.googleusercontent.com'
-                                            onLoginSuccess={this.handleSocialLogin}
-                                            onLoginFailure={this.handleSocialLoginFailure}
-                                            getInstance={this.setNodeRef.bind(this, 'google')}
-                                            onLogoutFailure={this.onLogoutFailure}
-                                            onLogoutSuccess={this.onLogoutSuccess}
-                                            autoLogin={true}
-                                        >
-                                            <GoogleLoginButton className={classes.loginButton}/>
-                                        </SocialButton>
-                                    </div>
-                                </Fade>
-
-                                {this.state.logged ?
-                                <Fade bottom>
-                                    <div className={classes.centerItems}>
-                                        <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
-                                              offset={0}
-                                              duration={800}
-                                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                            <Button onHandleClick={this.fetchTournaments}
-                                                    name={"Fetch existing tournaments"}/>
-                                        </Link>
-
-                                        <a className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                            <Button onHandleClick={this.logout}
-                                                    name={`Logout from ${this.state.currentProvider}`}/>
-                                        </a>
-
-                                        <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
-                                              offset={0}
-                                              duration={800}
-                                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                            <Button onHandleClick={this.turnOnCreateMode}
-                                                    name={"Create New Tournament"}/>
-                                        </Link>
-
-                                        <Link activeClass="active" to="joinForm" spy={true} smooth="easeInOutQuart"
-                                              offset={0}
-                                              duration={800}
-                                              className={[classes.link, classes.btnMarginSmall].join(' ')}>
-                                            <Button onHandleClick={this.turnOnJoinMode} name={"Join a Tournament"}/>
-                                        </Link>
-                                    </div>
-                                </Fade>: null}
+                                <SocialButton
+                                    provider='google'
+                                    appId='734310093470-6q1lsdl5epaefrqgt9mq6nrkvjth44ke.apps.googleusercontent.com'
+                                    onLoginSuccess={this.handleSocialLogin}
+                                    onLoginFailure={this.handleSocialLoginFailure}
+                                    getInstance={this.setNodeRef.bind(this, 'google')}
+                                    onLogoutFailure={this.onLogoutFailure}
+                                    onLogoutSuccess={this.onLogoutSuccess}
+                                    autoLogin={true}
+                                >
+                                    <GoogleLoginButton className={classes.loginButton}/>
+                                </SocialButton>
                             </div>
+                        </Fade>
 
-                        <Element name="createForm">
-                            {this.state.createMode ?
-                                <div className={classes.createForm}>
-                                    <CreateTournamentForm tournamentName={this.state.tournamentName}
-                                                          nickname={this.state.nickname}
-                                                          totalScore={this.state.totalScore}
-                                                          handleTournamentNameChange={this.tournamentNameChanged}
-                                                          handleNicknameChanged={this.nicknameChanged}
-                                                          handleTotalScoreChange={this.totalScoreChanged}
-                                                          handleSelectedLeagueChanged={this.selectedLeagueChanged}
-                                                          handleSelectedOddsSourceChange={this.selectedOddsSourceChanged}
-                                                          handleTournamentCreate={this.createTournament}/>
+                        {this.state.logged ?
+                            <Fade bottom>
+                                <div className={classes.centerItems}>
+                                    <Link activeClass="active" to="test1" spy={true} smooth="easeInOutQuart"
+                                          offset={0}
+                                          duration={800}
+                                          className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                        <Button onHandleClick={this.fetchTournaments}
+                                                name={"Fetch existing tournaments"}/>
+                                    </Link>
+
+                                    <a className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                        <Button onHandleClick={this.logout}
+                                                name={`Logout from ${this.state.currentProvider}`}/>
+                                    </a>
+
+                                    <Link activeClass="active" to="createForm" spy={true} smooth="easeInOutQuart"
+                                          offset={0}
+                                          duration={800}
+                                          className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                        <Button onHandleClick={this.turnOnCreateMode}
+                                                name={"Create New Tournament"}/>
+                                    </Link>
+
+                                    <Link activeClass="active" to="joinForm" spy={true} smooth="easeInOutQuart"
+                                          offset={0}
+                                          duration={800}
+                                          className={[classes.link, classes.btnMarginSmall].join(' ')}>
+                                        <Button onHandleClick={this.turnOnJoinMode} name={"Join a Tournament"}/>
+                                    </Link>
                                 </div>
-                                : null}
-                        </Element>
-
-                        <Element name="joinForm">
-                            {this.state.joinMode ?
-                                <div className={classes.joinForm}>
-                                    <JoinTournamentForm
-                                        nickname={this.state.nickname}
-                                        tournamentSerialNumber={this.state.tournamentSerialNumber}
-                                        handleTournamentSerialChange={this.tournamentSerialChanged}
-                                        handleNicknameChanged={this.nicknameChanged}
-                                        handleJoinToTournament={this.joinTournament}/>
-                                </div>
-                                : null}
-                        </Element>
-
-                        <Element name="test1" className="element">
-                            {this.state.fetchMode ?
-                                <div className={classes.cardsWrapper}>
-                                    <div className="ui grid" style={{margin: '0 5%'}}>
-                                        {tournamentsList}
-                                    </div>
-                                </div>
-                                : null}
-                        </Element>
-
-                        <Element name="test2" className="element" id="shownTournament">
-                            {this.state.showTournament ?
-                                <div className={classes.showTournament}>
-                                    <Tournament tournamentName={this.props.selectedTournamentName}
-                                                tournamentLeagueId={this.props.selectedTournamentLeagueId}
-                                                tournamentId={this.props.tournamentId}
-                                                lastRecordedRound={this.props.lastRecordedRound}
-                                                oddsSource={this.props.selectedTournamentOddsSource}
-                                                backHome={this.backToHomePage}
-                                                initialUsers={this.props.selectedTournamentUsers}
-                                                admin={this.props.isTournamentAdmin}
-                                                currUserNickname={this.state.nickname}/>
-                                </div> : null}
-                        </Element>
+                            </Fade> : null}
                     </div>
-                </Zoom>
+
+                    <Element name="createForm">
+                        {this.state.createMode ?
+                            <div className={classes.createForm}>
+                                <CreateTournamentForm tournamentName={this.state.tournamentName}
+                                                      nickname={this.state.nickname}
+                                                      totalScore={this.state.totalScore}
+                                                      handleTournamentNameChange={this.tournamentNameChanged}
+                                                      handleNicknameChanged={this.nicknameChanged}
+                                                      handleTotalScoreChange={this.totalScoreChanged}
+                                                      handleSelectedLeagueChanged={this.selectedLeagueChanged}
+                                                      handleSelectedOddsSourceChange={this.selectedOddsSourceChanged}
+                                                      handleTournamentCreate={this.createTournament}/>
+                            </div>
+                            : null}
+                    </Element>
+
+                    <Element name="joinForm">
+                        {this.state.joinMode ?
+                            <div className={classes.joinForm}>
+                                <JoinTournamentForm
+                                    nickname={this.state.nickname}
+                                    tournamentSerialNumber={this.state.tournamentSerialNumber}
+                                    handleTournamentSerialChange={this.tournamentSerialChanged}
+                                    handleNicknameChanged={this.nicknameChanged}
+                                    handleJoinToTournament={this.joinTournament}/>
+                            </div>
+                            : null}
+                    </Element>
+
+                    <Element name="test1" className="element">
+                        {this.state.fetchMode ?
+                            <div className={classes.cardsWrapper}>
+                                <div className="ui grid" style={{margin: '0 5%'}}>
+                                    {tournamentsList}
+                                </div>
+                            </div>
+                            : null}
+                    </Element>
+
+                    <Element name="test2" className="element" id="shownTournament">
+                        {this.state.showTournament ?
+                            <div className={classes.showTournament}>
+                                <Tournament tournamentName={this.props.selectedTournamentName}
+                                            tournamentLeagueId={this.props.selectedTournamentLeagueId}
+                                            tournamentId={this.props.tournamentId}
+                                            lastRecordedRound={this.props.lastRecordedRound}
+                                            oddsSource={this.props.selectedTournamentOddsSource}
+                                            backHome={this.backToHomePage}
+                                            initialUsers={this.props.selectedTournamentUsers}
+                                            admin={this.props.isTournamentAdmin}
+                                            currUserNickname={this.state.nickname}/>
+                            </div> : null}
+                    </Element>
+                </div>
+            </Zoom>
         );
     }
 }

@@ -65,12 +65,12 @@ export const clearLanding = () => {
 };
 
 export const joinTournament = (tournamentSerialNumber, joinedUser) => {
-    console.log(tournamentSerialNumber);
-    console.log(joinedUser);
+  //  console.log(tournamentSerialNumber);
+    //console.log(joinedUser);
     return dispatch => {
         return axiosInstance().put('/tournaments/joinUser/' + tournamentSerialNumber, {joinedUser: joinedUser})
             .then(response => {
-                console.log(response);
+              //  console.log(response);
                 dispatch(setCurrentTournament(response.data._id, response.data));
                 setUserTournaments(response.data._id, joinedUser);
             })
@@ -81,8 +81,8 @@ export const createTournament = (newTournament, userId, nickname) => {
     return dispatch => {
         return axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then(response => {
-                console.log('adding tournament');
-                console.log(response);
+               // console.log('adding tournament');
+               // console.log(response);
                 dispatch(setTournamentId(response.data._id));
                 dispatch(setCreatedTournament(newTournament));
                 dispatch(checkAdmin(true));
@@ -95,11 +95,11 @@ export const createTournament = (newTournament, userId, nickname) => {
 };
 
 export const getTournament = (id, currUserId) => {
-    console.log('on get torunament action creator');
+    //console.log('on get torunament action creator');
     return dispatch => {
         return axiosInstance().get('/tournaments/' + id)
             .then(response => {
-                console.log(response);
+              //  console.log(response);
                 dispatch(setCurrentTournament(id, response.data));
                 let isTournamentAdmin = false;
                 if (currUserId === response.data.tournamentCreator){
@@ -121,15 +121,15 @@ export const setUserNicknames = (nicknamesList) => {
 };
 
 export const fetchTournaments = (userId) => {//async func
-    console.log(userId);
+    //console.log(userId);
     return dispatch => {//available due to redux-thunk
         return axiosInstance().get('/users/tournaments/' + userId)
             .then( async response => {
-                console.log('NOT RESPONSE OF FETCH');
-                console.log(response);
+      //          console.log('NOT RESPONSE OF FETCH');
+        //        console.log(response);
                 dispatch(setUserNicknames(response.data));
                 const tournamentsArray = await getTournamentsByIds(response.data);
-                console.log(tournamentsArray);
+          //      console.log(tournamentsArray);
                 dispatch(setTournaments(tournamentsArray));
             })
             .catch(error => {

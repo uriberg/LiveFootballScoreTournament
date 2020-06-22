@@ -16,7 +16,8 @@ interface MatchProps {
     oddsSource: string,
     tournamentId: any,
     isExist: boolean,
-    isOver: boolean
+    isOver: boolean,
+    admin: boolean
 }
 
 interface PropsFromDispatch {
@@ -69,7 +70,7 @@ class Match extends Component<AllProps> {
         //set match in store
         this.props.onInsertMatch(this.props.id);
         if (this.props.isExist) {
-            console.log('onLoad is exists');
+            //console.log('onLoad is exists');
             this.props.getMatchDetails(this.props.tournamentId, this.props.id, this.props.oddsSource, this.props.homeTeamName, this.props.awayTeamName);
             // @ts-ignore
             this.interval = setInterval(() => {
@@ -83,7 +84,7 @@ class Match extends Component<AllProps> {
     }
 
     componentWillUnmount(): void {
-        console.log('clearing match');
+        //console.log('clearing match');
         clearInterval(this.interval);
     }
 
@@ -115,7 +116,7 @@ class Match extends Component<AllProps> {
            //this.setState({userChoseHome: userChoseHome, userChoseTie: userChoseTie, userChoseAway: userChoseAway});
         }
         if (!prevProps.isExist && this.props.isExist) {
-            console.log('updated!! Exists!!');
+            //console.log('updated!! Exists!!');
             this.props.getMatchDetails(this.props.tournamentId, this.props.id, this.props.oddsSource, this.props.homeTeamName, this.props.awayTeamName);
         }
         if (!prevProps.isOver && this.props.isOver) {
@@ -139,8 +140,8 @@ class Match extends Component<AllProps> {
     //same as above
     handleTieOddChange = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
         //clear timeout
-        console.log('home odd handle');
-        console.log(value);
+        //console.log('home odd handle');
+        //console.log(value);
         //clearTimeout(this.tieOddTimeout);
         //then, setTimeout of 5 seconds, then update store using dispatch(setTieOdd);
         // @ts-ignore
@@ -233,9 +234,10 @@ class Match extends Component<AllProps> {
                         }
                     </div>
                 </Button>
+                {this.props.admin && this.props.oddsSource === 'Manual' ?
                 <Button onClick={this.toggleEditMode} icon>
                     <Icon name={this.props.editMode ? 'check' : 'edit'}/>
-                </Button>
+                </Button> : null}
             </div>
         );
     }

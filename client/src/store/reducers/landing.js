@@ -16,7 +16,7 @@ const initialState = {
 
 
 const setTournaments = (state, action) => {
-    console.log('on fetch now');
+   // console.log('on fetch now');
     return updateObject(state, {tournamentsArray: action.tournamentsArray});
 };
 
@@ -35,7 +35,7 @@ const setCreatedTournament = (state, action) => {
 };
 
 const setCurrentTournament = (state, action) => {
-    console.log(action);
+    //console.log(action);
     return updateObject(state, {
         tournamentId: action.tournamentId,
         lastRecordedRound: action.lastRecordedRound,

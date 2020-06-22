@@ -14,13 +14,11 @@ interface joinTournamentForm {
 
 const JoinTournamentForm = (props: joinTournamentForm) => (
     <Form className={classes.joinFormStyle}>
-        <Form>
             <Form.Field>
                 <label>Tournament Serial</label>
                 <input placeholder='Tournament Serial Number' value={props.tournamentSerialNumber}
                        onChange={props.handleTournamentSerialChange}/>
             </Form.Field>
-        </Form>
 
         <Form.Field>
             <label>Choose a Nickname</label>

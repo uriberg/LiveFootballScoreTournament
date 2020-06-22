@@ -121,13 +121,13 @@ export const checkDatabase = (currentRound, leagueId, tournamentId, users) => {
         axiosInstance().get('/matches/' + leagueId + '/' + currentRound)
             .then(response => {
                 if (response.data.length === 0) {
-                    console.log('LENGTH IS ZERO');
+                   // console.log('LENGTH IS ZERO');
                     dispatch(calculateLastWeekScore(tournamentId, leagueId, currentRound, users));
                     const updatedScore = updateTournamentRound(users);
                     dispatch(verifyAllMatchesCalculated(leagueId, currentRound, users));
                     const currFixtures = getState().tournament.currFixtures;
-                    console.log('currFixtures from selector will now be print');
-                    console.log(currFixtures);
+                    //console.log('currFixtures from selector will now be print');
+                    //console.log(currFixtures);
                     dispatch(updateCurrentRound(tournamentId, currentRound, updatedScore, currFixtures));
                 } else {
                     dispatch(setAllMatchesExists(true));
@@ -162,7 +162,7 @@ export const updateUsersScore = (tournamentId, updatedUsers) => {
     return dispatch => {
             axiosInstance().put('/tournaments/' + tournamentId + '/updateUsersScore', {users: updatedUsers})
                 .then(response => {
-                    console.log(response);
+                  //  console.log(response);
                     dispatch(setUsers(response.data.tournamentUsers));
                 })
                 .catch(err => {
@@ -172,14 +172,14 @@ export const updateUsersScore = (tournamentId, updatedUsers) => {
 };
 
 export const updateCurrentRound = (tournamentId, currentRound, updatedScore, fixtures) => {
-    console.log(updatedScore);
+   // console.log(updatedScore);
     return dispatch => {
         axiosInstance().put('tournaments/' + tournamentId + '/updateCurrentRound', {
             newRecordedRound: currentRound
             // updatedTotalScore: updatedScore
         })
             .then(async response => {
-                console.log(response);
+               // console.log(response);
                 //console.log('before set current database');
                 //setUsers???
                 await setCurrentDatabase(fixtures);
@@ -208,9 +208,9 @@ export const addUser = (tournamentId, users) =>{
 export const onCalculateWeeklyScore = (tournamentId) => {
     return (dispatch, getState) => {
         let weeklyUsers = calculateWeeklyScore(getState().tournament.users, getState().tournament.currMatches, tournamentId);
-        console.log(weeklyUsers);
+       // console.log(weeklyUsers);
         if (weeklyUsers.length > 0) {
-            console.log('length is greater!!');
+       //     console.log('length is greater!!');
             dispatch(updateUsersScore(tournamentId, weeklyUsers));
         }
     }
@@ -219,16 +219,16 @@ export const onCalculateWeeklyScore = (tournamentId) => {
 export const calculateLastWeekScore = (tournamentId, leagueId, currentRound, users) => {
   return dispatch => {
       const prevRound = getDesiredPrevRound(currentRound);
-      console.log('last week Round: ' + prevRound);
+     // console.log('last week Round: ' + prevRound);
       axiosInstance().get('/matches/' + leagueId + '/' + prevRound)
           .then(response => {
               if (response.data.length !== 0) {
-                  console.log(response.data);
+                //  console.log(response.data);
                  const lastMatches = response.data;
                  let weeklyScore = calculateWeeklyScore(users, lastMatches, tournamentId);
-                 console.log(weeklyScore);
+              //   console.log(weeklyScore);
                  let newTotalScore = updateTournamentRound(users);
-                 console.log(newTotalScore);
+                 //console.log(newTotalScore);
                  dispatch(updateUsersScore(tournamentId, newTotalScore));
               }
           })

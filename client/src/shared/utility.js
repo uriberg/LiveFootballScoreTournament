@@ -9,7 +9,7 @@ export const updateObject = (oldObject, updatedProperties) => {
 
 export const updateCollection = (oldObject, updatedProperties, id, collection) => {
     //console.log(oldObject);
-    console.log(updatedProperties);
+    //console.log(updatedProperties);
     return {
         ...oldObject,
         [collection]: {

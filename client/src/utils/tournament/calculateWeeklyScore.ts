@@ -3,7 +3,7 @@ import {MatchType, User} from "../../constants/interfaces";
 export const calculateWeeklyScore = (stateUsers: any, stateCurrMatches: any, tournamentId: string) => {
     let users: User [] = [...stateUsers];
     let matches: MatchType [] = [...stateCurrMatches];
-    console.log(matches);
+    //console.log(matches);
     for (let i = 0; i < users.length; i++) {
         users[i].weeklyScore = 0;
 
@@ -36,6 +36,6 @@ export const calculateWeeklyScore = (stateUsers: any, stateCurrMatches: any, tou
     // if (users.length > 0) {
     //     return users;
     // }
-    console.log(users);
+    //console.log(users);
     return users;
 };
