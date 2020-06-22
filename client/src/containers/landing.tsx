@@ -306,9 +306,10 @@ class Landing extends Component<AllProps> {
             this.state.loading ? <div className={classes.loadingWrapper}><Spinner/></div> :
                 <Zoom>
                     <div className={classes.container}>
+                        <Fade top>
                             <div className={classes.mainButtons}>
-                                {!this.state.logged ? <Fade left>
-                                    <div>
+                                <Fade top when={!this.state.logged}>
+                                    <div className={classes.socialButtons}>
                                         <SocialButton
                                             provider='facebook'
                                             appId='2689386027831977'
@@ -336,7 +337,7 @@ class Landing extends Component<AllProps> {
                                             <GoogleLoginButton className={classes.loginButton}/>
                                         </SocialButton>
                                     </div>
-                                </Fade> : null}
+                                </Fade>
 
                                 {this.state.logged ?
                                 <Fade bottom>
@@ -371,7 +372,7 @@ class Landing extends Component<AllProps> {
                                     </div>
                                 </Fade>: null}
                             </div>
-
+                        </Fade>
                         <Element name="createForm">
                             {this.state.createMode ?
                                 <div className={classes.createForm}>
