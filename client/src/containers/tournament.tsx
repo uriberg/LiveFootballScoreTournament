@@ -9,8 +9,6 @@ import TournamentTable from "../components/tournamentTable";
 import TournamentMenu from "../components/tournamentMenu";
 import Popup from "../components/popup";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
-const Fade = require('react-reveal/Fade');
-const Zoom = require('react-reveal/Zoom');
 
 
 interface PropsFromDispatch {
