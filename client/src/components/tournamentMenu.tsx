@@ -7,7 +7,8 @@ interface TournamentMenuProps {
     onToggleEditMode: () => void,
     onDeleteTournament: () => void,
     selectedUser: string,
-    showDeleteMenu: boolean
+    isAdmin: boolean,
+    togglePopup: () => void
 }
 
 const TournamentMenu = (props: TournamentMenuProps) => (
@@ -21,7 +22,14 @@ const TournamentMenu = (props: TournamentMenuProps) => (
         >{props.selectedUser}
         </Menu.Item>
 
-        {props.showDeleteMenu ?
+        {props.isAdmin ?
+            <Menu.Item
+                // name='deleteTournament'
+                icon='add'
+                onClick={props.togglePopup}
+            /> : null }
+
+        {props.isAdmin ?
         <Menu.Item
             // name='deleteTournament'
             icon='delete'

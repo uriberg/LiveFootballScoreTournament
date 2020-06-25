@@ -1,3 +1,7 @@
+.tournamentWrapper {
+    min-height: 100vh;
+}
+
 .tournamentBody {
     margin-top: 5%;
     /*display: flex;*/
@@ -47,4 +51,30 @@
     .matchesWrapper {
         justify-content: center;
     }
+}
+
+
+/*POPup animation*/
+
+.enter {
+    opacity: 0.01;
+    transform: scale3d(0.1, 0.1, 0.1);
+    transition: all 1s ease-in;
+}
+
+.enterActive {
+    opacity: 1;
+    transform: none;
+    /*transform: none;*/
+    /*transform: none;1;*/
+}
+
+.leave {
+    opacity: 1;
+    transform: none;
+    transition: all 1s ease-in;
+}
+.leave.leaveActive {
+    transform: scale3d(0.1, 0.1, 0.1);
+    opacity: 0.01;
 }

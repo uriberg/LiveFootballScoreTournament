@@ -7,6 +7,11 @@ import * as actions from '../store/actions/index';
 import {User} from '../constants/interfaces';
 import TournamentTable from "../components/tournamentTable";
 import TournamentMenu from "../components/tournamentMenu";
+import Popup from "../components/popup";
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+const Fade = require('react-reveal/Fade');
+const Zoom = require('react-reveal/Zoom');
+
 
 interface PropsFromDispatch {
     onDeleteTournament: (id: string) => void,
@@ -57,7 +62,8 @@ class Tournament extends Component<AllProps> {
         selectedUser: '',
         leagueCurrentRound: '',
         usersList: [],
-        userAdded: false
+        userAdded: false,
+        showPopup: false
     };
 
     componentDidMount() {
@@ -127,19 +133,40 @@ class Tournament extends Component<AllProps> {
         }));
     };
 
+    togglePopup = () => {
+        this.setState((prevState: any) => ({
+            showPopup: !prevState.showPopup
+        }));
+    };
 
     render() {
 
         const direction = this.state.direction;
+        const showPopup = this.state.showPopup;
 
         return (
-            <div>
+            <div className={classes.tournamentWrapper}>
+
+                <ReactCSSTransitionGroup
+                    transitionName={{
+                        enter: classes.enter,
+                        enterActive: classes.enterActive,
+                        leave: classes.leave,
+                        leaveActive: classes.leaveActive,
+                    }}
+                    transitionEnterTimeout={1250}
+                    transitionLeaveTimeout={1250}>
+                    {this.state.showPopup ? <Popup closePopup={this.togglePopup} open={!showPopup}/> : undefined}
+                </ReactCSSTransitionGroup>
+
+
                 <div style={{display: 'flex', justifyContent: 'center'}}>
                     <Responsive {...Responsive.onlyMobile}>
                         <TournamentMenu onBackHome={this.props.backHome} onToggleEditMode={this.toggleEditMode}
                                         onDeleteTournament={this.deleteTournament}
                                         selectedUser={this.props.currUserNickname}
-                                        showDeleteMenu={this.props.admin}/>
+                                        isAdmin={this.props.admin}
+                                        togglePopup={this.togglePopup}/>
                     </Responsive>
                 </div>
 
@@ -148,7 +175,8 @@ class Tournament extends Component<AllProps> {
                         <TournamentMenu onBackHome={this.props.backHome} onToggleEditMode={this.toggleEditMode}
                                         onDeleteTournament={this.deleteTournament}
                                         selectedUser={this.props.currUserNickname}
-                                        showDeleteMenu={this.props.admin}/>
+                                        isAdmin={this.props.admin}
+                                        togglePopup={this.togglePopup}/>
                     </Responsive>
                 </div>
 
