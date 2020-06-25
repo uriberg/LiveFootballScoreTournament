@@ -8,7 +8,7 @@ import {User} from '../constants/interfaces';
 import TournamentTable from "../components/tournamentTable";
 import TournamentMenu from "../components/tournamentMenu";
 import Popup from "../components/popup";
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 
 interface PropsFromDispatch {
