@@ -9,6 +9,7 @@ import TournamentTable from "../components/tournamentTable";
 import TournamentMenu from "../components/tournamentMenu";
 import Popup from "../components/popup";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import axiosInstance from "../axios";
 
 
 interface PropsFromDispatch {
@@ -61,7 +62,10 @@ class Tournament extends Component<AllProps> {
         leagueCurrentRound: '',
         usersList: [],
         userAdded: false,
-        showPopup: false
+        showPopup: false,
+        email: '',
+        emailSuccess: false,
+        code: ''
     };
 
     componentDidMount() {
@@ -85,7 +89,7 @@ class Tournament extends Component<AllProps> {
     }
 
     componentDidUpdate(prevProps: Readonly<AllProps>, prevState: Readonly<{}>, snapshot?: any): void {
-        if (this.state.userAdded){
+        if (this.state.userAdded) {
             this.setState({usersList: this.props.users, userAdded: false});
         }
     }
@@ -96,6 +100,37 @@ class Tournament extends Component<AllProps> {
         clearInterval(this.currMatchesInterval);
         clearInterval(this.checkRoundInterval);
     }
+
+    emailChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
+        this.setState({email: value});
+    };
+
+    codeChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
+        this.setState({code: value});
+    };
+
+    addUser = () => {
+
+
+        axiosInstance().post('/api/email', {email: this.state.email, code: this.props.tournamentId})
+            .then(res => {
+                if (res.data.success) {
+                    this.setState({
+                        emailSuccess: true
+                    });
+                } else {
+                    this.setState({
+                        emailSuccess: false
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({
+                    emailSuccess: false
+                });
+            })
+    };
 
     deleteTournament = async () => {
         if (window.confirm("Do you want to delete " + this.props.tournamentName + '?') === true) {
@@ -154,7 +189,16 @@ class Tournament extends Component<AllProps> {
                     }}
                     transitionEnterTimeout={1250}
                     transitionLeaveTimeout={1250}>
-                    {this.state.showPopup ? <Popup closePopup={this.togglePopup} open={!showPopup}/> : undefined}
+                    {this.state.showPopup ?
+                        <Popup
+                            closePopup={this.togglePopup} open={!showPopup}
+                            handleEmailChange={this.emailChanged}
+                            handleTournamentCodeChange={this.codeChanged}
+                            handleJoinRequest={this.addUser}
+                            email={this.state.email}
+                            tournamentCode={this.props.tournamentId}
+                            emailStatus={this.state.emailSuccess ? 'Email Sent' : 'Email Not Sent'}
+                        /> : undefined}
                 </ReactCSSTransitionGroup>
 
 
@@ -180,7 +224,8 @@ class Tournament extends Component<AllProps> {
 
                 <div className={classes.tournamentBody}>
                     <div className={classes.tableWrapper}>
-                        <TournamentTable usersList={this.props.users} handleSort={this.handleSort} sortDirection={direction}
+                        <TournamentTable usersList={this.props.users} handleSort={this.handleSort}
+                                         sortDirection={direction}
                                          columnToSort={this.state.column}/>
                     </div>
                     <div className={classes.matchesWrapper}>
@@ -193,7 +238,7 @@ class Tournament extends Component<AllProps> {
                                    isExist={this.props.allMatchesExists}
                                    homeGoals={match.goalsHomeTeam} awayGoals={match.goalsAwayTeam}
                                    isOver={match.statusShort === "FT"}
-                                    admin={this.props.admin}/>)}
+                                   admin={this.props.admin}/>)}
                     </div>
                 </div>
             </div>
