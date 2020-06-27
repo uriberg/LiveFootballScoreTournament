@@ -22,7 +22,7 @@ const Popup = (props: PopupProps) => (
                 <div className={classes.popup_header}>
                     <div className={classes.close} onClick={props.closePopup}>X</div>
                 </div>
-                <Form>
+                <Form className={classes.popup_form}>
                     <Form.Field>
                         <label>Recipient's email address</label>
                         <input placeholder='Email' value={props.email} type='email'
