@@ -171,17 +171,32 @@ class Match extends Component<AllProps> {
     //action creator
     pushUserToHomeWin = () => {
         //util(selectedUser, tournamentId)
-        this.props.onPushUserToHomeWin(this.props.selectedUser, this.props.tournamentId, this.props.id);
+        if (this.props.ns) {
+            this.props.onPushUserToHomeWin(this.props.selectedUser, this.props.tournamentId, this.props.id);
+        }
+        else {
+            alert('This match has already started');
+        }
     };
 
     //matches redux
     pushUserToAwayWin = () => {
-        this.props.onPushUserToAwayWin(this.props.selectedUser, this.props.tournamentId, this.props.id);
+        if (this.props.ns) {
+            this.props.onPushUserToAwayWin(this.props.selectedUser, this.props.tournamentId, this.props.id);
+        }
+        else {
+            alert('This match has already started');
+        }
     };
 
     //matches redux
     pushUserToTie = () => {
-       this.props.onPushUserToTieWin(this.props.selectedUser, this.props.tournamentId, this.props.id);
+       if (this.props.ns) {
+           this.props.onPushUserToTieWin(this.props.selectedUser, this.props.tournamentId, this.props.id);
+       }
+       else {
+           alert('This match has already started');
+       }
     };
 
     toggleEditMode = () => {
