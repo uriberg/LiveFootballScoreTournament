@@ -16,8 +16,8 @@ router.route('/:userId').get((req, res) => {
         .then(user => {
             //console.log(tournament);
             if (user){
-                console.log('now is user');
-                console.log(user);
+              //  console.log('now is user');
+               // console.log(user);
                 res.json(user);
             } else {
                 res.json(user);
@@ -28,27 +28,27 @@ router.route('/:userId').get((req, res) => {
 });
 
 router.route('/tournaments/:userId').get((req, res) => {
-    console.log(req.params);
+   // console.log(req.params);
     User.findById(req.params.userId)
         .then(user => {
-            console.log('looking for tournaments');
-            console.log(user);
+           // console.log('looking for tournaments');
+          //  console.log(user);
             res.json(user.tournamentsId);
         })
         .catch(err => {console.log(err)});
 });
 
 router.route('/addUser').post((req, res) => {
-    console.log(req.body);
+   // console.log(req.body);
     const id = req.body.id;
-    console.log(id);
+  //  console.log(id);
     const newUser = new User ({
         _id: id,
         name: req.body.name,
         tournamentsId: [],
         createdTournaments: []
     });
-    console.log(newUser);
+   //console.log(newUser);
     newUser.save()
         .then(() => res.json(newUser))
         .catch(err => res.status(400).json('Error ' + err));
@@ -64,7 +64,7 @@ router.route('/addUser').post((req, res) => {
 // });
 
 router.route('/newUser').post((req, res) => {
-    console.log(req.body);
+   // console.log(req.body);
     const newUser = new User ({
         name: req.body.username,
         totalScore: req.body.totalScore,

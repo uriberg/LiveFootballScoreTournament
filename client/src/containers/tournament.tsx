@@ -21,6 +21,7 @@ interface PropsFromDispatch {
     setTournamentUsers: (users: User []) => void,
     addUser: (tournamentId: string, users: User []) => void,
     calculateWeeklyScore: (tournamentId: string) => void,
+    calculateTotalScore: (tournamentId: string, tournamentLeagueId: number) => void,
     onSortByUsers: (clickedColumn: any) => void,
     onReverseUsers: () => void
 }
@@ -73,6 +74,10 @@ class Tournament extends Component<AllProps> {
         this.setState({usersList: this.props.initialUsers});
         this.props.getCurrentRound(this.props.tournamentId, this.props.tournamentLeagueId, this.props.initialUsers);
         this.props.calculateWeeklyScore(this.props.tournamentId);
+
+        console.log(this.props.tournamentLeagueId);
+        //NEW
+        this.props.calculateTotalScore(this.props.tournamentId, this.props.tournamentLeagueId);
 
         this.currMatchesInterval = window.setInterval(() => {
             this.props.getMatches(this.props.tournamentLeagueId, this.props.leagueCurrentRound);
@@ -266,6 +271,7 @@ const mapDispatchToProps = (dispatch: any) => {
         setTournamentUsers: (users: User []) => dispatch(actions.setUsers(users)),
         addUser: (tournamentId: string, users: User []) => dispatch(actions.addUser(tournamentId, users)),
         calculateWeeklyScore: (tournamentId: string) => dispatch(actions.onCalculateWeeklyScore(tournamentId)),
+        calculateTotalScore: (tournamentId: string, tournamentLeagueId: number) => dispatch(actions.calculateTotalScore(tournamentId, tournamentLeagueId)),
         onSortByUsers: (clickedColumn: any) => dispatch(actions.sortUsers(clickedColumn)),
         onReverseUsers: () => dispatch(actions.reverseUsers())
     }

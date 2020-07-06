@@ -12,12 +12,17 @@ const initialState = {
     allMatchesExists: false,
     unhandledMatches: [],
     temp: '',
+    calculatedMatches: []
 };
 
 
 const setMatches = (state, action) => {
     //console.log('set matches in reducer');
     return updateObject(state, {currMatches: action.currMatches});
+};
+
+const setCalculatedMatches = (state, action) => {
+    return updateObject(state, {calculatedMatches: action.calculatedMatches});
 };
 
 const setRoundAndMatches = (state, action) => {
@@ -58,6 +63,7 @@ const tournament = (state = initialState, action) => {
         case actionTypes.SET_USERS: return setUsers(state, action);
         case actionTypes.REVERSE_USERS: return reverseUsers(state);
         case actionTypes.SORT_BY_USERS: return sortByUsers(state, action);
+        case actionTypes.SET_CALCULATED_MATCHES: return setCalculatedMatches(state, action);
         case actionTypes.CLEAR_TOURNAMENT: return {...initialState};
         default:
             return state;

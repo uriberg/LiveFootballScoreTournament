@@ -8,6 +8,7 @@ import {submitOdds} from "../../utils/match/submitOddsToDatabase";
 import {setUserToHomeWin} from "../../utils/match/setUserToHomeWin";
 import {setUserToAwayWin} from "../../utils/match/setUserToAwayWin";
 import {setUserToTieWin} from "../../utils/match/setUserToTieWin";
+import {setMatchStatus} from "../../utils/match/setMatchStatus";
 
 
 export const setOdds = (matchOdds, matchId) => {
@@ -116,6 +117,7 @@ export const awayIsWinning = (goalsHomeTeam, goalsAwayTeam, matchId) => {
 };
 
 export const setFinalResult = (goalsHomeTeam, goalsAwayTeam, matchId) => {
+    console.log('set final result action creator');
     return {
         type: actionTypes.SET_FINAL_SCORE,
         ns: false,
@@ -187,7 +189,11 @@ export const getMatchScore = (matchId, homeTeamName, awayTeamName) => {
                             dispatch(tieIsWinning(goalsHomeTeam, goalsAwayTeam, matchId));
                         }
                         //pure util
+                        console.log('match status is: ' + response.data.api.fixtures[0].statusShort);
                         updateMatchScore(goalsHomeTeam, goalsAwayTeam, matchId);
+                        if (response.data.api.fixtures[0].statusShort === "FT"){
+                            dispatch(setFinalScore(matchId,goalsHomeTeam, goalsAwayTeam, homeTeamName, awayTeamName));
+                        }
                     }
                 })
                 .catch(err => {
@@ -226,6 +232,7 @@ export const setFinalScore = (matchId, homeGoals, awayGoals, homeTeamName, awayT
         //console.log('HomeGoals: ' + homeGoals);
         //console.log('match between ' + homeTeamName + ' and ' + awayTeamName + ' is over');
         updateMatchScore(+homeGoals, +awayGoals, matchId);
+        setMatchStatus(matchId,"FT");
         dispatch(setFinalResult(+homeGoals, +awayGoals, matchId));
     };
 };
@@ -257,16 +264,13 @@ export const pushUserToHomeWin = (selectedUser, tournamentId, matchId) => {
     return (dispatch, getState) => {
         //util(selectedUser, tournamentId)
         if (selectedUser) {
-            //  console.log('selected');
             //console.log(this.props.homeWinUsers);
             let homeWinUsers = [...getState().match.matchesById[matchId].homeWinUsers];
             let awayWinUsers = [...getState().match.matchesById[matchId].awayWinUsers];
             let tieUsers = [...getState().match.matchesById[matchId].tieUsers];
 
-            //util
             const userPushToHomeWin = setUserToHomeWin(tournamentId, selectedUser, homeWinUsers, tieUsers, awayWinUsers);
            // console.log(userPushToHomeWin.homeWinUsers);
-            //updatechoices
             dispatch(updateUserSelection(matchId, userPushToHomeWin, true, false, false));
         }
     }
@@ -302,8 +306,6 @@ export const pushUserToTie = (selectedUser, tournamentId, matchId) => {
 };
 
 export const updateUserSelection = (matchId, newChoices, userChoseHome, userChoseTie, userChoseAway) => {
-    // console.log(newChoices);
-    //console.log(matchId);
     return dispatch => {
         axiosInstance().put('/matches/' + matchId + '/bet', {
             homeWinUsers: newChoices.homeWinUsers,

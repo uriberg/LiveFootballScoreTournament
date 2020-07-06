@@ -10,11 +10,11 @@ export const getBookmakersOdds = (bookmakers: any, oddsSource: string) => {
         //pure util which returns the matchOdds object. after that we simply dispatch an action with it
         if (bookmakers[i].bookmaker_name === oddsSource){
             let bookmakerBets = bookmakers[i].bets;
-            console.log(bookmakerBets);
+           // console.log(bookmakerBets);
             for(let j = 0; j < bookmakerBets.length; j++){
                 if (bookmakerBets[j].label_name === 'Match Winner'){
                     let matchWinnerOdds = bookmakerBets[j].values;
-                    console.log(matchWinnerOdds);
+                   // console.log(matchWinnerOdds);
                     for(let k = 0; k <matchWinnerOdds.length; k++){
                         if (matchWinnerOdds[k].value === 'Home'){
                             matchOdds.homeOdd = matchWinnerOdds[k].odd;

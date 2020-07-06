@@ -10,6 +10,14 @@ import {addMissingToTotal} from "../../utils/tournament/addMissingToTotal";
 import {setCurrentDatabase} from "../../utils/tournament/setCurrentDatabase";
 import {calculateWeeklyScore} from "../../utils/tournament/calculateWeeklyScore";
 import {getDesiredPrevRound} from "../../utils/tournament/verifyLastRoundHasEnded";
+import {getTournamentCalculatedMatches} from "../../utils/tournament/getTournamentCalculatedMatches";
+import {getTournament} from "../../utils/tournament/getTournament";
+import {sumScoreForFinishedMatches} from "../../utils/tournament/sumScoreForFinishedMatches";
+import axios from "axios";
+import {headers} from "../../constants/objects";
+import {updateMatchScore} from "../../utils/match/updateMatchScore";
+import {setMatchStatus} from "../../utils/match/setMatchStatus";
+import {setCalculatedMatches} from "../../utils/tournament/setCalculatedMatches";
 
 
 export const setMatches = (matches) => {//sync function
@@ -19,8 +27,15 @@ export const setMatches = (matches) => {//sync function
     };
 };
 
+export const updateCalculatedMatches = (calculatedMatches) => {
+    return {
+        type: actionTypes.SET_CALCULATED_MATCHES,
+        calculatedMatches: calculatedMatches
+    };
+};
+
 export const setCurrentRound = (fixtures) => {
-   // console.log('dispatching current round');
+    // console.log('dispatching current round');
     return {
         type: actionTypes.SET_CURRENT_ROUND,
         currFixtures: fixtures,
@@ -31,7 +46,7 @@ export const setCurrentRound = (fixtures) => {
 
 
 export const setRoundAndFixtures = (fixtures) => {
-   // console.log('setting round and fixtures');
+    // console.log('setting round and fixtures');
     return {
         type: actionTypes.SET_ROUND_AND_FIXTURES,
         leagueCurrentRound: fixtures[0].round,
@@ -40,7 +55,7 @@ export const setRoundAndFixtures = (fixtures) => {
 };
 
 export const setAllMatchesExists = (allMatchesExists) => {
-   // console.log('AllMatchesExists actionCreator');
+    // console.log('AllMatchesExists actionCreator');
     return {
         type: actionTypes.SET_ALL_MATCHES_EXISTS,
         allMatchesExists: allMatchesExists
@@ -55,7 +70,7 @@ export const setUnhandledMatches = (unhandledMatches) => {
 };
 
 export const setUsers = (users) => {
-   // console.log(users);
+    // console.log(users);
     return {
         type: actionTypes.SET_USERS,
         users: users
@@ -81,7 +96,7 @@ export const getMatches = (tournamentLeagueId, leagueCurrentRound) => {
     return dispatch => {//available due to redux-thunk
         return axiosInstance().get('/matches/' + tournamentLeagueId + '/' + leagueCurrentRound)
             .then(response => {
-           //     console.log('dispatching...');
+                //     console.log('dispatching...');
                 dispatch(setMatches(response.data));
             })
             .catch(error => {
@@ -105,7 +120,7 @@ export const deleteTournament = (id) => {//async func
 export const getCurrentRound = (tournamentId, leagueId, users) => { //async func
     return async dispatch => {
         const apiRound = await getCurrRound(leagueId);
-      //  console.log('is new round: ' + apiRound);
+        //  console.log('is new round: ' + apiRound);
         const apiRoundMatches = await getCurrRoundMatches(apiRound, leagueId);
         //console.log(apiRoundMatches);
         const currRoundMatches = await verifyLastRoundHasEnded(apiRoundMatches, apiRound, leagueId);
@@ -116,33 +131,37 @@ export const getCurrentRound = (tournamentId, leagueId, users) => { //async func
 };
 
 export const checkDatabase = (currentRound, leagueId, tournamentId, users) => {
-   // console.log('in check database action creator');
+    // console.log('in check database action creator');
     return (dispatch, getState) => {
         axiosInstance().get('/matches/' + leagueId + '/' + currentRound)
             .then(response => {
                 if (response.data.length === 0) {
-                   // console.log('LENGTH IS ZERO');
-                    dispatch(calculateLastWeekScore(tournamentId, leagueId, currentRound, users));
-                    const updatedScore = updateTournamentRound(users);
-                    dispatch(verifyAllMatchesCalculated(leagueId, currentRound, users));
+                    console.log('LENGTH IS ZERO');
+
+                    //  dispatch(calculateLastWeekScore(tournamentId, leagueId, currentRound, users));
+                    //  const updatedScore = updateTournamentRound(users);
+                    //  dispatch(verifyAllMatchesCalculated(leagueId, currentRound, users));
+
                     const currFixtures = getState().tournament.currFixtures;
                     //console.log('currFixtures from selector will now be print');
                     //console.log(currFixtures);
-                    dispatch(updateCurrentRound(tournamentId, currentRound, updatedScore, currFixtures));
+                    dispatch(updateCurrentRound(tournamentId, currentRound, currFixtures));
                 } else {
                     dispatch(setAllMatchesExists(true));
                     dispatch(setMatches(response.data));
                 }
             })
-            .catch(error => {console.log(error)});
+            .catch(error => {
+                console.log(error)
+            });
     }
 };
 
-export const verifyAllMatchesCalculated  = (leagueId, currentRound, users) => {
+export const verifyAllMatchesCalculated = (leagueId, currentRound, users) => {
     return dispatch => {
         axiosInstance().get('matches/verify/' + leagueId + '/' + currentRound)
             .then(response => {
-               // console.log(response);
+                // console.log(response);
                 dispatch(setUnhandledMatches(response.data));
                 const manipulatedResults = loopUnhandledMatches(response.data);
                 dispatch(setUnhandledMatches(manipulatedResults));
@@ -160,28 +179,29 @@ export const verifyAllMatchesCalculated  = (leagueId, currentRound, users) => {
 
 export const updateUsersScore = (tournamentId, updatedUsers) => {
     return dispatch => {
-            axiosInstance().put('/tournaments/' + tournamentId + '/updateUsersScore', {users: updatedUsers})
-                .then(response => {
-                  //  console.log(response);
-                    dispatch(setUsers(response.data.tournamentUsers));
-                })
-                .catch(err => {
-                    console.log(err)
-                });
+        axiosInstance().put('/tournaments/' + tournamentId + '/updateUsersScore', {users: updatedUsers})
+            .then(response => {
+                //  console.log(response);
+                dispatch(setUsers(response.data.tournamentUsers));
+            })
+            .catch(err => {
+                console.log(err)
+            });
     }
 };
 
-export const updateCurrentRound = (tournamentId, currentRound, updatedScore, fixtures) => {
-   // console.log(updatedScore);
+export const updateCurrentRound = (tournamentId, currentRound, fixtures) => {
+    console.log('updatr Current)');
     return dispatch => {
         axiosInstance().put('tournaments/' + tournamentId + '/updateCurrentRound', {
             newRecordedRound: currentRound
             // updatedTotalScore: updatedScore
         })
             .then(async response => {
-               // console.log(response);
+                // console.log(response);
                 //console.log('before set current database');
                 //setUsers???
+                console.log('in updateCurrent Round');
                 await setCurrentDatabase(fixtures);
                 //console.log('after set current database');
                 dispatch(setAllMatchesExists(true));
@@ -192,7 +212,7 @@ export const updateCurrentRound = (tournamentId, currentRound, updatedScore, fix
     }
 };
 
-export const addUser = (tournamentId, users) =>{
+export const addUser = (tournamentId, users) => {
     return dispatch => {
         axiosInstance().put('/tournaments/' + tournamentId + '/addUser', {users: users})
             .then(response => {
@@ -208,30 +228,109 @@ export const addUser = (tournamentId, users) =>{
 export const onCalculateWeeklyScore = (tournamentId) => {
     return (dispatch, getState) => {
         let weeklyUsers = calculateWeeklyScore(getState().tournament.users, getState().tournament.currMatches, tournamentId);
-       // console.log(weeklyUsers);
+        // console.log(weeklyUsers);
         if (weeklyUsers.length > 0) {
-       //     console.log('length is greater!!');
+            //     console.log('length is greater!!');
             dispatch(updateUsersScore(tournamentId, weeklyUsers));
         }
     }
 };
 
 export const calculateLastWeekScore = (tournamentId, leagueId, currentRound, users) => {
-  return dispatch => {
-      const prevRound = getDesiredPrevRound(currentRound);
-     // console.log('last week Round: ' + prevRound);
-      axiosInstance().get('/matches/' + leagueId + '/' + prevRound)
-          .then(response => {
-              if (response.data.length !== 0) {
-                //  console.log(response.data);
-                 const lastMatches = response.data;
-                 let weeklyScore = calculateWeeklyScore(users, lastMatches, tournamentId);
-              //   console.log(weeklyScore);
-                 let newTotalScore = updateTournamentRound(users);
-                 //console.log(newTotalScore);
-                 dispatch(updateUsersScore(tournamentId, newTotalScore));
-              }
-          })
-          .catch(error => {console.log(error)});
-  };
+    return dispatch => {
+        const prevRound = getDesiredPrevRound(currentRound);
+        // console.log('last week Round: ' + prevRound);
+        axiosInstance().get('/matches/' + leagueId + '/' + prevRound)
+            .then(response => {
+                if (response.data.length !== 0) {
+                    //  console.log(response.data);
+                    const lastMatches = response.data;
+                    let weeklyScore = calculateWeeklyScore(users, lastMatches, tournamentId);
+                    //   console.log(weeklyScore);
+                    let newTotalScore = updateTournamentRound(users);
+                    //console.log(newTotalScore);
+                    dispatch(updateUsersScore(tournamentId, newTotalScore));
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            });
+    };
+};
+
+export const calculateTotalScore = (tournamentId, leagueId) => {
+    return dispatch => {
+        axiosInstance().get('/matches/leagueId/' + leagueId)
+            .then(async response => {
+                if (response.data.length !== 0) {
+                    console.log(response.data);
+                    const leagueMatches = response.data;
+                    let unhandledMatches = [];
+                    //after round is over
+                    for (let i = 0; i < leagueMatches.length; i++) {
+                        if (leagueMatches[i].statusShort !== 'FT') {
+                            console.log(leagueMatches[i]);
+                            let op = axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/id/' + leagueMatches[i]._id, {headers})
+                            unhandledMatches.push(op);
+                        }
+                    }
+
+                    let res = await axios.all(unhandledMatches);
+                    console.log(res.length);
+                    let matchTemp = [];
+                    for (let i = 0; i < res.length; i++) {
+                        let goalsHomeTeam = res[i].data.api.fixtures[0].goalsHomeTeam;
+                        let goalsAwayTeam = res[i].data.api.fixtures[0].goalsAwayTeam;
+                        let matchId = res[i].data.api.fixtures[0].fixture_id;
+                        let pending1 = await updateMatchScore(goalsHomeTeam, goalsAwayTeam, matchId);
+                        if (res[i].data.api.fixtures[0].statusShort === "FT") {
+                            let pending2 = await setMatchStatus(matchId, "FT");
+                        }
+                        matchTemp.push(pending1);
+                    }
+
+                    await axios.all(matchTemp).then(dispatch(sumCalculateScore(tournamentId, leagueId)));
+                    console.log(res);
+                }
+            })
+    };
+};
+
+export const sumCalculateScore = (tournamentId, leagueId) => {
+    return (dispatch, getState) => {
+        console.log('in sum calculate');
+        axiosInstance().get('/matches/leagueId/' + leagueId)
+            .then(async response => {
+                console.log(response.data);
+                if (response.data.length !== 0) {
+                    console.log(response.data);
+                    const leagueMatches = response.data;
+                    const tournament = await getTournament(tournamentId);
+                    const tournamentCalculatedMatches = tournament.calculatedMatches;
+                    let matchesToCalculate = [];
+                    for (let j = 0; j < leagueMatches.length; j++) {
+                        if (leagueMatches[j].statusShort === 'FT') {
+                            console.log('match has ended');
+                        }
+                        if (leagueMatches[j].createdAt.localeCompare(tournament.createdAt) === 1 &&
+                            (tournamentCalculatedMatches.findIndex((item) =>
+                                item._id === leagueMatches[j]._id
+                            ) === -1) && leagueMatches[j].statusShort === 'FT') {
+                            matchesToCalculate.push(leagueMatches[j]);
+                        }
+                    }
+
+                    console.log(matchesToCalculate);
+                    const result = sumScoreForFinishedMatches(getState().tournament.users, matchesToCalculate, tournamentId);
+                    let updatedCalculatedMatches = tournament.calculatedMatches;
+                    for(let i = 0; i < matchesToCalculate.length; i++){
+                        updatedCalculatedMatches.push(matchesToCalculate[i]);
+                    }
+                    console.log(updatedCalculatedMatches);
+                    setCalculatedMatches(tournamentId, updatedCalculatedMatches);
+                    dispatch(updateCalculatedMatches(updatedCalculatedMatches));
+                    console.log(result);
+                }
+            });
+    };
 };

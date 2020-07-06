@@ -19,12 +19,21 @@ router.route('/:tournamentId').get((req, res) => {
         .catch(err => res.status(400).json('Error ' + err));
 });
 
+router.route('/:tournamentId/calculatedMatches').get((req, res) => {
+    Tournament.findById(req.params.tournamentId)
+        .then(tournament => {
+            //console.log(tournament);
+            res.json(tournament.calculatedMatches);
+        })
+        .catch(err => res.status(400).json('Error ' + err));
+});
+
 router.route('/Ids').put((req, res) => {
-    console.log('tournamentsListRequest');
-    console.log(req.body);
+   // console.log('tournamentsListRequest');
+    //console.log(req.body);
     Tournament.find( { _id : { $in : req.body.desiredTournamentsIds } } )
         .then(result => {
-            console.log(result);
+          //  console.log(result);
             res.json(result);
         })
         .catch(err => {console.log(err)});
@@ -64,13 +73,13 @@ router.route('/:tournamentId/matches/:matchId/odds').put((req, res) => {
             //console.log(tournament);
             for(let i = 0; i < tournament.tournamentMatches.length; i++){
                 if (tournament.tournamentMatches[i]._id === +req.params.matchId){
-                    console.log('there is a match');
+                  //  console.log('there is a match');
                     tournament.tournamentMatches[i].homeOdd = +req.body.homeOdd;
                     tournament.tournamentMatches[i].tieOdd = +req.body.tieOdd;
                     tournament.tournamentMatches[i].awayOdd = +req.body.awayOdd;
-                    console.log(tournament.tournamentMatches[i]);
+                  //  console.log(tournament.tournamentMatches[i]);
                     tournament.save();
-                    console.log(tournament);
+                  //  console.log(tournament);
                     break;
                 }
             }
@@ -83,7 +92,7 @@ router.route('/:tournamentId/matches/:matchId/odds').put((req, res) => {
 router.route('/newTournament').post((req, res) => {
     //console.log(req.body);
     //console.log(req.body.newTournament.tournamentUsers[0]);
-    console.log(req.body.newTournament);
+   // console.log(req.body.newTournament);
 
 
     const newTournament = new Tournament ({
@@ -158,6 +167,17 @@ router.route('/:tournamentId/matches').put((req, res) => {
         })
         .catch(err => res.status(400).json('Error ' + err));
 });
+
+router.route('/:tournamentId/setCalculatedMatches').put((req, res) => {
+    Tournament.findByIdAndUpdate(req.params.tournamentId)
+        .then(tournament => {
+            tournament.calculatedMatches = req.body.calculatedMatches;
+            //console.log(tournament);
+            tournament.save();
+            res.json(tournament);
+        })
+        .catch(err => res.status(400).json('Error ' + err));
+})
 
 
 router.route('/:id').delete((req, res) => {

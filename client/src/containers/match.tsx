@@ -79,9 +79,15 @@ class Match extends Component<AllProps> {
         }
         if (this.props.isOver) {
             //console.log(this.props.homeGoals);
-            this.props.setFinalScore(this.props.id, this.props.homeGoals, this.props.awayGoals, this.props.homeTeamName, this.props.awayTeamName);
+            console.log('MATCH IS OVER');
+            this.setFinalScore();
         }
     }
+
+    setFinalScore = async () => {
+        await this.props.getMatchScore(this.props.id, this.props.homeTeamName, this.props.awayTeamName);
+        this.props.setFinalScore(this.props.id, this.props.homeGoals, this.props.awayGoals, this.props.homeTeamName, this.props.awayTeamName);
+    };
 
     componentWillUnmount(): void {
         //console.log('clearing match');
@@ -89,32 +95,7 @@ class Match extends Component<AllProps> {
     }
 
     componentDidUpdate(prevProps: Readonly<AllProps>): void {
-        if (prevProps.selectedUser !== this.props.selectedUser || this.props.selectionChanged || prevProps.leagueId !== this.props.leagueId) {
 
-            // axiosInstance().get('/matches/' + this.props.id)
-            //     .then(response => {
-            //         //  console.log(response);
-            //         let selectionHasChanged = true;
-            //         if (prevProps.selectedUser === this.props.selectedUser) {
-            //             selectionHasChanged = false;
-            //         }
-            //         //setState for selectionChanged, but besides of that its a pure action and we send selectedUser and tournamentId as params.
-            //         this.setState({
-            //             userChoseAway: response.data.awayWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId) > -1,
-            //             userChoseHome: response.data.homeWinUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId) > -1,
-            //             userChoseTie: response.data.tieUsers.findIndex((item: any) => item.name === this.props.selectedUser && item.tournamentId === this.props.tournamentId) > -1,
-            //             selectionChanged: selectionHasChanged
-            //         });
-            //     })
-            //     .catch(err => {
-            //         console.log('Error: ' + err)
-            //     });
-           // const userChoseHome = this.props.homeWinUsers.findIndex((item: any) => item.tournamentId === this.props.tournamentId && item.name === this.props.selectedUser) > -1;
-           // const userChoseTie = this.props.tieUsers.findIndex((item: any) => item.tournamentId === this.props.tournamentId && item.name === this.props.selectedUser) > -1;
-           // const userChoseAway = this.props.awayWinUsers.findIndex((item: any) => item.tournamentId === this.props.tournamentId && item.name === this.props.selectedUser) > -1;
-           // console.log(userChoseHome);
-           //this.setState({userChoseHome: userChoseHome, userChoseTie: userChoseTie, userChoseAway: userChoseAway});
-        }
         if (!prevProps.isExist && this.props.isExist) {
             //console.log('updated!! Exists!!');
             this.props.getMatchDetails(this.props.tournamentId, this.props.id, this.props.oddsSource, this.props.homeTeamName, this.props.awayTeamName);
@@ -125,50 +106,22 @@ class Match extends Component<AllProps> {
     }
 
     handleHomeOddChange = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
-        //clear timeout
-        //clearTimeout(this.homeOddTimeout);
-        //then, setTimeout of 5 seconds, then update store using dispatch(setHomeOdd);
-        // @ts-ignore
-        // this.homeOddTimeout = setTimeout(() => {
-        //     //dispatch to set homeOdd: value
-        //     this.props.setHomeOdd(value);
-        // }, 5000);//after 5 seconds
         this.setState({manualHomeOdd: value});
         this.props.setHomeOdd(value, this.props.id);
     };
 
     //same as above
     handleTieOddChange = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
-        //clear timeout
-        //console.log('home odd handle');
-        //console.log(value);
-        //clearTimeout(this.tieOddTimeout);
-        //then, setTimeout of 5 seconds, then update store using dispatch(setTieOdd);
-        // @ts-ignore
-        // this.tieOddTimeout = setTimeout(() => {
-        //     //dispatch to set tieOdd: value
-        //     this.props.setTieOdd(value);
-        // }, 5000);//after 5 seconds
         this.setState({manualTieOdd: value});
         this.props.setTieOdd(value, this.props.id);
     };
 
     //same as above
     handleAwayOddChange = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
-        //clear timeout
-        // clearTimeout(this.homeOddTimeout);
-        // //then, setTimeout of 5 seconds, then update store using dispatch(setAwayOdd);
-        // // @ts-ignore
-        // this.awayOddTimeout = setTimeout(() => {
-        //     //dispatch to set awayOdd: value
-        //     this.props.setAwayOdd(value);
-        // }, 5000);//after 5 seconds
         this.setState({manualAwayOdd: value});
         this.props.setAwayOdd(value, this.props.id);
     };
 
-    //matches redux
-    //action creator
     pushUserToHomeWin = () => {
         //util(selectedUser, tournamentId)
         if (this.props.ns) {
@@ -179,7 +132,6 @@ class Match extends Component<AllProps> {
         }
     };
 
-    //matches redux
     pushUserToAwayWin = () => {
         if (this.props.ns) {
             this.props.onPushUserToAwayWin(this.props.selectedUser, this.props.tournamentId, this.props.id);
@@ -189,7 +141,6 @@ class Match extends Component<AllProps> {
         }
     };
 
-    //matches redux
     pushUserToTie = () => {
        if (this.props.ns) {
            this.props.onPushUserToTieWin(this.props.selectedUser, this.props.tournamentId, this.props.id);
