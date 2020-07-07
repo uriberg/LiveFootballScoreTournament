@@ -155,7 +155,7 @@ class Landing extends Component<AllProps> {
     };
 
     backToHomePage = () => {
-        this.setState({showTournament: false, fetchMode: false, createMode: false});
+        this.setState({showTournament: false, fetchMode: false, createMode: false, joinMode: false, nickname: ''});
         this.props.onClearStore();
     };
 
@@ -198,7 +198,11 @@ class Landing extends Component<AllProps> {
         this.setState({
             logged: false,
             currentProvider: '',
-            user: {}
+            user: {},
+            fetchMode: false,
+            createMode: false,
+            showTournament: false,
+            joinMode: false
         });
     };
 
@@ -227,7 +231,7 @@ class Landing extends Component<AllProps> {
     };
 
     turnOnJoinMode = () => {
-        this.setState({createMode: false, fetchMode: false, joinMode: true, tournamentUsers: [], tournamentName: ''});
+        this.setState({createMode: false, fetchMode: false, joinMode: true, tournamentUsers: [], tournamentName: '', nickname: ''});
     };
 
     joinTournament = async () => {
