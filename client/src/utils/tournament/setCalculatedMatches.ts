@@ -1,9 +1,10 @@
 import axiosInstance from "../../axios";
+import {DEBUG} from "../../constants/settings";
 
 export const setCalculatedMatches = (tournamentId:any, updatedCalculatedMatches: any) => {
     axiosInstance().put('/tournaments/' + tournamentId + '/setCalculatedMatches', {calculatedMatches: updatedCalculatedMatches})
         .then(response => {
-            console.log(response);
+            DEBUG && console.log(response);
         })
-        .catch(err => {console.log(err)});
+        .catch(err => {DEBUG && console.log(err)});
 };

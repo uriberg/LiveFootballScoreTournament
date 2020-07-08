@@ -1,4 +1,5 @@
 import axiosInstance from "../../axios";
+import {DEBUG} from "../../constants/settings";
 
 export const setUserTournaments = (tournamentId: any, joinedUser: any) => {
     axiosInstance().put('/users/joinTournament', {
@@ -7,7 +8,7 @@ export const setUserTournaments = (tournamentId: any, joinedUser: any) => {
         nickname: joinedUser.nickname
         })
         .then(response => {
-            console.log(response);
+            DEBUG && console.log(response);
         })
-        .catch(err => {console.log(err)});
+        .catch(err => {DEBUG && console.log(err)});
 };

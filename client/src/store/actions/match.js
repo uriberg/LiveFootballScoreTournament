@@ -9,11 +9,12 @@ import {setUserToHomeWin} from "../../utils/match/setUserToHomeWin";
 import {setUserToAwayWin} from "../../utils/match/setUserToAwayWin";
 import {setUserToTieWin} from "../../utils/match/setUserToTieWin";
 import {setMatchStatus} from "../../utils/match/setMatchStatus";
+import {DEBUG} from "../../constants/settings";
 
 
 export const setOdds = (matchOdds, matchId) => {
-    //console.log(matchId);
-    //console.log(matchOdds);
+    //DEBUG && console.log(matchId);
+    //DEBUG && console.log(matchOdds);
     return {
         type: actionTypes.SET_ODDS,
         homeOdd: matchOdds.homeOdd,
@@ -64,7 +65,7 @@ export const setSelectionChanged = (value, matchId) => {
 };
 
 export const setUsersChoices = (data, userChoseHome, userChoseTie, userChoseAway, matchId) => {
-   // console.log(data.homeWinUsers);
+   // DEBUG && console.log(data.homeWinUsers);
     return {
         type: actionTypes.SET_USERS_CHOICES,
         homeWinUsers: data.homeWinUsers,
@@ -117,7 +118,7 @@ export const awayIsWinning = (goalsHomeTeam, goalsAwayTeam, matchId) => {
 };
 
 export const setFinalResult = (goalsHomeTeam, goalsAwayTeam, matchId) => {
-    console.log('set final result action creator');
+    DEBUG && console.log('set final result action creator');
     return {
         type: actionTypes.SET_FINAL_SCORE,
         ns: false,
@@ -133,7 +134,7 @@ export const setFinalResult = (goalsHomeTeam, goalsAwayTeam, matchId) => {
 
 
 export const setInitialOdds = (data, tournamentId, matchId) => {
-  //  console.log(data);
+  //  DEBUG && console.log(data);
     return dispatch => {
         const homeOddIndex = data.homeOdd.findIndex((item) => item.tournamentId === tournamentId);
         const tieOddIndex = data.tieOdd.findIndex((item) => item.tournamentId === tournamentId);
@@ -143,18 +144,18 @@ export const setInitialOdds = (data, tournamentId, matchId) => {
             tieOdd: tieOddIndex > -1 ? data.tieOdd[tieOddIndex].value : '',
             awayOdd: awayOddIndex > -1 ? data.awayOdd[awayOddIndex].value : '',
         };
-       // console.log(matchId);
+       // DEBUG && console.log(matchId);
         dispatch(setOdds(matchOdds, matchId));
     }
 };
 
 
 export const getMatchDetails = (tournamentId, matchId, oddsSource, homeTeamName, awayTeamName) => {//async func
-    // console.log(matchId);
+    // DEBUG && console.log(matchId);
     return dispatch => {//available due to redux-thunk
         axiosInstance().get('/matches/' + matchId)
             .then(response => {
-               // console.log(response);
+               // DEBUG && console.log(response);
                 if (response.data) {
                     dispatch(setInitialOdds(response.data, tournamentId, matchId));
                     dispatch(setUsersChoices(response.data, false, false, false, matchId));
@@ -172,7 +173,7 @@ export const getMatchDetails = (tournamentId, matchId, oddsSource, homeTeamName,
 export const getMatchScore = (matchId, homeTeamName, awayTeamName) => {
     return (dispatch, getState) => {
         if (!getState().match.matchesById[matchId].ft) {
-            // console.log(homeTeamName + ' - ' + awayTeamName + ': fetching....');
+             //DEBUG && console.log(homeTeamName + ' - ' + awayTeamName + ': fetching....');
             axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/id/' + matchId, {headers})
                 .then(response => {
                     if (response.data.api.fixtures[0].statusShort !== 'NS') {
@@ -189,7 +190,7 @@ export const getMatchScore = (matchId, homeTeamName, awayTeamName) => {
                             dispatch(tieIsWinning(goalsHomeTeam, goalsAwayTeam, matchId));
                         }
                         //pure util
-                        console.log('match status is: ' + response.data.api.fixtures[0].statusShort);
+                       // DEBUG && console.log('match status is: ' + response.data.api.fixtures[0].statusShort);
                         updateMatchScore(goalsHomeTeam, goalsAwayTeam, matchId);
                         if (response.data.api.fixtures[0].statusShort === "FT"){
                             dispatch(setFinalScore(matchId,goalsHomeTeam, goalsAwayTeam, homeTeamName, awayTeamName));
@@ -197,24 +198,24 @@ export const getMatchScore = (matchId, homeTeamName, awayTeamName) => {
                     }
                 })
                 .catch(err => {
-                    console.log(err)
+                    DEBUG && console.log(err)
                 });
         } else {
-           // console.log('match between ' + homeTeamName + ' and ' + awayTeamName + ' is already in the database!!');
+           // DEBUG && console.log('match between ' + homeTeamName + ' and ' + awayTeamName + ' is already in the database!!');
         }
     }
 };
 
 export const getMatchOdds = (tournamentId, matchId, oddsSource) => {
-   // console.log(matchId);
+   // DEBUG && console.log(matchId);
     return dispatch => {
         axios.get('https://api-football-v1.p.rapidapi.com/v2/odds/fixture/' + matchId, {headers})
             .then(response => {
-               // console.log(response);
+               // DEBUG && console.log(response);
                 let bookmakers = response.data.api.odds[0].bookmakers;
                 const matchOdds = getBookmakersOdds(bookmakers, oddsSource);
-                //console.log(matchId);
-                //console.log(matchOdds);
+                //DEBUG && console.log(matchId);
+                //DEBUG && console.log(matchOdds);
                 dispatch(setOdds(matchOdds, matchId));
                 //dispatch editMode to be false, then it's a pure util.
                 dispatch(setEditMode(false, matchId));
@@ -222,15 +223,15 @@ export const getMatchOdds = (tournamentId, matchId, oddsSource) => {
                     tournamentId, oddsSource);
             })
             .catch(err => {
-                console.log(err)
+                DEBUG && console.log(err)
             });
     }
 };
 
 export const setFinalScore = (matchId, homeGoals, awayGoals, homeTeamName, awayTeamName) => {
     return dispatch => {
-        //console.log('HomeGoals: ' + homeGoals);
-        //console.log('match between ' + homeTeamName + ' and ' + awayTeamName + ' is over');
+        //DEBUG && console.log('HomeGoals: ' + homeGoals);
+        //DEBUG && console.log('match between ' + homeTeamName + ' and ' + awayTeamName + ' is over');
         updateMatchScore(+homeGoals, +awayGoals, matchId);
         setMatchStatus(matchId,"FT");
         dispatch(setFinalResult(+homeGoals, +awayGoals, matchId));
@@ -264,13 +265,13 @@ export const pushUserToHomeWin = (selectedUser, tournamentId, matchId) => {
     return (dispatch, getState) => {
         //util(selectedUser, tournamentId)
         if (selectedUser) {
-            //console.log(this.props.homeWinUsers);
+            //DEBUG && console.log(this.props.homeWinUsers);
             let homeWinUsers = [...getState().match.matchesById[matchId].homeWinUsers];
             let awayWinUsers = [...getState().match.matchesById[matchId].awayWinUsers];
             let tieUsers = [...getState().match.matchesById[matchId].tieUsers];
 
             const userPushToHomeWin = setUserToHomeWin(tournamentId, selectedUser, homeWinUsers, tieUsers, awayWinUsers);
-           // console.log(userPushToHomeWin.homeWinUsers);
+           // DEBUG && console.log(userPushToHomeWin.homeWinUsers);
             dispatch(updateUserSelection(matchId, userPushToHomeWin, true, false, false));
         }
     }
@@ -279,13 +280,13 @@ export const pushUserToHomeWin = (selectedUser, tournamentId, matchId) => {
 export const pushUserToAwayWin = (selectedUser, tournamentId, matchId) => {
     return (dispatch, getState) => {
         if (selectedUser) {
-            //  console.log('selected');
-            //console.log(this.props.homeWinUsers);
+            //  DEBUG && console.log('selected');
+            //DEBUG && console.log(this.props.homeWinUsers);
             let homeWinUsers = [...getState().match.matchesById[matchId].homeWinUsers];
             let awayWinUsers = [...getState().match.matchesById[matchId].awayWinUsers];
             let tieUsers = [...getState().match.matchesById[matchId].tieUsers];
             const userPushToAwayWin = setUserToAwayWin(tournamentId, selectedUser, homeWinUsers, tieUsers, awayWinUsers);
-            //console.log(userPushToAwayWin.awayWinUsers);
+            //DEBUG && console.log(userPushToAwayWin.awayWinUsers);
             dispatch(updateUserSelection(matchId, userPushToAwayWin, false, false, true));
         }
     }
@@ -294,12 +295,12 @@ export const pushUserToAwayWin = (selectedUser, tournamentId, matchId) => {
 export const pushUserToTie = (selectedUser, tournamentId, matchId) => {
     return (dispatch, getState) => {
         if (selectedUser) {
-            //  console.log('selected');
+            //  DEBUG && console.log('selected');
             let homeWinUsers = [...getState().match.matchesById[matchId].homeWinUsers];
             let awayWinUsers = [...getState().match.matchesById[matchId].awayWinUsers];
             let tieUsers = [...getState().match.matchesById[matchId].tieUsers];
             const userPushToTieWin = setUserToTieWin(tournamentId, selectedUser, homeWinUsers, tieUsers, awayWinUsers);
-            // console.log(userPushToTieWin.tieUsers);
+            // DEBUG && console.log(userPushToTieWin.tieUsers);
             dispatch(updateUserSelection(matchId, userPushToTieWin, false, true, false));
         }
     }
@@ -313,16 +314,16 @@ export const updateUserSelection = (matchId, newChoices, userChoseHome, userChos
             tieUsers: newChoices.tieUsers
         })
             .then(response => {
-                // console.log(response);
+                // DEBUG && console.log(response);
                 dispatch(setUsersChoices(response.data, userChoseHome, userChoseTie, userChoseAway, matchId));
                 dispatch(setSelectionChanged(true, matchId));
             })
-            .catch(err => console.log('Error: ' + err));
+            .catch(err => DEBUG && console.log('Error: ' + err));
     }
 };
 
 export const insertMatch = (matchId) => {
-    //console.log(matchId);
+    //DEBUG && console.log(matchId);
     const newObject = {
         id: matchId,
         selectionChanged: false,

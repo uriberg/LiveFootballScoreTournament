@@ -3,6 +3,7 @@ import {Button, Icon} from "semantic-ui-react";
 import classes from './match.module.css';
 import {connect} from 'react-redux';
 import * as actions from '../store/actions/index';
+import {DEBUG} from '../constants/settings';
 
 interface MatchProps {
     id: number,
@@ -15,9 +16,9 @@ interface MatchProps {
     round: string,
     oddsSource: string,
     tournamentId: any,
-    isExist: boolean,
     isOver: boolean,
-    admin: boolean
+    admin: boolean,
+    isExist: boolean
 }
 
 interface PropsFromDispatch {
@@ -69,17 +70,14 @@ class Match extends Component<AllProps> {
     componentDidMount() {
         //set match in store
         this.props.onInsertMatch(this.props.id);
+        DEBUG && console.log(this.props.isExist);
         if (this.props.isExist) {
-            //console.log('onLoad is exists');
-            this.props.getMatchDetails(this.props.tournamentId, this.props.id, this.props.oddsSource, this.props.homeTeamName, this.props.awayTeamName);
-            // @ts-ignore
-            this.interval = setInterval(() => {
-                this.props.getMatchScore(this.props.id, this.props.homeTeamName, this.props.awayTeamName);
-            }, 30000);//evert 5 minutes
+           // DEBUG && console.log('onLoad is exists');
+            this.matchDetailsLive();
         }
         if (this.props.isOver) {
-            //console.log(this.props.homeGoals);
-            console.log('MATCH IS OVER');
+            //DEBUG && console.log(this.props.homeGoals);
+           // DEBUG && console.log('MATCH IS OVER');
             this.setFinalScore();
         }
     }
@@ -90,20 +88,28 @@ class Match extends Component<AllProps> {
     };
 
     componentWillUnmount(): void {
-        //console.log('clearing match');
+        //DEBUG && console.log('clearing match');
         clearInterval(this.interval);
     }
 
     componentDidUpdate(prevProps: Readonly<AllProps>): void {
 
         if (!prevProps.isExist && this.props.isExist) {
-            //console.log('updated!! Exists!!');
-            this.props.getMatchDetails(this.props.tournamentId, this.props.id, this.props.oddsSource, this.props.homeTeamName, this.props.awayTeamName);
+            this.matchDetailsLive();
         }
         if (!prevProps.isOver && this.props.isOver) {
             this.props.setFinalScore(this.props.id, this.props.goalsHomeTeam, this.props.goalsAwayTeam, this.props.homeTeamName, this.props.awayTeamName);
         }
     }
+
+    matchDetailsLive = () => {
+        this.props.getMatchDetails(this.props.tournamentId, this.props.id, this.props.oddsSource, this.props.homeTeamName, this.props.awayTeamName);
+        // @ts-ignore
+        this.interval = setInterval(() => {
+            //DEBUG && console.log('match between ' + this.props.homeTeamName + ' and ' + this.props.awayTeamName);
+            this.props.getMatchScore(this.props.id, this.props.homeTeamName, this.props.awayTeamName);
+        }, 30000);//evert 5 minutes
+    };
 
     handleHomeOddChange = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
         this.setState({manualHomeOdd: value});
@@ -210,7 +216,7 @@ class Match extends Component<AllProps> {
 }
 
 const mapStateToProps = (state: any, AllProps: AllProps) => {
-            //console.log(state.match.matchesById[AllProps.id]);
+            //DEBUG && console.log(state.match.matchesById[AllProps.id]);
             if (state.match.matchesById[AllProps.id]) {
                 return {
                     selectionChanged: state.match.matchesById[AllProps.id].selectionChanged,

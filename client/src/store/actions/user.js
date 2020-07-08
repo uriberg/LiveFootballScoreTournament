@@ -1,14 +1,15 @@
 import axiosInstance from "../../axios";
 import * as actionTypes from "./actionsTypes";
+import {DEBUG} from "../../constants/settings";
 
 export const login = (name, id) => {
     return dispatch => {
         return axiosInstance().get('/users/' + id)
             .then(response => {
-                console.log(response);
+                DEBUG && console.log(response);
                 if (response.data === null){
-                    console.log('user is null');
-                    console.log(id);
+                    DEBUG && console.log('user is null');
+                    DEBUG && console.log(id);
                     dispatch(addUser(name, id));
                 } else {
                     let responseName = response.data.name;
@@ -18,7 +19,7 @@ export const login = (name, id) => {
 
             })
             .catch(error => {
-                console.log(error)
+                DEBUG && console.log(error)
             });
     };
 };
@@ -41,13 +42,13 @@ export const addUser = (name, id) => {
     return dispatch => {
         return axiosInstance().post('/users/addUser', {name: name, id: id})
             .then(response => {
-                console.log(response);
+                DEBUG && console.log(response);
                 let responseName = response.data.name;
                 let responseId = response.data._id;
                 dispatch(setCurrUser(responseName, responseId));
             })
             .catch(error => {
-                console.log(error)
+                DEBUG && console.log(error)
             });
     };
 };

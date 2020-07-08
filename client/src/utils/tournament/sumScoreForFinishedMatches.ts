@@ -1,10 +1,11 @@
 import {MatchType, User} from "../../constants/interfaces";
+import {DEBUG} from "../../constants/settings";
 
 export const sumScoreForFinishedMatches = (stateUsers: any, matchesToSum: any, tournamentId: string) => {
     let users: User [] = [...stateUsers];
     let matches: MatchType [] = [...matchesToSum];
-    console.log(users);
-    console.log(matches);
+    DEBUG && console.log(users);
+    DEBUG && console.log(matches);
 
     for (let i = 0; i < users.length; i++) {
         for (let j = 0; j < matches.length; j++) {
@@ -16,7 +17,7 @@ export const sumScoreForFinishedMatches = (stateUsers: any, matchesToSum: any, t
                     if (matches[j].goalsHomeTeam > matches[j].goalsAwayTeam) {
                         // @ts-ignore
                         if (matches[j].homeWinUsers.findIndex((item: any) => item.nickname === users[i].nickname && item.tournamentId === tournamentId) > -1) {
-                            console.log('FOUND');
+                            DEBUG && console.log('FOUND');
                             users[i].totalScore = +parseFloat((users[i].totalScore + matches[j].homeOdd[homeOddIndex].value).toFixed(2));
                         }
                     } else if (matches[j].goalsHomeTeam < matches[j].goalsAwayTeam) {
@@ -37,6 +38,6 @@ export const sumScoreForFinishedMatches = (stateUsers: any, matchesToSum: any, t
     // if (users.length > 0) {
     //     return users;
     // }
-    //console.log(users);
+    //DEBUG && console.log(users);
     return users;
 };

@@ -10,6 +10,7 @@ import TournamentMenu from "../components/tournamentMenu";
 import Popup from "../components/popup";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import axiosInstance from "../axios";
+import {DEBUG} from '../constants/settings';
 
 
 interface PropsFromDispatch {
@@ -75,7 +76,7 @@ class Tournament extends Component<AllProps> {
         this.props.getCurrentRound(this.props.tournamentId, this.props.tournamentLeagueId, this.props.initialUsers);
         this.props.calculateWeeklyScore(this.props.tournamentId);
 
-        console.log(this.props.tournamentLeagueId);
+        DEBUG && console.log(this.props.tournamentLeagueId);
         //NEW
         this.props.calculateTotalScore(this.props.tournamentId, this.props.tournamentLeagueId);
 
@@ -130,7 +131,7 @@ class Tournament extends Component<AllProps> {
                 }
             })
             .catch(err => {
-                console.log(err);
+                DEBUG && console.log(err);
                 this.setState({
                     emailSuccess: false
                 });

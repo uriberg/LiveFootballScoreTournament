@@ -12,6 +12,7 @@ import Button from "../components/button";
 import SocialButton from '../components/socialButton';
 import {FacebookLoginButton, GoogleLoginButton} from 'react-social-login-buttons';
 import JoinTournamentForm from "../components/joinTournamentForm";
+import {DEBUG} from '../constants/settings';
 
 const Fade = require('react-reveal/Fade');
 const Zoom = require('react-reveal/Zoom');
@@ -71,7 +72,7 @@ class Landing extends Component<AllProps> {
 
     createTournament = async () => {
         this.setState({loading: true});
-        //  console.log(this.state.tournamentLeagueId);
+        //  DEBUG && console.log(this.state.tournamentLeagueId);
         let tournamentCreator = {
             _id: this.props.currUserId,
             nickname: this.state.nickname,
@@ -97,7 +98,7 @@ class Landing extends Component<AllProps> {
             this.setState({loading: false});
             var elmnt = document.getElementById("shownTournament");
             if (elmnt) {
-                console.log('shold now show tournament');
+                DEBUG && console.log('shold now show tournament');
                 elmnt.scrollIntoView();
             }
         }, 3000);
@@ -106,7 +107,7 @@ class Landing extends Component<AllProps> {
     fetchTournaments = async () => {
         this.setState({fetchMode: true, createMode: false, joinMode: false, nickname: ''});
         await this.props.onFetchTournaments(this.props.currUserId);
-        //  console.log(this.props.tournamentsArray);
+        //  DEBUG && console.log(this.props.tournamentsArray);
     };
 
     tournamentNameChanged = ({currentTarget: {value}}: React.SyntheticEvent<HTMLInputElement>) => {
@@ -126,7 +127,7 @@ class Landing extends Component<AllProps> {
     };
 
     selectedLeagueChanged = (event: any, {value}: any) => {
-        // console.log(value);
+        // DEBUG && console.log(value);
         if (value === 'Israeli Premier League') {
             this.setState({tournamentLeagueId: 637});
         } else if (value === 'Premier League') {
@@ -161,12 +162,12 @@ class Landing extends Component<AllProps> {
 
     getTournament = async (id: string) => {
         this.setState({showTournament: false});
-        //  console.log(id);
+        //  DEBUG && console.log(id);
         await this.props.onGetTournament(id, this.props.currUserId);
         let nickname = '';
-        //console.log(this.props.currUserId);
+        //DEBUG && console.log(this.props.currUserId);
         for (let i = 0; i < this.props.userNicknames.length; i++) {
-            //  console.log(this.props.userNicknames[i]);
+            //  DEBUG && console.log(this.props.userNicknames[i]);
             // @ts-ignore
             if (this.props.userNicknames[i]._id === id) {
                 // @ts-ignore
@@ -174,13 +175,13 @@ class Landing extends Component<AllProps> {
                 break;
             }
         }
-        //   console.log(this.state.nickname);
+        //   DEBUG && console.log(this.state.nickname);
         this.setState({showTournament: true, nickname: nickname});
     };
 
     handleSocialLogin = (user: any) => {
-        //console.log(user.profile.name);
-        //console.log(user.profile.id);
+        //DEBUG && console.log(user.profile.name);
+        //DEBUG && console.log(user.profile.id);
 
         this.setState({
             logged: true,
@@ -212,7 +213,7 @@ class Landing extends Component<AllProps> {
 
     logout = () => {
         const {logged, currentProvider} = this.state;
-        console.log(this.nodes);
+        DEBUG && console.log(this.nodes);
 
         if (logged && currentProvider) {
             (this.nodes as any)[currentProvider].props.triggerLogout();
@@ -221,11 +222,11 @@ class Landing extends Component<AllProps> {
     };
 
     setNodeRef(provider: any, node: any) {
-        // console.log(node);
-        //console.log(provider);
+        // DEBUG && console.log(node);
+        //DEBUG && console.log(provider);
         if (node) {
-            //  console.log(node);
-            console.log(this.nodes);
+            //  DEBUG && console.log(node);
+            DEBUG && console.log(this.nodes);
             (this.nodes as any)[provider] = node;
         }
     };
@@ -241,7 +242,7 @@ class Landing extends Component<AllProps> {
             // @ts-ignore
             if (this.props.tournamentsArray[i]._id === this.state.tournamentSerialNumber) {
                 validToJoin = false;
-                //  console.log('You are already part of this tournament');
+                //  DEBUG && console.log('You are already part of this tournament');
                 alert('you are already part of this tournament');
                 break;
             }
@@ -252,14 +253,14 @@ class Landing extends Component<AllProps> {
             if (this.props.selectedTournamentUsers[i].nickname === this.state.nickname) {
                 validToJoin = false;
                 alert('nickname is occupied');
-                //  console.log('nickname is occupied');
+                //  DEBUG && console.log('nickname is occupied');
                 break;
             }
         }
 
         if (validToJoin) {
             this.setState({loading: true});
-            // console.log(this.state.tournamentSerialNumber);
+            // DEBUG && console.log(this.state.tournamentSerialNumber);
             let joinedUser = {
                 _id: this.props.currUserId,
                 nickname: this.state.nickname,
@@ -274,9 +275,9 @@ class Landing extends Component<AllProps> {
                 this.setState({loading: false});
                 var elmnt = document.getElementById("shownTournament");
                 if (elmnt) {
-                    console.log('should now show tournament');
+                    DEBUG && console.log('should now show tournament');
                     elmnt.scrollIntoView();
-                    console.log('afterScroll');
+                    DEBUG && console.log('afterScroll');
                 }
             }, 3000);
         }

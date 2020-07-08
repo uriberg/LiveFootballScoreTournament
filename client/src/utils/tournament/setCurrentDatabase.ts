@@ -1,5 +1,6 @@
 import axiosInstance from "../../axios";
 import axios from "axios";
+import {DEBUG} from "../../constants/settings";
 
 export const setCurrentDatabase = async (currFixtures: any) => {
     let promises = [];
@@ -13,7 +14,7 @@ export const setCurrentDatabase = async (currFixtures: any) => {
         let awayTeamName = currFixtures[i].awayTeam.team_name;
         // @ts-ignore
         let currentRound = currFixtures[i].round;
-        // console.log(currentRound);
+        // DEBUG && console.log(currentRound);
         // @ts-ignore
         let leagueId = currFixtures[i].league_id;
 
@@ -27,10 +28,10 @@ export const setCurrentDatabase = async (currFixtures: any) => {
         }));
     }
    await axios.all(promises).then(() => {
-        console.log('finish all Axios in setCurrent Database');
+        DEBUG && console.log('finish all Axios in setCurrent Database');
         //this.setState({allMatchesExists: true});
     })
         .catch(err => {
-            console.log(err)
+            DEBUG && console.log(err)
         });
 };

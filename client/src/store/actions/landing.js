@@ -3,6 +3,7 @@ import axiosInstance from "../../axios";
 import {setTournamentCreator} from "../../utils/tournament/setTournamentCreator";
 import {getTournamentsByIds} from "../../utils/tournament/getTournamentsByIds";
 import {setUserTournaments} from "../../utils/landing/setUserTournaments";
+import {DEBUG} from "../../constants/settings";
 
 export const setTournaments = (tournaments) => {//sync function
     return {
@@ -34,7 +35,7 @@ export const setCreatedTournament = (newTournament) => {
 };
 
 export const setCurrentTournament = (id, data) => {
-    //console.log(data);
+    //DEBUG && console.log(data);
     return {
         type: actionTypes.SET_CURRENT_TOURNAMENT,
         tournamentId: id,
@@ -65,12 +66,12 @@ export const clearLanding = () => {
 };
 
 export const joinTournament = (tournamentSerialNumber, joinedUser) => {
-  //  console.log(tournamentSerialNumber);
-    //console.log(joinedUser);
+  //DEBUG && console.log(tournamentSerialNumber);
+    //DEBUG && console.log(joinedUser);
     return dispatch => {
         return axiosInstance().put('/tournaments/joinUser/' + tournamentSerialNumber, {joinedUser: joinedUser})
             .then(response => {
-              //  console.log(response);
+              //DEBUG && console.log(response);
                 dispatch(setCurrentTournament(response.data._id, response.data));
                 setUserTournaments(response.data._id, joinedUser);
             })
@@ -81,25 +82,25 @@ export const createTournament = (newTournament, userId, nickname) => {
     return dispatch => {
         return axiosInstance().post('/tournaments/newTournament', {newTournament})
             .then(response => {
-               // console.log('adding tournament');
-               // console.log(response);
+               //DEBUG && console.log('adding tournament');
+               //DEBUG && console.log(response);
                 dispatch(setTournamentId(response.data._id));
                 dispatch(setCreatedTournament(newTournament));
                 dispatch(checkAdmin(true));
                 setTournamentCreator(userId, response.data._id, nickname);
             })
             .catch(error => {
-                console.log(error)
+                DEBUG && console.log(error)
             });
     };
 };
 
 export const getTournament = (id, currUserId) => {
-    //console.log('on get torunament action creator');
+    //DEBUG && console.log('on get torunament action creator');
     return dispatch => {
         return axiosInstance().get('/tournaments/' + id)
             .then(response => {
-              //  console.log(response);
+              //DEBUG && console.log(response);
                 dispatch(setCurrentTournament(id, response.data));
                 let isTournamentAdmin = false;
                 if (currUserId === response.data.tournamentCreator){
@@ -108,7 +109,7 @@ export const getTournament = (id, currUserId) => {
                 dispatch(checkAdmin(isTournamentAdmin));
             })
             .catch(error => {
-                console.log(error)
+                DEBUG && console.log(error)
             });
     };
 };
@@ -121,19 +122,19 @@ export const setUserNicknames = (nicknamesList) => {
 };
 
 export const fetchTournaments = (userId) => {//async func
-    //console.log(userId);
+    //DEBUG && console.log(userId);
     return dispatch => {//available due to redux-thunk
         return axiosInstance().get('/users/tournaments/' + userId)
             .then( async response => {
-      //          console.log('NOT RESPONSE OF FETCH');
-        //        console.log(response);
+      //          DEBUG && console.log('NOT RESPONSE OF FETCH');
+        //        && DEBUG && console.log(response);
                 dispatch(setUserNicknames(response.data));
                 const tournamentsArray = await getTournamentsByIds(response.data);
-          //      console.log(tournamentsArray);
+          //      DEBUG && console.log(tournamentsArray);
                 dispatch(setTournaments(tournamentsArray));
             })
             .catch(error => {
-                console.log(error);
+                DEBUG && console.log(error);
             })
     };
 };

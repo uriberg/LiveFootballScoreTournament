@@ -18,6 +18,7 @@ import {headers} from "../../constants/objects";
 import {updateMatchScore} from "../../utils/match/updateMatchScore";
 import {setMatchStatus} from "../../utils/match/setMatchStatus";
 import {setCalculatedMatches} from "../../utils/tournament/setCalculatedMatches";
+import {DEBUG} from "../../constants/settings";
 
 
 export const setMatches = (matches) => {//sync function
@@ -35,7 +36,7 @@ export const updateCalculatedMatches = (calculatedMatches) => {
 };
 
 export const setCurrentRound = (fixtures) => {
-    // console.log('dispatching current round');
+    // DEBUG && console.log('dispatching current round');
     return {
         type: actionTypes.SET_CURRENT_ROUND,
         currFixtures: fixtures,
@@ -46,7 +47,7 @@ export const setCurrentRound = (fixtures) => {
 
 
 export const setRoundAndFixtures = (fixtures) => {
-    // console.log('setting round and fixtures');
+    // DEBUG && console.log('setting round and fixtures');
     return {
         type: actionTypes.SET_ROUND_AND_FIXTURES,
         leagueCurrentRound: fixtures[0].round,
@@ -55,7 +56,7 @@ export const setRoundAndFixtures = (fixtures) => {
 };
 
 export const setAllMatchesExists = (allMatchesExists) => {
-    // console.log('AllMatchesExists actionCreator');
+    // DEBUG && console.log('AllMatchesExists actionCreator');
     return {
         type: actionTypes.SET_ALL_MATCHES_EXISTS,
         allMatchesExists: allMatchesExists
@@ -70,7 +71,7 @@ export const setUnhandledMatches = (unhandledMatches) => {
 };
 
 export const setUsers = (users) => {
-    // console.log(users);
+    // DEBUG && console.log(users);
     return {
         type: actionTypes.SET_USERS,
         users: users
@@ -96,11 +97,11 @@ export const getMatches = (tournamentLeagueId, leagueCurrentRound) => {
     return dispatch => {//available due to redux-thunk
         return axiosInstance().get('/matches/' + tournamentLeagueId + '/' + leagueCurrentRound)
             .then(response => {
-                //     console.log('dispatching...');
+                //     DEBUG && console.log('dispatching...');
                 dispatch(setMatches(response.data));
             })
             .catch(error => {
-                console.log(error);
+                DEBUG && console.log(error);
             })
     };
 };
@@ -109,10 +110,10 @@ export const deleteTournament = (id) => {//async func
     return dispatch => {//available due to redux-thunk
         return axiosInstance().delete('/tournaments/' + id)
             .then(response => {
-                console.log('tournamet with id ' + id + ' has been successfully deleted!');
+                DEBUG && console.log('tournamet with id ' + id + ' has been successfully deleted!');
             })
             .catch(error => {
-                console.log(error);
+                DEBUG && console.log(error);
             })
     };
 };
@@ -120,31 +121,31 @@ export const deleteTournament = (id) => {//async func
 export const getCurrentRound = (tournamentId, leagueId, users) => { //async func
     return async dispatch => {
         const apiRound = await getCurrRound(leagueId);
-        //  console.log('is new round: ' + apiRound);
+        //  DEBUG && console.log('is new round: ' + apiRound);
         const apiRoundMatches = await getCurrRoundMatches(apiRound, leagueId);
-        //console.log(apiRoundMatches);
+        //DEBUG && console.log(apiRoundMatches);
         const currRoundMatches = await verifyLastRoundHasEnded(apiRoundMatches, apiRound, leagueId);
-        //console.log(currRoundMatches);
+        //DEBUG && console.log(currRoundMatches);
         dispatch(setRoundAndFixtures(currRoundMatches));
         dispatch(checkDatabase(currRoundMatches[0].round, leagueId, tournamentId, users));
     }
 };
 
 export const checkDatabase = (currentRound, leagueId, tournamentId, users) => {
-    // console.log('in check database action creator');
+    // DEBUG && console.log('in check database action creator');
     return (dispatch, getState) => {
         axiosInstance().get('/matches/' + leagueId + '/' + currentRound)
             .then(response => {
                 if (response.data.length === 0) {
-                    console.log('LENGTH IS ZERO');
+                    DEBUG && console.log('LENGTH IS ZERO');
 
                     //  dispatch(calculateLastWeekScore(tournamentId, leagueId, currentRound, users));
                     //  const updatedScore = updateTournamentRound(users);
                     //  dispatch(verifyAllMatchesCalculated(leagueId, currentRound, users));
 
                     const currFixtures = getState().tournament.currFixtures;
-                    //console.log('currFixtures from selector will now be print');
-                    //console.log(currFixtures);
+                    //DEBUG && console.log('currFixtures from selector will now be print');
+                    //DEBUG && console.log(currFixtures);
                     dispatch(updateCurrentRound(tournamentId, currentRound, currFixtures));
                 } else {
                     dispatch(setAllMatchesExists(true));
@@ -152,7 +153,7 @@ export const checkDatabase = (currentRound, leagueId, tournamentId, users) => {
                 }
             })
             .catch(error => {
-                console.log(error)
+                DEBUG && console.log(error)
             });
     }
 };
@@ -161,7 +162,7 @@ export const verifyAllMatchesCalculated = (leagueId, currentRound, users) => {
     return dispatch => {
         axiosInstance().get('matches/verify/' + leagueId + '/' + currentRound)
             .then(response => {
-                // console.log(response);
+                // DEBUG && console.log(response);
                 dispatch(setUnhandledMatches(response.data));
                 const manipulatedResults = loopUnhandledMatches(response.data);
                 dispatch(setUnhandledMatches(manipulatedResults));
@@ -172,7 +173,7 @@ export const verifyAllMatchesCalculated = (leagueId, currentRound, users) => {
                 dispatch(setUnhandledMatches([]));
             })
             .catch(err => {
-                console.log('Error ' + err)
+                DEBUG && console.log('Error ' + err)
             });
     }
 };
@@ -181,33 +182,33 @@ export const updateUsersScore = (tournamentId, updatedUsers) => {
     return dispatch => {
         axiosInstance().put('/tournaments/' + tournamentId + '/updateUsersScore', {users: updatedUsers})
             .then(response => {
-                //  console.log(response);
+                //  DEBUG && console.log(response);
                 dispatch(setUsers(response.data.tournamentUsers));
             })
             .catch(err => {
-                console.log(err)
+                DEBUG && console.log(err)
             });
     }
 };
 
 export const updateCurrentRound = (tournamentId, currentRound, fixtures) => {
-    console.log('updatr Current)');
+    DEBUG && console.log('updatr Current)');
     return dispatch => {
         axiosInstance().put('tournaments/' + tournamentId + '/updateCurrentRound', {
             newRecordedRound: currentRound
             // updatedTotalScore: updatedScore
         })
             .then(async response => {
-                // console.log(response);
-                //console.log('before set current database');
+                // DEBUG && console.log(response);
+                //DEBUG && console.log('before set current database');
                 //setUsers???
-                console.log('in updateCurrent Round');
+                DEBUG && console.log('in updateCurrent Round');
                 await setCurrentDatabase(fixtures);
-                //console.log('after set current database');
+                //DEBUG && console.log('after set current database');
                 dispatch(setAllMatchesExists(true));
             })
             .catch(err => {
-                console.log(err)
+                DEBUG && console.log(err)
             });
     }
 };
@@ -216,11 +217,11 @@ export const addUser = (tournamentId, users) => {
     return dispatch => {
         axiosInstance().put('/tournaments/' + tournamentId + '/addUser', {users: users})
             .then(response => {
-                //console.log(response);
+                //DEBUG && console.log(response);
                 dispatch(setUsers(response.data.tournamentUsers));
             })
             .catch(err => {
-                console.log(err)
+                DEBUG && console.log(err)
             });
     }
 };
@@ -228,9 +229,9 @@ export const addUser = (tournamentId, users) => {
 export const onCalculateWeeklyScore = (tournamentId) => {
     return (dispatch, getState) => {
         let weeklyUsers = calculateWeeklyScore(getState().tournament.users, getState().tournament.currMatches, tournamentId);
-        // console.log(weeklyUsers);
+        // DEBUG && console.log(weeklyUsers);
         if (weeklyUsers.length > 0) {
-            //     console.log('length is greater!!');
+            //     DEBUG && console.log('length is greater!!');
             dispatch(updateUsersScore(tournamentId, weeklyUsers));
         }
     }
@@ -239,21 +240,21 @@ export const onCalculateWeeklyScore = (tournamentId) => {
 export const calculateLastWeekScore = (tournamentId, leagueId, currentRound, users) => {
     return dispatch => {
         const prevRound = getDesiredPrevRound(currentRound);
-        // console.log('last week Round: ' + prevRound);
+        // DEBUG && console.log('last week Round: ' + prevRound);
         axiosInstance().get('/matches/' + leagueId + '/' + prevRound)
             .then(response => {
                 if (response.data.length !== 0) {
-                    //  console.log(response.data);
+                    //  DEBUG && console.log(response.data);
                     const lastMatches = response.data;
                     let weeklyScore = calculateWeeklyScore(users, lastMatches, tournamentId);
-                    //   console.log(weeklyScore);
+                    //   DEBUG && console.log(weeklyScore);
                     let newTotalScore = updateTournamentRound(users);
-                    //console.log(newTotalScore);
+                    //DEBUG && console.log(newTotalScore);
                     dispatch(updateUsersScore(tournamentId, newTotalScore));
                 }
             })
             .catch(error => {
-                console.log(error)
+                DEBUG && console.log(error)
             });
     };
 };
@@ -263,20 +264,20 @@ export const calculateTotalScore = (tournamentId, leagueId) => {
         axiosInstance().get('/matches/leagueId/' + leagueId)
             .then(async response => {
                 if (response.data.length !== 0) {
-                    console.log(response.data);
+                    DEBUG && console.log(response.data);
                     const leagueMatches = response.data;
                     let unhandledMatches = [];
                     //after round is over
                     for (let i = 0; i < leagueMatches.length; i++) {
                         if (leagueMatches[i].statusShort !== 'FT') {
-                            console.log(leagueMatches[i]);
+                            DEBUG && console.log(leagueMatches[i]);
                             let op = axios.get('https://api-football-v1.p.rapidapi.com/v2/fixtures/id/' + leagueMatches[i]._id, {headers})
                             unhandledMatches.push(op);
                         }
                     }
 
                     let res = await axios.all(unhandledMatches);
-                    console.log(res.length);
+                    DEBUG && console.log(res.length);
                     let matchTemp = [];
                     for (let i = 0; i < res.length; i++) {
                         let goalsHomeTeam = res[i].data.api.fixtures[0].goalsHomeTeam;
@@ -290,7 +291,7 @@ export const calculateTotalScore = (tournamentId, leagueId) => {
                     }
 
                     await axios.all(matchTemp).then(dispatch(sumCalculateScore(tournamentId, leagueId)));
-                    console.log(res);
+                    DEBUG && console.log(res);
                 }
             })
     };
@@ -298,19 +299,19 @@ export const calculateTotalScore = (tournamentId, leagueId) => {
 
 export const sumCalculateScore = (tournamentId, leagueId) => {
     return (dispatch, getState) => {
-        console.log('in sum calculate');
+        DEBUG && console.log('in sum calculate');
         axiosInstance().get('/matches/leagueId/' + leagueId)
             .then(async response => {
-                console.log(response.data);
+                DEBUG && console.log(response.data);
                 if (response.data.length !== 0) {
-                    console.log(response.data);
+                    DEBUG && console.log(response.data);
                     const leagueMatches = response.data;
                     const tournament = await getTournament(tournamentId);
                     const tournamentCalculatedMatches = tournament.calculatedMatches;
                     let matchesToCalculate = [];
                     for (let j = 0; j < leagueMatches.length; j++) {
                         if (leagueMatches[j].statusShort === 'FT') {
-                            console.log('match has ended');
+                            DEBUG && console.log('match has ended');
                         }
                         if (leagueMatches[j].createdAt.localeCompare(tournament.createdAt) === 1 &&
                             (tournamentCalculatedMatches.findIndex((item) =>
@@ -320,16 +321,16 @@ export const sumCalculateScore = (tournamentId, leagueId) => {
                         }
                     }
 
-                    console.log(matchesToCalculate);
+                    DEBUG && console.log(matchesToCalculate);
                     const result = sumScoreForFinishedMatches(getState().tournament.users, matchesToCalculate, tournamentId);
                     let updatedCalculatedMatches = tournament.calculatedMatches;
                     for(let i = 0; i < matchesToCalculate.length; i++){
                         updatedCalculatedMatches.push(matchesToCalculate[i]);
                     }
-                    console.log(updatedCalculatedMatches);
+                    DEBUG && console.log(updatedCalculatedMatches);
                     setCalculatedMatches(tournamentId, updatedCalculatedMatches);
                     dispatch(updateCalculatedMatches(updatedCalculatedMatches));
-                    console.log(result);
+                    DEBUG && console.log(result);
                 }
             });
     };
