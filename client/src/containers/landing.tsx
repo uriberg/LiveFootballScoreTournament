@@ -129,17 +129,17 @@ class Landing extends Component<AllProps> {
     selectedLeagueChanged = (event: any, {value}: any) => {
         // DEBUG && console.log(value);
         if (value === 'Israeli Premier League') {
-            this.setState({tournamentLeagueId: 637});
+            this.setState({tournamentLeagueId: 2708});
         } else if (value === 'Premier League') {
-            this.setState({tournamentLeagueId: 524});
+            this.setState({tournamentLeagueId: 2790});
         } else if (value === 'La Liga') {
-            this.setState({tournamentLeagueId: 775});
+            this.setState({tournamentLeagueId: 2833});
         } else if (value === 'Serie A') {
-            this.setState({tournamentLeagueId: 891});
+            this.setState({tournamentLeagueId: 2857});
         } else if (value === 'Bundesliga') {
-            this.setState({tournamentLeagueId: 754});
+            this.setState({tournamentLeagueId: 2755});
         } else if (value === 'Ligue 1') {
-            this.setState({tournamentLeagueId: 525});
+            this.setState({tournamentLeagueId: 2664});
         } else if (value === 'Belarus Premier League') {
             this.setState({tournamentLeagueId: 1383});
         }
